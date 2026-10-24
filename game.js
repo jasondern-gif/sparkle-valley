@@ -149,10 +149,10 @@ function render(){
   const t=state.time;
   ctx.setTransform(dpr,0,0,dpr,0,0);
   if(flight){drawFlight(t);return;}
-  const A=inClouds(player.x)?CLOUD_AREA:GROUND_AREA,aw=(A.x1-A.x0)*ts,ah=(A.y1-A.y0)*ts;
+  const AR=AREAS[areaAt(player.x,player.y)]||AREAS.valley,A=AR.cam,aw=(A.x1-A.x0)*ts,ah=(A.y1-A.y0)*ts;
   cam.x=aw<vw?A.x0*ts-(vw-aw)/2:clamp(player.x*ts-vw/2,A.x0*ts,A.x1*ts-vw);
   cam.y=ah<vh?A.y0*ts-(vh-ah)/2:clamp(player.y*ts-vh/2,A.y0*ts,A.y1*ts-vh);
-  if(A===CLOUD_AREA)drawBackdrop();else{ctx.fillStyle='#4f9a3e';ctx.fillRect(0,0,vw,vh);}
+  if(A===CLOUD_AREA)drawBackdrop();else if(AR.bg)AR.bg(t);else{ctx.fillStyle=AR.fill||'#4f9a3e';ctx.fillRect(0,0,vw,vh);}
   const x0=Math.max(0,Math.floor(cam.x/ts)),y0=Math.max(0,Math.floor(cam.y/ts)),x1=Math.min(W-1,Math.ceil((cam.x+vw)/ts)),y1=Math.min(H-1,Math.ceil((cam.y+vh)/ts));
   drawGround(x0,y0,x1,y1,t);
   ch2Ground(t,x0,y0,x1,y1);

@@ -51,8 +51,8 @@ function ch2Layer(L,t,x0,y0,x1,y1){
       L.push([y,()=>{shadow(SX(x),SY(y),s*.28,s*.07);drawEmoji('🪵',SX(x),SY(y)-s*.18,s*.55);if(Math.sin(t*2+i*2)>.9)drawStar(SX(x)+s*.2,SY(y)-s*.4,s*.06,'#fff6a8',true);}]);});
   }
   const pad=PADS[state.balloonAt||'valley'];
-  if(state.balloon>=1&&inClouds(pad.x)===inClouds(player.x))L.push([pad.y,()=>drawBalloonAt(SX(pad.x),SY(pad.y),s,state.balloon,t)]);
-  for(const id of PONY_IDS){const e=ents[id];if(inClouds(e.x)!==inClouds(player.x)||!onScreen(e.x,e.y))continue;L.push([e.y,()=>drawPonyEnt(id,t)]);}
+  if(state.balloon>=1&&areaAt(pad.x,pad.y)===areaAt(player.x,player.y))L.push([pad.y,()=>drawBalloonAt(SX(pad.x),SY(pad.y),s,state.balloon,t)]);
+  for(const id of PONY_IDS){const e=ents[id];if(!sameArea(e,player)||!onScreen(e.x,e.y))continue;L.push([e.y,()=>drawPonyEnt(id,t)]);}
   const b=ents.bird;if((qid()==='letter'||b.leaving)&&onScreen(b.x,b.y)){L.push([99,()=>{const f=Math.sin(t*14);
     drawEmoji('✉️',SX(b.x)+(b.flip?s*.2:-s*.2),SY(b.y)+s*.28,s*.32);drawEmoji('🐦',SX(b.x),SY(b.y)+f*s*.04,s*.6,!b.flip);}]);}
 }

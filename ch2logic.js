@@ -1,12 +1,12 @@
 'use strict';
 // ---------- Chapter 2 logic ----------
 let flight=null,placing=null,hide=null,menuPony=null,hoofprints=[],printIdx=0;
-const areaPad=()=>inClouds(player.x)?PADS.clouds:PADS.valley;
+const areaPad=()=>PADS[areaAt(player.x,player.y)]||PADS.valley;
 const rescued=id=>!!state.ponies[id];
 const ponyName=id=>(state.ponies[id]&&state.ponies[id].name)||PONIES[id].names[0];
 function spName(who){return PONIES[who]?ponyName(who):(SPK[who]||SPK.narrator).n;}
-function seedsHere(){if(inVillage(player.x,player.y))return [];
-  const ks=inClouds(player.x)?['rcarrot','cloudberry','strawberry','sunflower']:['carrot','strawberry','sunflower'];return ks.filter(k=>state.seeds[k]);}
+function seedsHere(){if(inVillage(player.x,player.y))return [];const A=AREAS[areaAt(player.x,player.y)];
+  const ks=A&&A.seeds?A.seeds:inClouds(player.x)?['rcarrot','cloudberry','strawberry','sunflower']:['carrot','strawberry','sunflower'];return ks.filter(k=>state.seeds[k]);}
 function validSeed(){const s=seedsHere();if(!s.includes(state.seed))state.seed=s[0]||'carrot';return state.seed;}
 
 function ch2Init(){
@@ -22,7 +22,7 @@ function bfsTiles(sx,sy,tx,ty){const prev=new Int32Array(W*H).fill(-2),q=[sx+sy*
   const out=[];for(let c=tx+ty*W;c>=0&&prev[c]!==-2;c=prev[c])out.unshift({x:c%W,y:(c/W)|0});return out;}
 function homeOf(id){const p=state.ponies[id];if(!p)return PONIES[id].home;
   const c=state.cottages[p.home];if(c)return{x:c.x+1.5,y:c.y+2.6};
-  const i=PONY_IDS.indexOf(id);return{x:7.5+(i*7)%28,y:36+Math.floor(i*7/28)*4};}
+  const i=PONY_IDS.indexOf(id);return{x:7.5+(i*7)%28,y:36+(Math.floor(i*7/28)%3)*3};}
 function placePonies(){for(const id of PONY_IDS){const h=homeOf(id),e=ents[id];e.x=h.x+rand(-.5,.5);e.y=h.y;e.tx=null;}}
 
 // ---------- Story interactions ----------

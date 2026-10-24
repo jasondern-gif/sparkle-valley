@@ -5,6 +5,8 @@
 // Everything lives in state.vil. Shared functions are wrapped (never replaced); see the list at the bottom of this file.
 (()=>{
 const S=()=>state.vil;
+// true when she is away from Sparkle Valley and Pony Village (Cloud Kingdom or a far land)
+const offV=()=>areaAt(player.x,player.y)!=='valley';
 const R=(t)=>reg('narrator',t);
 SPK.critter={n:'Baby animal',f:'🐣',p:1.7,r:1.05};
 
@@ -291,7 +293,7 @@ function drawRainbowArc(p,al){const s=ts,x=SX(p.x),y=SY(p.y)-s*.2,k=1-p.life/p.m
 function drawDot(p,al){ctx.save();ctx.globalAlpha=al;ctx.fillStyle=p.c;circ(SX(p.x),SY(p.y),ts*.06*(.6+al*.5));ctx.fill();ctx.restore();}
 let trailN=0;
 function trailUpdate(dt){for(const id of PONY_IDS){const e=ents[id],p=state.ponies[id];if(!p||!e)continue;const tr=vp(id).trail;if(!tr||tr==='none'||!PI.trail[tr])continue;
-  if(inClouds(e.x)!==inClouds(player.x)||!onScreen(e.x,e.y)||(hide&&id==='puff'))continue;
+  if(!sameArea(e,player)||!onScreen(e.x,e.y)||(hide&&id==='puff'))continue;
   const busy=e.moving||(e.trick&&state.time-e.trick<1.2)||(e.vTw&&state.time-e.vTw<1.4)||(e.vAct&&e.vAct.ph==='do'&&(e.vAct.k==='swing'||e.vAct.k==='slide'));
   if(Math.random()>dt*(busy?9:1.2))continue;const sc=PONIES[id].look.scale||1,bx=e.x+(e.flip?.25:-.25)*sc+rand(-.12,.12),by=e.y-(.35+(e.vLift||0))*sc+rand(-.15,.1);
   if(tr==='rainbow')particles.push({x:bx,y:by,vx:rand(-.1,.1),vy:-.25,g:0,life:1,max:1,c:STARS[(trailN++)%7].c,draw:drawDot});
@@ -828,7 +830,7 @@ window.vilPauseLife=sec=>{lifePause=state.time+(sec||10);for(const id of PONY_ID
 const decoOf=k=>S().decor.filter(d=>d.k===k&&d!==hold());
 const modalOpen=()=>$('c2modal').classList.contains('show');
 function lifeOK(id,e,t){return!!state.ponies[id]&&!!e&&state.follower!==id&&!(hide&&id==='puff')&&!(e.visitUntil>t)&&!e.goHome&&menuPony!==id&&!(e.pause>t)
-  &&!inClouds(e.x)&&homeOf(id).y>=30&&t>lifePause&&!flight;}
+  &&areaAt(e.x,e.y)==='valley'&&homeOf(id).y>=30&&homeOf(id).y<48&&t>lifePause&&!flight;}
 function lifeSay(id,text){const e=ents[id],t=state.time;if(t<lifeSayAt||dlgOpen||modalOpen()||speaking()||dist(e.x,e.y,player.x,player.y)>5||!onScreen(e.x,e.y))return;lifeSayAt=t+22;say(text,id);}
 function avail(k,id){const pl=inVillage(player.x,player.y)&&!inClouds(player.x),e=ents[id];
   if(k==='playground')return decoOf('playground').some(d=>{const o=occ(d);return!o.swing||!o.slide;});
@@ -901,8 +903,8 @@ ch2Update=function(dt){const keep=[];for(const id of PONY_IDS){const e=ents[id];
 // ---------- Little moments & greetings ----------
 let momentAt=0,wasInV=false,leftV=-999,greetAt=0,beginT=0;
 function momentUpdate(){const t=state.time;if(t<momentAt)return;momentAt=t+rand(32,52);
-  if(dlgOpen||menuPony||mode||modalOpen()||flight||speaking()||inClouds(player.x)){momentAt=t+6;return;}
-  const c=PONY_IDS.filter(id=>{const e=ents[id];return state.ponies[id]&&e&&!inClouds(e.x)&&onScreen(e.x,e.y)&&dist(e.x,e.y,player.x,player.y)<6.5&&!(hide&&id==='puff')
+  if(dlgOpen||menuPony||mode||modalOpen()||flight||speaking()||offV()){momentAt=t+6;return;}
+  const c=PONY_IDS.filter(id=>{const e=ents[id];return state.ponies[id]&&e&&areaAt(e.x,e.y)==='valley'&&onScreen(e.x,e.y)&&dist(e.x,e.y,player.x,player.y)<6.5&&!(hide&&id==='puff')
     &&!(e.vAct&&e.vAct.ph==='do'&&['swing','slide','nap','chase'].includes(e.vAct.k));});
   if(!c.length){momentAt=t+8;return;}
   const id=pick(c),e=ents[id],opts=['trick','butterfly','sneeze','snack','sleepy','wave','sing','hiccup','love','look'];
@@ -925,7 +927,7 @@ function doMoment(id,e,k,t){endAct(id,e);e.pause=t+4;e.hop=t;e.flip=player.x<e.x
   say(PL[k],id);}
 function greetUpdate(){const t=state.time,inV=inVillage(player.x,player.y)&&!inClouds(player.x);
   if(inV&&!wasInV&&t-leftV>60&&t-beginT>20&&t>greetAt&&!dlgOpen){
-    const c=PONY_IDS.filter(id=>state.ponies[id]&&ents[id]&&!inClouds(ents[id].x)&&state.follower!==id&&!(hide&&id==='puff'));
+    const c=PONY_IDS.filter(id=>state.ponies[id]&&ents[id]&&areaAt(ents[id].x,ents[id].y)==='valley'&&state.follower!==id&&!(hide&&id==='puff'));
     if(c.length){const id=pick(c),e=ents[id];endAct(id,e);e.visitUntil=t+7;e.emote={e:'💗',until:t+4};greetAt=t+120;
       setTimeout(()=>{if(!dlgOpen&&!speaking())say(pick([PL.greet1,PL.greet2,PL.greet3]),id);},800);}}
   if(!inV&&wasInV)leftV=t;wasInV=inV;}
@@ -947,12 +949,12 @@ const CHEST=[['p:head:butterfly','You found butterfly clips for your ponies!'],[
   ['d:heartbush','You found a heart bush!'],['d:starlamp','You found a star lamp!'],['d:rainbowbed','You found a rainbow flower bed!']].map(([u,t])=>({u,say:R(t)}));
 let chestAnim=null;
 function freeSpotNear(minD,maxD){const inV=inVillage(player.x,player.y),px=Math.floor(player.x),py=Math.floor(player.y),out=[];
-  for(let y=py-5;y<=py+5;y++)for(let x=px-8;x<=px+8;x++){if(!walkable(x,y)||inVillage(x,y)!==inV||inClouds(x))continue;const c=map[y][x];
+  for(let y=py-5;y<=py+5;y++)for(let x=px-8;x<=px+8;x++){if(!walkable(x,y)||inVillage(x,y)!==inV||areaAt(x,y)!=='valley')continue;const c=map[y][x];
     if(c==='S'||c===GARDEN||c==='Ω'||(c==='='&&Math.random()<.7)||(inGlade(x,y)&&!state.gateOpen))continue;
     const d=dist(x+.5,y+.5,player.x,player.y);if(d<minD||d>maxD)continue;const sx=(x+.5)*ts-cam.x,sy=(y+.5)*ts-cam.y;if(sx<90||sx>vw-90||sy<170||sy>vh-160)continue;out.push([x,y]);}
   for(let i=0;i<12&&out.length;i++){const j=Math.floor(Math.random()*out.length),[x,y]=out[j];out.splice(j,1);if(bfsTiles(px,py,x,y).length)return{x:x+.5,y:y+.6};}return null;}
 function chestUpdate(){const v=S(),t=state.time;
-  if(!v.chest&&t>v.chestAt&&!inClouds(player.x)&&!dlgOpen&&!mode&&!modalOpen()&&!flight){const p=freeSpotNear(3,8);
+  if(!v.chest&&t>v.chestAt&&!offV()&&!dlgOpen&&!mode&&!modalOpen()&&!flight){const p=freeSpotNear(3,8);
     if(!p){v.chestAt=t+8;return;}v.chest={x:p.x,y:p.y};sfx('sparkle');burst(p.x,p.y-.5,'✨',10,1);if(!speaking())say(L.chestHere,'narrator');saveGame();}}
 function pickReward(){const v=S(),un=CHEST.filter(r=>r.u[0]!=='d'&&!v.unl[r.u]),dec=CHEST.filter(r=>r.u[0]==='d');
   if(un.length&&Math.random()<.7)return pick(un);return Math.random()<.3?{u:'coins',say:L.coins}:pick(dec);}
@@ -994,11 +996,11 @@ function befriend(){if(!wild)return;const b=BABY[wild.id],v=S();v.babyFollow=wil
   sfx(b.snd);burst(bEnt.f.x,bEnt.f.y-.5,'💗',6,.7);talk([['narrator',b.hi],['narrator',L.babyFollow]]);saveGame();}
 function babyUpdate(dt){const v=S(),t=state.time,inV=inVillage(player.x,player.y)&&!inClouds(player.x);
   const left=BABIES.filter(b=>!v.babies[b.id]&&v.babyFollow!==b.id);
-  if(!wild&&!v.babyFollow&&left.length&&t>v.babyAt&&!inV&&!inClouds(player.x)&&!dlgOpen&&!flight&&!modalOpen()){const p=freeSpotNear(4,8);
+  if(!wild&&!v.babyFollow&&left.length&&t>v.babyAt&&!inV&&!offV()&&!dlgOpen&&!flight&&!modalOpen()){const p=freeSpotNear(4,8);
     if(p){const b=pick(left);wild={id:b.id,x:p.x,y:p.y,hx:p.x,hy:p.y};sfx(b.snd);burst(p.x,p.y-.4,'✨',6,.6);}else v.babyAt=t+8;}
   if(wild){wander(wild,dt,[wild.hx-1.4,wild.hy-.8,wild.hx+1.4,wild.hy+.8],1.2);
-    if(dist(wild.x,wild.y,player.x,player.y)>15||inClouds(player.x)||inV){wild=null;v.babyAt=t+25;}}
-  if(v.babyFollow){const b=bEnt.f||(bEnt.f={x:player.x-1,y:player.y+.3});if(!inClouds(player.x)){if(dist(b.x,b.y,player.x,player.y)>12){b.x=player.x-1;b.y=player.y+.3;}follow(b,1.9,dt);}
+    if(dist(wild.x,wild.y,player.x,player.y)>15||offV()||inV){wild=null;v.babyAt=t+25;}}
+  if(v.babyFollow){const b=bEnt.f||(bEnt.f={x:player.x-1,y:player.y+.3});if(!offV()){if(dist(b.x,b.y,player.x,player.y)>12){b.x=player.x-1;b.y=player.y+.3;}follow(b,1.9,dt);}
     if(inV&&!dlgOpen)moveInBaby(v.babyFollow,b);}
   for(const id in v.babies){const h=v.babies[id];const e=bEnt[id]||(bEnt[id]={x:h.x,y:h.y});wander(e,dt,[h.x-1.6,h.y-.9,h.x+1.6,h.y+.9],1.1);}}
 function drawBaby(b,e,t){const s=ts,X=SX(e.x),Y=SY(e.y),hop=e.moving?Math.abs(Math.sin((e.walkT||0)*.9))*s*.12:Math.abs(Math.sin(t*2+e.x))*s*.015;
@@ -1008,7 +1010,7 @@ function drawBaby(b,e,t){const s=ts,X=SX(e.x),Y=SY(e.y),hop=e.moving?Math.abs(Ma
 const GFL=[[40.5,33.6],[42.5,33.7],[41.5,36.6],[40.5,42.6],[42.5,43.6]],GCHEST={x:41.5,y:40.4},WISH={x:42.5,y:41.88},CRYS={x:42.5,y:35.88};
 let wishAt=0;
 function carveGarden(){for(let y=33;y<=43;y++){map[y][39]=y===GAP.y?'Ω':'T';for(let x=40;x<=42;x++)map[y][x]=GARDEN;}map[35][42]=BLOCK;map[41][42]=BLOCK;}
-function gardenUpdate(){const v=S(),t=state.time;if(inClouds(player.x)||player.y<32)return;const c=map[Math.floor(player.y)][Math.floor(player.x)];
+function gardenUpdate(){const v=S(),t=state.time;if(offV()||player.y<32)return;const c=map[Math.floor(player.y)][Math.floor(player.x)];
   if(!v.garden&&(c===GARDEN||c==='Ω')){v.garden=true;GFX.sig='';sfx('fanfare');celebrate();
     for(let y=33;y<=43;y+=2)burst(41.5,y,'🍃',3,.8);talk([['narrator',L.garden1],['narrator',L.garden2]]);saveGame();}
   if(v.garden)GFL.forEach(([x,y],i)=>{if(!(v.gflowers[i]>t)&&dist(player.x,player.y,x,y)<.55)pickMagic(i);});}
@@ -1072,12 +1074,12 @@ function tapDeco(d){const D=DECO[d.k],o=originOf(d),fx=o.x,fy=d.y+D.h+.45;
 HOOK.tap.push((wx,wy)=>{if(!state.vil||placing||flight)return false;
   if(mode){if(mode.t==='place')placeTap(wx,wy);else moveTap(wx,wy);return true;}
   if(menuPony)return false;
-  const v=S(),cl=inClouds(player.x);
-  if(v.chest&&inClouds(v.chest.x)===cl&&dist(wx,wy,v.chest.x,v.chest.y-.35)<.8){goDo(v.chest.x,v.chest.y+.1,1.3,openChest);return true;}
+  const v=S(),cl=offV();
+  if(v.chest&&!cl&&dist(wx,wy,v.chest.x,v.chest.y-.35)<.8){goDo(v.chest.x,v.chest.y+.1,1.3,openChest);return true;}
   if(wild&&dist(wx,wy,wild.x,wild.y-.25)<.7){goDo(wild.x,wild.y,1.4,befriend,wild);return true;}
   for(const id in bEnt){const e=bEnt[id];if(cl||dist(wx,wy,e.x,e.y-.25)>=.6)continue;const b=BABY[id==='f'?v.babyFollow:id];if(!b)continue;
     goDo(e.x,e.y,1.4,()=>{sfx(b.snd);burst(e.x,e.y-.6,'💗',5,.6);e.hop=state.time;say(pick(CRIT),'critter');},e);return true;}
-  if(PONY_IDS.some(id=>{const e=ents[id];return e&&inClouds(e.x)===cl&&dist(wx,wy,e.x,e.y-.5)<.9;}))return false;
+  if(PONY_IDS.some(id=>{const e=ents[id];return e&&sameArea(e,player)&&dist(wx,wy,e.x,e.y-.5)<.9;}))return false;
   if(cl)return false;
   if(v.garden&&wx>=39.5&&wx<=43.2&&wy>=32.4&&wy<=44.6){
     if(!v.gchest&&dist(wx,wy,GCHEST.x,GCHEST.y-.35)<.8){goDo(GCHEST.x,GCHEST.y+.1,1.3,openGold);return true;}
@@ -1086,7 +1088,7 @@ HOOK.tap.push((wx,wy)=>{if(!state.vil||placing||flight)return false;
     for(let i=0;i<GFL.length;i++){const[x,y]=GFL[i];if(!(v.gflowers[i]>state.time)&&dist(wx,wy,x,y-.3)<.6){goDo(x,y,.5,()=>{if(!(S().gflowers[i]>state.time))pickMagic(i);});return true;}}}
   if(inVillage(wx,wy)){const h=hitObject(wx,wy);if(h&&h.t==='d'&&!DECO[h.d.k].walk){tapDeco(h.d);return true;}}
   return false;});
-HOOK.ground.push((t,x0,y0,x1,y1)=>{if(!state.vil||inClouds(player.x)||y1<30)return;drawPaths(x0,y0,x1,y1);
+HOOK.ground.push((t,x0,y0,x1,y1)=>{if(!state.vil||offV()||y1<30)return;drawPaths(x0,y0,x1,y1);
   if(!mode)return;const s=ts;let w=1,h=1;
   if(mode.t==='place'){w=DECO[mode.k].w;h=DECO[mode.k].h;}else if(mode.hold){if(mode.hold.t==='c'){w=3;h=2;}else{w=DECO[mode.hold.d.k].w;h=DECO[mode.hold.d.k].h;}}
   mode.spots.forEach((p,i)=>{const x=SX(p.x),y=SY(p.y);if(x<-3*s||x>vw+s||y<-3*s||y>vh+s)return;const k=.5+.5*Math.sin(t*4+i);
@@ -1094,7 +1096,7 @@ HOOK.ground.push((t,x0,y0,x1,y1)=>{if(!state.vil||inClouds(player.x)||y1<30)retu
     rr(x+s*.08,y+s*.08,s*(w-.16),s*(h-.16),s*.3);ctx.fill();ctx.stroke();ctx.setLineDash([]);drawStar(x+s*w/2,y+s*(h/2-.05*k),s*.09*(1+k*.4),'#fff6a8',true);});
   if(mode.t==='move'&&mode.hold){const H=mode.hold,x=H.t==='c'?H.ox:H.ox,y=H.oy;ctx.strokeStyle='rgba(255,126,182,.8)';ctx.lineWidth=3;ctx.setLineDash([4,6]);
     rr(SX(x)+s*.05,SY(y)+s*.05,s*(w-.1),s*(h-.1),s*.25);ctx.stroke();ctx.setLineDash([]);}});
-HOOK.layer.push((L2,t,x0,y0,x1,y1)=>{if(!state.vil||inClouds(player.x))return;const v=S(),s=ts;
+HOOK.layer.push((L2,t,x0,y0,x1,y1)=>{if(!state.vil||offV())return;const v=S(),s=ts;
   if(y1>=29){
     for(const d of v.decor){const D=DECO[d.k];if(d.x+D.w<x0-1||d.x>x1+1||d.y+D.h<y0-1||d.y-D.hg>y1+1)continue;
       if(d===hold())L2.push([99,()=>{ctx.globalAlpha=.8;drawDeco(d,t,s*(.35+.08*Math.sin(t*5)));ctx.globalAlpha=1;}]);
@@ -1122,9 +1124,9 @@ HOOK.bar.push(()=>{if(!state.vil||flight)return[];const out=[];
   out.push({key:'vward',html:'👗',label:'clothes',cls:newWard?'pulse':'',onTap:openWardrobe});return out;});
 HOOK.ponyButtons.push({act:'dress',icon:'🎨',show:id=>!!(state.vil&&state.ponies[id]),onTap:id=>{closePonyMenu();openDress(id);}});
 HOOK.ponyButtons.push({act:'trick',icon:'✨',show:id=>!!(state.vil&&state.ponies[id])&&vp(id).lv>=2,onTap:id=>doTrick(id)});
-HOOK.target.push(()=>{if(!state.vil||qid()!=='freeEnd')return undefined;const v=S(),cl=inClouds(player.x);if(mode)return null;
+HOOK.target.push(()=>{if(!state.vil||qid()!=='freeEnd')return undefined;const v=S(),cl=offV();if(mode)return null;
   if(v.babyFollow&&!inVillage(player.x,player.y)&&!cl)return VILLAGE_GATE;
-  if(v.chest&&inClouds(v.chest.x)===cl)return{x:v.chest.x,y:v.chest.y-.4};
+  if(v.chest&&!cl)return{x:v.chest.x,y:v.chest.y-.4};
   if(v.garden&&!v.gchest&&inVillage(player.x,player.y))return{x:GCHEST.x,y:GCHEST.y-.4};
   return undefined;});
 // small API for other modules

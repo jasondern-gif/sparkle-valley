@@ -6,7 +6,9 @@ const emojiCache=new Map();
 const EMOJI_FONT='"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
 // graphics caches (ground chunks, sprites); all cleared on resize
 const GFX={chunks:new Map(),pool:[],sprites:new Map(),field:null,sig:'',frame:0,vig:null,vigKey:''};
-const CHUNK=4,FP=4,KNOWN_TILES='.=SWTFGHBCMmgK';
+const CHUNK=4,FP=4,KNOWN_TILES='.=SWTFGHBCMmgKduwj';
+// Modules can draw extra cached ground art into chunks: f(ax,ay,bx,by,s) with ctx set to the chunk.
+const CHUNK_HOOKS=[];
 const nowS=()=>performance.now()/1000;
 
 function resize(){
@@ -79,13 +81,16 @@ function stageOf(p){return p.w?Math.min(3,1+Math.floor(p.g/GROW)):0;}
 
 // ---------- Ground: smooth color field + cached chunks ----------
 function tileAt(x,y){const r=map[y];return r?r[x]:undefined;}
-function groundClass(x,y){const c=tileAt(x,y);if(c===undefined)return 0;if(c==='g'||inGlade(x,y))return 2;if(c==='m')return 1;return 0;}
+function groundClass(x,y){const c=tileAt(x,y);if(c===undefined)return 0;
+  if(y>=48&&x<45){if(y<80)return 3;if(y<112)return c==='u'||c==='w'?5:4;return 6;}
+  if(c==='g'||inGlade(x,y))return 2;if(c==='m')return 1;return 0;}
 function fieldPal(h,s,l,dh,dl,dl2){const b=hslRgb(h,s,l),a=hslRgb(h+dh/2,s,l+dl/2),z=hslRgb(h-dh/2,s,l-dl/2),p=hslRgb(h,s,l+dl2/2),q=hslRgb(h,s,l-dl2/2);
   return[b,[0,1,2].map(i=>a[i]-z[i]),[0,1,2].map(i=>p[i]-q[i])];}
 function buildField(){
   const Hm=map.length,Wm=map[0].length,fw=Wm*FP,fh=Hm*FP,n=fw*fh,R=new Float32Array(n),G=new Float32Array(n),B=new Float32Array(n),rb=!!state.rainbow;
   const cls=new Uint8Array(Wm*Hm);for(let y=0;y<Hm;y++)for(let x=0;x<Wm;x++)cls[y*Wm+x]=groundClass(x,y);
-  const pals=[fieldPal(99,54,57.5,16,7,3),fieldPal(78,64,65,14,6,2.5),rb?fieldPal(322,74,85,70,4,2):fieldPal(267,44,83,26,5,2)];
+  const pals=[fieldPal(99,54,57.5,16,7,3),fieldPal(78,64,65,14,6,2.5),rb?fieldPal(322,74,85,70,4,2):fieldPal(267,44,83,26,5,2),
+    fieldPal(118,40,38,22,8,3),fieldPal(44,74,81,10,6,2),fieldPal(186,52,60,16,7,2.5),fieldPal(232,34,38,20,7,3)];
   const a3=hslRgb(336,74,85),b3=hslRgb(308,74,85),D3=[0,1,2].map(i=>(a3[i]-b3[i])/2);
   for(let py=0;py<fh;py++){const wy=(py+.5)/FP,ty=Math.floor(wy);
     for(let px=0;px<fw;px++){const wx=(px+.5)/FP,cl=cls[ty*Wm+Math.floor(wx)],P=pals[cl];
@@ -104,7 +109,10 @@ function boxBlur(A,w,h,r){const T=new Float32Array(Math.max(w,h)),k=1/(2*r+1);
     for(let y=0;y<h;y++){T[y]=s*k;s+=A[Math.min(h-1,y+r+1)*w+x]-A[Math.max(0,y-r)*w+x];}for(let y=0;y<h;y++)A[y*w+x]=T[y];}}
 function mapSig(){let h=2166136261;for(let y=0;y<map.length;y++){const r=map[y];for(let x=0;x<r.length;x++){const c=r[x];h=Math.imul(h^(c?String(c).charCodeAt(0):0),16777619);}h=Math.imul(h^r.length,16777619);}
   return h+'|'+map.length+'|'+(state.rainbow?1:0)+'|'+ts+'|'+dpr;}
-function gfxSync(){const sg=mapSig();if(sg!==GFX.sig){GFX.sig=sg;for(const ch of GFX.chunks.values())ch.stale=true;buildField();}}
+function gfxSync(){const sg=mapSig();if(sg!==GFX.sig){GFX.sig=sg;for(const ch of GFX.chunks.values())ch.stale=true;
+  // the smooth color field only depends on ground classes, so most map changes (cottages, paths) don't need a rebuild
+  let h=2166136261;for(let y=0;y<map.length;y++)for(let x=0;x<map[0].length;x++)h=Math.imul(h^(groundClass(x,y)+1),16777619);
+  const cs=h+'|'+(state.rainbow?1:0)+'|'+map.length;if(cs!==GFX.clsSig||!GFX.field){GFX.clsSig=cs;buildField();}}}
 
 // rounded "blob" autotile: adds one tile's piece of a smooth region (path, pond, bed) to the current path
 function blobTile(x,y,s,e,r,is,fk){
@@ -121,8 +129,8 @@ const isGrassy=c=>c==='.'||c==='m'||c==='g'||c==='T'||c==='F'||c==='G'||c==='K'|
 
 function grassTexture(x,y,c,s){
   const r=mulberry32(x*92821+y*68917+13),X=x*s,Y=y*s,cl=groundClass(x,y);
-  const dark=cl===2?(state.rainbow?'rgba(220,110,180,.22)':'rgba(140,105,200,.22)'):cl===1?'rgba(105,150,35,.26)':'rgba(45,120,40,.22)';
-  const lite=cl===2?'rgba(255,255,255,.38)':'rgba(240,255,200,.30)';
+  const dark=cl===2?(state.rainbow?'rgba(220,110,180,.22)':'rgba(140,105,200,.22)'):cl===1?'rgba(105,150,35,.26)':cl===3?'rgba(20,70,25,.30)':cl===6?'rgba(15,20,60,.30)':cl===4||cl===5?'rgba(150,120,60,.18)':'rgba(45,120,40,.22)';
+  const lite=cl===2?'rgba(255,255,255,.38)':cl===3?'rgba(170,230,140,.26)':cl===6?'rgba(190,210,255,.30)':'rgba(240,255,200,.30)';
   if(r()<.3){ctx.fillStyle=r()<.5?'rgba(255,255,255,.05)':cl===2?'rgba(150,100,200,.04)':'rgba(40,110,30,.035)';ell(X+r()*s,Y+r()*s,s*(.25+r()*.25),s*(.15+r()*.15));ctx.fill();}
   ctx.lineCap='round';ctx.lineWidth=Math.max(1,s*.022);
   for(const col of[dark,lite]){ctx.beginPath();const n=col===dark?6:3;
@@ -133,6 +141,7 @@ function flower(x,y,r,col){ctx.fillStyle=col;ctx.beginPath();for(let i=0;i<5;i++
   ctx.fillStyle='#ffcf33';circ(x,y,r*.62);ctx.fill();}
 function grassDeco(x,y,c,s){
   const r=mulberry32(x*15731+y*789221+7),X=x*s,Y=y*s,cl=groundClass(x,y),h=hash(x,y);
+  if(cl>=3){if(typeof LG!=='undefined'&&LG.grassDeco)LG.grassDeco(x,y,c,s,cl,r);return;}
   ctx.lineCap='round';
   if(r()<(cl===1?.5:.32)){const tx=X+s*(.15+r()*.7),ty=Y+s*(.3+r()*.6),n=3+Math.floor(r()*3),hh=s*(.1+r()*.06);
     const cols=cl===2?(state.rainbow?['#e98bc8','#f6b6dc']:['#a98ad8','#c7b2ee']):['#4c9a3a','#6cbd4c'];
@@ -199,6 +208,7 @@ function buildChunk(ch){
       blobLayer(S,s,-.02,.22,is,'rgba(70,60,20,.22)');blobLayer(S,s,.01,.2,is,'#8a5832');blobLayer(S,s,.04,.18,is,'#cf9a62');
       blobLayer(S,s,.1,.12,is,'#8d5b37');for(const[x,y]of S)soilMound(x*s,y*s,s,false);}
     for(const[x,y,c]of Gr)grassDeco(x,y,c,s);
+    for(const f of CHUNK_HOOKS)f(ax,ay,bx,by,s);
     for(const[x,y]of U)ctx.clearRect(x*s,y*s,s,s);
   });
 }
@@ -235,7 +245,7 @@ function cloudSprite(){return getSprite('cloud',200,110,0,0,()=>{
     g.addColorStop(0,'rgba(30,60,80,.5)');g.addColorStop(1,'rgba(30,60,80,0)');ctx.fillStyle=g;ctx.fillRect(a-r,b-r,r*2,r*2);}},1);}
 function drawCloudShadows(t){
   const s=ts,c=cloudSprite(),Wm=map[0].length,Hm=map.length,span=Wm+16;
-  for(let i=0;i<6;i++){const w=(5+hash(i,3)*3)*s,hh=w*.55,wx=(((hash(i,5)*span+t*.22)%span)-8)*s,wy=(hash(i,9)*Hm+Math.sin(t*.03+i)*1.5)*s;
+  for(let i=0;i<Math.ceil(Hm/8);i++){const w=(5+hash(i,3)*3)*s,hh=w*.55,wx=(((hash(i,5)*span+t*.22)%span)-8)*s,wy=(hash(i,9)*Hm+Math.sin(t*.03+i)*1.5)*s;
     const x=wx-cam.x,y=wy-cam.y-hh/2;if(x+w<0||x>vw||y+hh<0||y>vh)continue;ctx.globalAlpha=.15;ctx.drawImage(c,x,y,w,hh);}
   ctx.globalAlpha=1;
 }
