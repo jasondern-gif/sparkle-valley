@@ -173,10 +173,10 @@ const isCh4=()=>qid().startsWith('f4');
 const DEF={letterSeen:false,letterRead:false,met:false,vineGone:[],cloverFree:false,houses:[null,null,null],mushGiven:false,
   buttonMet:false,big:false,pathOpen:false,glimmerMet:false,sparkle:false,done:false};
 function ensure(){if(!state.ch4||typeof state.ch4!=='object')state.ch4={};const C=state.ch4;
-  for(const k in DEF)if(C[k]===undefined)C[k]=JSON.parse(JSON.stringify(DEF[k]));
+  for(const k in DEF)if(C[k]===undefined)C[k]=JSON.parse(JSON.stringify(DEF[k]));C._ok=1;
   for(const k of ['mushroom','acorn'])if(!(state.inv[k]>=0))state.inv[k]=0;
   return C;}
-const C4=()=>state.ch4||ensure();
+const C4=()=>state.ch4&&state.ch4._ok?state.ch4:ensure();
 function openPath(fx){C4().pathOpen=true;SECRET.forEach(([x,y],i)=>{map[y][x]='j';if(fx)setTimeout(()=>{burst(x+.5,y+.5,'✨',6,.7);sfx('sparkle');},i*300);});}
 
 const bf=LG.messenger('forest.butterfly');

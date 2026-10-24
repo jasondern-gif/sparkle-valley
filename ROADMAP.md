@@ -81,8 +81,31 @@ Design rules (apply to everything):
 ## ✅ 📖 My Magic Quest Book (done)
 - [x] A picture book of story quests: the current adventure, plus "coming next" steps with icons, all spoken out loud
 
-## 🚧 Future lands (by Rainbow Balloon), wave 2
+## ✅ Future lands (by Rainbow Balloon), wave 2 (done)
 - [x] Pony care: 10-second rest between options; friendship levels; dress-up; player wardrobe
-- [ ] **Fairy Forest**: help tiny fairies, discover secret paths, rescue a baby unicorn
-- [ ] **Mermaid Lagoon**: underwater friends, rebuild a seashell palace
-- [ ] **Moonlight Meadow**: find sleepy star ponies, return fallen stars to the sky
+- [x] The Rainbow Balloon flies anywhere: a picture-card picker (spoken names, the card her quest needs glows) and a flight between any two places
+- [x] Each land's chapter starts right after the one before (saves that were already in free play pick up the next new chapter)
+- [x] Every new pony moves into Pony Village, and the land's ruler gives magic wood so building the 3 cottages isn't grindy
+- [x] **Chapter 4: The Fairy Forest**: a butterfly brings Queen Willow's leaf letter; Pip the tiny fairy helps and waters the garden
+  - [x] Clover: tap thorny vines with a magic wand to turn them into flowers, then grow golden acorns
+  - [x] Build 3 mushroom fairy houses (pick roof, door, window and flowers) from fairy mushrooms
+  - [x] Button: shrunk by Pip's oopsy spell; mix the big-again potion from a picture recipe
+  - [x] Fairy lights memory game opens a secret stepping-stone path to baby unicorn **Glimmer**; give her the 3 magic colors she asks for
+- [x] **Chapter 5: The Mermaid Lagoon**: a magic bubble brings Princess Marina's message in a bottle; Pinch the crab and Splash the dolphin
+  - [x] A magic bubble lets her walk on the coral reef under the sea
+  - [x] Coral: pop the bubbles to free her from a giant bubble, then grow sea grapes
+  - [x] Collect 8 seashells and rebuild the Seashell Palace (towers, wall decorations, topper, flags)
+  - [x] Pearl: clam memory match to find where she's hiding, then grow a beach melon
+  - [x] Misty: ride Splash the dolphin out to sea and catch sparkles (steer with a finger, can't fail)
+- [x] **Chapter 6: Moonlight Meadow**: Zip the shooting star brings Mother Moon's letter (a night meadow with a dandelion field, Mirror Lake and a Wish Windmill)
+  - [x] Nova: blow dandelion fluff to find her fallen star, then the Star Toss game pushes it back into the sky
+  - [x] Comet: scoop his star out of Mirror Lake with a net (fish, frog and turtle surprises), then toss it up
+  - [x] Fix the Wish Windmill (moon melons and dream daisies) and catch 5 floating star pieces
+  - [x] Dusk: wake her with a song on the star bells, then connect the stars into a pony constellation
+- [x] New crops: fairy mushrooms, golden acorns, sea grapes, beach melons, moon melons, dream daisies
+- [x] Every new pony has a replayable game from the pony menu's play button
+- [x] Every new object is drawn by a named function in a per-land drawing table (`LandArt` in lands.js, forest.js, lagoon.js, meadow.js), ready to be swapped for sprite art
+
+## 💡 Ideas for later
+- More lands (a candy castle, a snowy mountain), and more Pony Village buildings for the new ponies' favorite things
+- Real hand-drawn sprite art for the new lands (see the `LandArt` tables)

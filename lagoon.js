@@ -153,10 +153,10 @@ const isCh5=()=>qid().startsWith('m5');
 // ===== State =====
 const DEF={letterSeen:false,letterRead:false,met:false,popped:0,coralFree:false,shells:[],palace:null,pearlFound:false,mistyFound:false,done:false};
 function ensure(){if(!state.ch5||typeof state.ch5!=='object')state.ch5={};const C=state.ch5;
-  for(const k in DEF)if(C[k]===undefined)C[k]=JSON.parse(JSON.stringify(DEF[k]));
+  for(const k in DEF)if(C[k]===undefined)C[k]=JSON.parse(JSON.stringify(DEF[k]));C._ok=1;
   for(const k of ['seagrape','melon'])if(!(state.inv[k]>=0))state.inv[k]=0;
   return C;}
-const C5=()=>state.ch5||ensure();
+const C5=()=>state.ch5&&state.ch5._ok?state.ch5:ensure();
 const bub=LG.messenger('lagoon.bottle');
 const pinch={x:12.5,y:90.4,tx:null,flip:false,walkT:0,moving:false};
 let ride=null;
