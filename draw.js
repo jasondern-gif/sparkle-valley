@@ -1,6 +1,6 @@
 'use strict';
 // ---------- Rendering ----------
-const canvas=$('game'),ctx=canvas.getContext('2d');
+const canvas=$('game');let ctx=canvas.getContext('2d');
 let ts=64,dpr=1,vw=0,vh=0;const cam={x:0,y:0};
 const emojiCache=new Map();
 const EMOJI_FONT='"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
@@ -40,6 +40,7 @@ function drawGround(x0,y0,x1,y1,t){
   const s=ts;
   for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++){
     const c=map[y][x],sx=x*s-cam.x,sy=y*s-cam.y,h=hash(x,y);
+    if(typeof drawTileExtra==='function'&&drawTileExtra(c,x,y,sx,sy,s,h,t))continue;
     if(c==='='){ctx.fillStyle='#ead39d';ctx.fillRect(sx,sy,s+1,s+1);
       ctx.fillStyle='#d8bd82';if(h<.6){ell(sx+s*(.2+h),sy+s*(.3+h*.6),s*.06,s*.04);ctx.fill();}if(h>.4){ell(sx+s*(1-h*.8),sy+s*(.75),s*.05,s*.035);ctx.fill();}}
     else if(c==='S'){const p=state.plots[x+','+y];const wet=p&&p.w&&stageOf(p)<3;
