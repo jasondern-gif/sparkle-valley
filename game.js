@@ -47,6 +47,7 @@ function follow(e,d,dt){const p=trailPoint(d);if(!p){e.moving=false;return;}cons
 
 // ---------- Tapping ----------
 function tapWorld(sx,sy){
+  window.__tapWalk=false;
   if(flight)return;
   const wx=(sx+cam.x)/ts,wy=(sy+cam.y)/ts;tapMark={x:wx,y:wy,life:.5};
   for(const f of HOOK.tap)if(f(wx,wy))return;
@@ -69,7 +70,7 @@ function tapWorld(sx,sy){
   if(map[ty][tx]==='K'){goDo(STONE.x,STONE.y,1.5,interactStone);return;}
   if(map[ty][tx]==='S'){goDo(tx+.5,ty+.5,1.3,()=>interactSoil(tx,ty));return;}
   if(map[ty][tx]==='M'){goDo(ents.hops.x,ents.hops.y,1.6,interactHops);return;}
-  player.action=null;player.path=findPath(wx,wy);
+  player.action=null;player.path=findPath(wx,wy);window.__tapWalk=true;
 }
 const flowerUp=i=>!(state.flowerAt[i]>state.time);
 
