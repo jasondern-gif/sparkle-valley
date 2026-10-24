@@ -184,7 +184,7 @@ function render(){
   for(const c of chickens)L.push([c.y,()=>{shadow(SX(c.x),SY(c.y),s*.18,s*.05);drawEmoji('🐔',SX(c.x),SY(c.y)-s*.25+(c.moving?Math.abs(Math.sin(c.walkT))*-s*.05:0),s*.5,!c.flip);}]);
   const g=ents.grandma;L.push([g.y,()=>drawPerson(SX(g.x),SY(g.y),'👵','#a77bd8',player.x<g.x,0,false)]);
   const hp=ents.hops;L.push([hp.y,()=>drawPerson(SX(hp.x),SY(hp.y),'🐰','#7cc6ff',false,0,false,{apron:true})]);
-  const pony=ents.pony,ponyOpts=()=>({body:'#ffe08a',mane:['#ff8cc6','#ff6fb5'],hoof:'#a0643a',snout:'#ffd0a0',bow:!!state.decor.bow});
+  const pony=ents.pony,ponyOpts=()=>({body:'#ffe08a',mane:['#ff8cc6','#ff6fb5'],hoof:'#a0643a',snout:'#ffd0a0',bow:!!state.decor.bow,assetId:'buttercup'});
   const u=ents.unicorn;
   L.push([u.y,()=>drawHorse(SX(u.x),SY(u.y),{body:state.rainbow?'#fff':'#f1eef6',mane:state.rainbow?STARS.map(x=>x.c):state.uniFollow?UNI_HAPPY:UNI_SAD,
     hoof:'#c9b6ff',snout:'#ffe1ef',horn:true,hornColor:state.rainbow||state.uniFollow?'#ffd34d':'#ddd2a8',crown:state.uniCrown,flip:u.flip,walkT:u.walkT,moving:u.moving})]);

@@ -12,7 +12,7 @@ document.body.insertAdjacentHTML('beforeend',`
 const portraitCache=new Map();
 function ponyLook(id){
   if(PONIES[id]){const p=state.ponies[id];return Object.assign({},PONIES[id].look,{acc:p&&p.acc});}
-  if(id==='buttercup')return{body:'#ffe08a',mane:['#ff8cc6','#ff6fb5'],hoof:'#a0643a',snout:'#ffd0a0',bow:!!state.decor.bow};
+  if(id==='buttercup')return{body:'#ffe08a',mane:['#ff8cc6','#ff6fb5'],hoof:'#a0643a',snout:'#ffd0a0',bow:!!state.decor.bow,assetId:'buttercup'};
   if(id==='stardust')return{body:state.rainbow?'#fff':'#f1eef6',mane:state.rainbow?STARS.map(x=>x.c):state.uniFollow?UNI_HAPPY:UNI_SAD,
     hoof:'#c9b6ff',snout:'#ffe1ef',horn:true,hornColor:state.rainbow||state.uniFollow?'#ffd34d':'#ddd2a8',crown:state.uniCrown};
   if(id==='cloudberry')return{body:'#f6ecff',mane:['#c9a6ff','#ff9ad5','#9fd3ff','#c9a6ff'],hoof:'#b79cf0',snout:'#fff0fb',
