@@ -5,7 +5,7 @@ document.body.insertAdjacentHTML('beforeend',`
   <div class="pmBtns">
     <button data-act="pet" aria-label="Pet">💗</button><button data-act="feed" aria-label="Feed" id="pmFeed">🥕</button>
     <button data-act="brush" aria-label="Brush">🪮</button><button data-act="play" aria-label="Play">⚽</button>
-    <button data-act="follow" aria-label="Follow" id="pmFollow">🐾</button></div></div>
+    <button data-act="follow" aria-label="Follow" id="pmFollow">🐾</button><span id="pmExtra" style="display:contents"></span></div></div>
 <div id="c2modal" class="modal"><div class="panel box"><button class="close" id="c2close">✖</button><div id="c2body"></div></div></div>`);
 
 // Portraits: ponies drawn into a small picture for dialog and picker screens
@@ -49,6 +49,8 @@ function refreshPonyMenu(){if(!menuPony)return;const id=menuPony,p=state.ponies[
   const f=feedChoice(id);$('pmFeed').innerHTML=f?iconHTML(f):'🍽️';
   $('pmFollow').textContent=state.follower===id?'🏠':'🐾';
   $('ponyMenu').querySelector('[data-act=play]').textContent=id==='puff'?'🙈':'⚽';
+  const ex=$('pmExtra');ex.innerHTML=HOOK.ponyButtons.map((b,i)=>b.show&&!b.show(id)?'':`<button data-hb="${i}" aria-label="${b.act}">${b.icon}</button>`).join('');
+  ex.querySelectorAll('[data-hb]').forEach(el=>el.onclick=e=>{e.stopPropagation();initAudio();if(menuPony)HOOK.ponyButtons[+el.dataset.hb].onTap(menuPony);});
   updateCooldowns();}
 function updateCooldowns(){if(!menuPony)return;
   $('ponyMenu').querySelectorAll('[data-act]').forEach(b=>{const a=b.dataset.act;if(a==='follow')return;const left=coolLeft(menuPony,a);

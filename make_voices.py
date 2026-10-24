@@ -12,6 +12,10 @@ VOICES = {
     'peaches':   ('en-AU-NatashaNeural', '+5%',  '+18Hz'),
     'puff':      ('en-GB-MaisieNeural',  '+4%',  '+22Hz'),
 }
+# Modules can add character voices in voices-<module>.json: {"speaker": ["en-US-AvaNeural", "-5%", "+0Hz"]}
+import glob
+for vf in glob.glob('voices-*.json'):
+    for k, v in json.load(open(vf, encoding='utf-8')).items(): VOICES[k] = tuple(v)
 lines = json.load(open('lines.json', encoding='utf-8'))
 os.makedirs('audio', exist_ok=True)
 try: old = json.load(open('audio/manifest.json', encoding='utf-8'))
@@ -23,7 +27,7 @@ async def make(l):
     prev = old.get(k)
     if isinstance(prev, dict) and prev.get('w') and os.path.exists(path):
         manifest[k] = prev; return
-    v, rate, pitch = VOICES[l['who']]
+    v, rate, pitch = VOICES.get(l['who'], VOICES['narrator'])
     async with sem:
         for attempt in range(4):
             try:

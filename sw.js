@@ -1,5 +1,5 @@
-﻿const CACHE='sparkle-valley-v5';
-const FILES=['./','index.html','core.js','draw.js','quests.js','ch2data.js','ch2logic.js','ch2world.js','ch2ui.js','ch2draw.js','ch2draw2.js','game.js','manifest.json','icon-180.png','icon-512.png','audio/manifest.json'];
+﻿const CACHE='sparkle-valley-v6';
+const FILES=['./','index.html','core.js','draw.js','quests.js','ch2data.js','ch2logic.js','ch2world.js','ch2ui.js','ch2draw.js','ch2draw2.js','hooks.js','ch3.js','village.js','game.js','manifest.json','icon-180.png','icon-512.png','audio/manifest.json'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(async c=>{
   await c.addAll(FILES);
   // also save every voice recording so the game talks even without internet

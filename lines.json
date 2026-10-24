@@ -280,26 +280,6 @@
   "text": "This is the Wishing Stone. It looks like something is missing..."
  },
  {
-  "key": "3bbzcz",
-  "who": "narrator",
-  "text": "Once upon a time, a little farmer came to visit Grandma's farm in Sparkle Valley."
- },
- {
-  "key": "g61rjd",
-  "who": "narrator",
-  "text": "Tap on the grass to walk. Tap on things to use them!"
- },
- {
-  "key": "bk7kd7",
-  "who": "narrator",
-  "text": "Look! There's Grandma. Tap on her to say hi!"
- },
- {
-  "key": "1ds95su",
-  "who": "narrator",
-  "text": "Welcome back!"
- },
- {
   "key": "9utnl7",
   "who": "narrator",
   "text": "The rainbow is back, and everyone in Sparkle Valley is so happy!"
@@ -563,6 +543,26 @@
   "key": "1ji19tt",
   "who": "narrator",
   "text": "Sparkle, sparkle! It turned into a rainbow bridge!"
+ },
+ {
+  "key": "3bbzcz",
+  "who": "narrator",
+  "text": "Once upon a time, a little farmer came to visit Grandma's farm in Sparkle Valley."
+ },
+ {
+  "key": "g61rjd",
+  "who": "narrator",
+  "text": "Tap on the grass to walk. Tap on things to use them!"
+ },
+ {
+  "key": "bk7kd7",
+  "who": "narrator",
+  "text": "Look! There's Grandma. Tap on her to say hi!"
+ },
+ {
+  "key": "1ds95su",
+  "who": "narrator",
+  "text": "Welcome back!"
  },
  {
   "key": "6ftzp7",
@@ -835,14 +835,14 @@
   "text": "Tap on a pony to pet it, feed it, brush it, and play!"
  },
  {
-  "key": "1bkoas8",
+  "key": "1p0jptu",
   "who": "narrator",
-  "text": "Free play! Visit your ponies, fly the balloon, and buy fun things from Mr. Hops."
+  "text": "Free play! Visit your ponies, decorate your village, and fly the balloon!"
  },
  {
-  "key": "u096bv",
+  "key": "wlo3ps",
   "who": "grandma",
-  "text": "Visit your ponies, fly the balloon to the Cloud Kingdom, or buy fun things from Mr. Hops!"
+  "text": "Visit your ponies, decorate your Pony Village, or fly the Rainbow Balloon!"
  },
  {
   "key": "1h6alu1",
@@ -960,6 +960,11 @@
   "text": "The Tulip garden costs 5 coins. Grow more food to sell!"
  },
  {
+  "key": "1o38uh8",
+  "who": "hops",
+  "text": "Tulip garden. It costs 5 coins."
+ },
+ {
   "key": "thqpx6",
   "who": "hops",
   "text": "Yay! You got the Bow for Buttercup! Buttercup looks so pretty!"
@@ -973,6 +978,11 @@
   "key": "x2e7up",
   "who": "hops",
   "text": "The Bow for Buttercup costs 8 coins. Grow more food to sell!"
+ },
+ {
+  "key": "ft77cr",
+  "who": "hops",
+  "text": "Bow for Buttercup. It costs 8 coins."
  },
  {
   "key": "1s3ukq3",
@@ -990,6 +1000,11 @@
   "text": "The Kitty friend costs 12 coins. Grow more food to sell!"
  },
  {
+  "key": "b9dyiy",
+  "who": "hops",
+  "text": "Kitty friend. It costs 12 coins."
+ },
+ {
   "key": "1npn6de",
   "who": "hops",
   "text": "Yay! You got the Fountain! Go see it next to your farm!"
@@ -1003,6 +1018,11 @@
   "key": "1r2kidk",
   "who": "hops",
   "text": "The Fountain costs 20 coins. Grow more food to sell!"
+ },
+ {
+  "key": "1w943ho",
+  "who": "hops",
+  "text": "Fountain. It costs 20 coins."
  },
  {
   "key": "1v2na1w",
@@ -1020,6 +1040,11 @@
   "text": "The Carousel costs 30 coins. Grow more food to sell!"
  },
  {
+  "key": "gl0zsd",
+  "who": "hops",
+  "text": "Carousel. It costs 30 coins."
+ },
+ {
   "key": "p8pjl9",
   "who": "hops",
   "text": "Yay! You got the Princess castle! Go see it next to your farm!"
@@ -1033,6 +1058,11 @@
   "key": "14y0yqo",
   "who": "hops",
   "text": "The Princess castle costs 50 coins. Grow more food to sell!"
+ },
+ {
+  "key": "101bh12",
+  "who": "hops",
+  "text": "Princess castle. It costs 50 coins."
  },
  {
   "key": "1f2jnwl",
@@ -1178,36 +1208,6 @@
   "key": "2yb1fg",
   "who": "hops",
   "text": "Your basket is empty. Grow some food to sell!"
- },
- {
-  "key": "1o38uh8",
-  "who": "hops",
-  "text": "Tulip garden. It costs 5 coins."
- },
- {
-  "key": "ft77cr",
-  "who": "hops",
-  "text": "Bow for Buttercup. It costs 8 coins."
- },
- {
-  "key": "b9dyiy",
-  "who": "hops",
-  "text": "Kitty friend. It costs 12 coins."
- },
- {
-  "key": "1w943ho",
-  "who": "hops",
-  "text": "Fountain. It costs 20 coins."
- },
- {
-  "key": "gl0zsd",
-  "who": "hops",
-  "text": "Carousel. It costs 30 coins."
- },
- {
-  "key": "101bh12",
-  "who": "hops",
-  "text": "Princess castle. It costs 50 coins."
  },
  {
   "key": "1gmbc3d",

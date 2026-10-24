@@ -118,7 +118,7 @@ function defaultState(){return{
   px:5.5,py:7.3,settings:{voice:true,music:true}};}
 let state=defaultState();
 
-function saveGame(){try{state.px=player.x;state.py=player.y;localStorage.setItem(SAVE_KEY,JSON.stringify(state));}catch(e){}}
+function saveGame(){try{state.questId=Q[state.quest]&&Q[state.quest].id;state.px=player.x;state.py=player.y;localStorage.setItem(SAVE_KEY,JSON.stringify(state));}catch(e){}}
 function loadGame(){try{const s=JSON.parse(localStorage.getItem(SAVE_KEY));if(s&&typeof s.quest==='number'){const d=defaultState();
   return Object.assign(d,s,{inv:Object.assign(d.inv,s.inv),seeds:Object.assign(d.seeds,s.seeds),settings:Object.assign(d.settings,s.settings)});}}catch(e){}return null;}
 

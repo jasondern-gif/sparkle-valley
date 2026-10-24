@@ -22,7 +22,7 @@ function bfsTiles(sx,sy,tx,ty){const prev=new Int32Array(W*H).fill(-2),q=[sx+sy*
   const out=[];for(let c=tx+ty*W;c>=0&&prev[c]!==-2;c=prev[c])out.unshift({x:c%W,y:(c/W)|0});return out;}
 function homeOf(id){const p=state.ponies[id];if(!p)return PONIES[id].home;
   const c=state.cottages[p.home];if(c)return{x:c.x+1.5,y:c.y+2.6};
-  const i=PONY_IDS.indexOf(id);return{x:17+i*3,y:35+i};}
+  const i=PONY_IDS.indexOf(id);return{x:7.5+(i*7)%28,y:36+Math.floor(i*7/28)*4};}
 function placePonies(){for(const id of PONY_IDS){const h=homeOf(id),e=ents[id];e.x=h.x+rand(-.5,.5);e.y=h.y;e.tx=null;}}
 
 // ---------- Story interactions ----------
@@ -112,6 +112,7 @@ function landFlight(){
   if(state.uniFollow)near(ents.unicorn,-1.8);
   if(state.follower)near(ents[state.follower],1.2);
   sfx('sparkle');refreshBar(true);saveGame();
+  for(const f of HOOK.land)f(to);
   if((to==='clouds'&&qid()==='fly')||(to==='valley'&&qid()==='flyHome'))completeQuest();
 }
 
@@ -132,6 +133,7 @@ function ponyAction(id,act){
     else{state.inv[f]--;sfx('crunch');burst(e.x,e.y-1,'💗',4);const fav=f===PONIES[id].fav;say(fav?T2.feedFav:T2.feed,id);addHeart(id,fav?2:1);}}
   else if(act==='brush'){sfx('sparkle');burst(e.x,e.y-1.1,'✨',8,.8);say(pick(T2.brush),id);addHeart(id,1);}
   else if(act==='play'){
+    if(HOOK.play[id]){closePonyMenu();HOOK.play[id](id);return;}
     if(id==='puff'){closePonyMenu();startHide();return;}
     e.trick=state.time;sfx('fanfare');say(pick(T2.play),id);addHeart(id,1);}
   else if(act==='follow'){
