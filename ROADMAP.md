@@ -50,38 +50,39 @@ Design rules (apply to everything):
 - [x] Puff greets her when she comes back: "You're back! I missed you!" and plays hide-and-seek
 - [x] The balloon stays available for return trips to Cloud Kingdom
 
-## Release 2: More of the Cloud Kingdom
-- [ ] Princess Cloudberry's Magical Rain Fountain: find 3 sparkle drops so a giant smiling raincloud wakes up
-- [ ] **Moonbeam**, asleep in a magical garden. Grow a glowing moonflower to wake her.
-- [ ] **Sugarplum**, preparing a surprise party. Grow strawberries for a celebration cake.
-- [ ] More cloud crops: star oats (pony energy) and moonflowers (stable decorations)
-- [ ] Make a rainbow by watering different colored crops
-- [ ] The rainbow celebration: all ponies celebrate, and she earns a special reward
-- [ ] She picks a cloud pony who can visit Sparkle Valley
+## ✅ Release 2: More of the Cloud Kingdom (done, Chapter 3)
+- [x] Princess Cloudberry's Magical Rain Fountain: find 3 sparkle drops so a giant smiling raincloud wakes up
+- [x] **Moonbeam**, asleep in a magical garden. Grow a glowing moonflower to wake her.
+- [x] **Sugarplum**, preparing a surprise party. Grow strawberries for a celebration cake.
+- [x] More cloud crops: star oats (pony energy) and moonflowers (stable decorations)
+- [x] Make a rainbow by watering different colored crops
+- [x] The rainbow celebration: all ponies celebrate, and she earns a special reward
+- [x] She picks a cloud pony who can visit Sparkle Valley
 
-## Release 3: Village life and customization
-- [ ] Pony playground (ponies swing, slide and play together)
-- [ ] Rainbow pond (ponies visit, splash and play)
-- [ ] Pony bakery: combine ingredients into treats (strawberries + star oats = sparkle muffins), deliver them for friendship rewards
-- [ ] Move buildings anywhere with no penalty
-- [ ] Decorate cottage outsides and pick colors; name the village
-- [ ] More decorations: flower beds, fountains, fences, tiny houses, stables
-- [ ] Pony customization: ribbons, flower crowns, colorful manes, accessories
-- [ ] Unlockable tricks
-- [ ] A library of pony mini-interactions so visits don't feel identical
-- [ ] Pony personalities in the village:
+## ✅ Release 3: Village life and customization (done)
+- [x] Pony playground (ponies swing, slide and play together)
+- [x] Rainbow pond (ponies visit, splash and play)
+- [x] Pony bakery: combine ingredients into treats (strawberries + star oats = sparkle muffins), deliver them for friendship rewards
+- [x] Move buildings anywhere with no penalty
+- [x] Decorate cottage outsides and pick colors; name the village
+- [x] More decorations: flower beds, fountains, fences, tiny houses, stables
+- [x] Pony customization: ribbons, flower crowns, colorful manes, accessories
+- [x] Unlockable tricks
+- [x] A library of pony mini-interactions so visits don't feel identical
+- [x] Pony personalities in the village:
   - Twinkle visits the carrot garden and asks for snacks
   - Peaches plays at the playground
   - Puff follows her around and plays hide-and-seek
   - Moonbeam naps under the trees
   - Sugarplum hangs out at the bakery
-- [ ] Village growth stages: Meadow (first pony) → Village (3 ponies) → Kingdom (5+ ponies)
-- [ ] Little surprises: hidden paths, sparkling treasure chests, baby animals, secret gardens
+- [x] Village growth stages: Meadow (first pony) → Village (3 ponies) → Kingdom (5+ ponies)
+- [x] Little surprises: hidden paths, sparkling treasure chests, baby animals, secret gardens
 
-## 📖 My Magic Quest Book
-- [ ] A picture book of story quests: the current adventure, plus "coming next" steps with icons, all spoken out loud
+## ✅ 📖 My Magic Quest Book (done)
+- [x] A picture book of story quests: the current adventure, plus "coming next" steps with icons, all spoken out loud
 
-## 🎈 Future lands (by Rainbow Balloon)
+## 🚧 Future lands (by Rainbow Balloon), wave 2
+- [x] Pony care: 10-second rest between options; friendship levels; dress-up; player wardrobe
 - [ ] **Fairy Forest**: help tiny fairies, discover secret paths, rescue a baby unicorn
 - [ ] **Mermaid Lagoon**: underwater friends, rebuild a seashell palace
 - [ ] **Moonlight Meadow**: find sleepy star ponies, return fallen stars to the sky
