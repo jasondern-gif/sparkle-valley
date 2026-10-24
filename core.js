@@ -45,7 +45,7 @@ rect(67,15,69,15,'b');rect(70,11,77,19,'c');rect(57,21,58,21,'c');rect(53,22,76,
 for(const[x,y0,y1]of[[60,22,26],[64,24,28],[68,22,26],[72,24,28]])rect(x,y0,x,y1,'p');
 [[76,12],[71,18],[54,23],[55,27],[49,9],[65,19]].forEach(([x,y])=>map[y][x]='p');
 [[48,8],[66,8],[48,20],[66,20],[70,11],[77,11],[70,19],[77,19],[53,22],[53,28],[76,22],[76,28]].forEach(([x,y])=>map[y][x]='X');
-const CLOUD_AREA={x0:45,y0:0,x1:W,y1:30},GROUND_AREA={x0:0,y0:0,x1:VW,y1:H};
+const CLOUD_AREA={x0:45,y0:0,x1:W,y1:H},GROUND_AREA={x0:0,y0:0,x1:VW,y1:H};
 const inClouds=x=>x>=45;
 const inVillage=(x,y)=>y>=30&&!inClouds(x);
 
@@ -63,7 +63,7 @@ const SIGNS=[
   {x:15.6,y:10.7,text:'Rainbow Balloon'},
   {x:53.4,y:10.9,text:"Princess Cloudberry's Castle"},{x:61.6,y:8.8,text:'Flower Maze'},{x:51.4,y:16.6,text:'Cloud Garden'},
   {x:65.6,y:14.6,text:'Rainbow Bridge'},{x:55.6,y:20.8,text:'Fluffy Clouds'}];
-function isWalkChar(c,gate){return c==='.'||c==='='||c==='S'||c==='m'||c==='g'||c==='c'||c==='r'||(c==='G'&&gate);}
+function isWalkChar(c,gate){return c==='.'||c==='='||c==='S'||c==='m'||c==='g'||c==='c'||c==='r'||c==='n'||(c==='G'&&gate);}
 // scatter trees while keeping every walkable tile reachable
 (function placeTrees(){
   const noTree=[[13,9,19,11],[3,30,40,45],[2,2,8,10],[8,2,17,7],[17,2,28,7],[9,9,16,16],[1,9,9,19],[21,11,28,19],[13,20,20,23],[19,9,21,25],[24,17,27,20]];

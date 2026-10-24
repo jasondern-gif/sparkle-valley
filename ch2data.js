@@ -81,6 +81,8 @@ const N2={
   princess:['Thank you for helping my ponies!','The Cloud Kingdom is so happy you came!'].map(t=>reg('cloudberry',t)),
 };
 
+N2.wait=reg('narrator','Wait a little bit! Try something else!');
+
 // ---------- Chapter 2 quests (replace the old "free play" ending) ----------
 const CH2Q=[
 {id:'letter',icon:'🐦',text:'A bluebird has a letter for you! Tap the bluebird.',

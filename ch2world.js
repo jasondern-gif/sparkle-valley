@@ -39,7 +39,7 @@ function ch2Update(dt){
   }
   if(q==='findPuff'){let bi=0,bd=1e9;hoofprints.forEach((h,i)=>{const d=dist(h.x,h.y,player.x,player.y);if(d<bd){bd=d;bi=i;}});if(bd<2.5)printIdx=Math.max(printIdx,bi);}
   const vs=SIGNS.find(s=>s.village);vs.text=state.cottages.length?N2.villageSign:'Future Home of Pony Village!';
-  if(menuPony)positionPonyMenu();
+  if(menuPony){positionPonyMenu();updateCooldowns();}
 }
 function takeLog(i){const[x,y]=LOG_SPOTS[i];state.logsAt[i]=state.time+25;state.inv.wood++;sfx('harvest');floatText(x,y-.3,'+1 🪵');
   if(state.inv.wood===3&&qid()==='build')say(N2.woodReady,'narrator');}

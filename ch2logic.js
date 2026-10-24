@@ -116,8 +116,16 @@ function landFlight(){
 }
 
 // ---------- Pony care ----------
+// Each pony option needs a 10 second rest before it can be used again (per pony), so hearts can't be tapped repeatedly.
+const PONY_COOLDOWN=10;
+function coolLeft(id,act){const p=state.ponies[id];return p&&p.cd&&p.cd[act]?Math.max(0,p.cd[act]-state.time):0;}
+function startCool(id,act){const p=state.ponies[id];if(!p.cd)p.cd={};p.cd[act]=state.time+PONY_COOLDOWN;}
 function ponyAction(id,act){
-  const p=state.ponies[id],e=ents[id];if(!p)return;e.pause=state.time+5;e.hop=state.time;
+  const p=state.ponies[id],e=ents[id];if(!p)return;
+  if(act!=='follow'&&coolLeft(id,act)>0){sfx('nope');say(N2.wait,'narrator');
+    const b=$('ponyMenu').querySelector('[data-act='+act+']');if(b){b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake');}return;}
+  e.pause=state.time+5;e.hop=state.time;
+  if(act!=='follow'&&!(act==='feed'&&!feedChoice(id)))startCool(id,act);
   if(act==='pet'){sfx('pop');burst(e.x,e.y-1,'💗',6);say(pick(T2.pet),id);addHeart(id,1);}
   else if(act==='feed'){const f=feedChoice(id);
     if(!f){sfx('nope');say(T2.feedNone,id);}
@@ -152,7 +160,7 @@ function hideSpot(){
   const vis=cands.filter(c=>{const sx=c.x*ts-cam.x,sy=c.y*ts-cam.y;return sx>70&&sx<vw-70&&sy>150&&sy<vh-150;});
   return vis.length?pick(vis):cands.length?pick(cands):{x:player.x+4,y:player.y};
 }
-function foundPuff(){const e=ents.puff;hide=null;e.pause=state.time+4;e.hop=state.time;
+function foundPuff(){const e=ents.puff;hide=null;if(state.ponies.puff)startCool('puff','play');e.pause=state.time+4;e.hop=state.time;
   e.x=player.x+1.1;e.y=player.y+.2;burst(e.x,e.y-.8,'🎉',8);celebrate(true);say(T2.found,'puff');addHeart('puff',2);saveGame();}
 
 // ---------- Building cottages ----------

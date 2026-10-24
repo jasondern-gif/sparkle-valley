@@ -2,7 +2,7 @@
 // ---------- Chapter 2 drawing: scene layers and the balloon flight ----------
 function ch2Ground(t,x0,y0,x1,y1){
   const s=ts;
-  if(inClouds(player.x))for(let y=Math.max(0,y0);y<=Math.min(29,y1);y++)for(let x=Math.max(45,x0);x<=x1;x++){if(map[y][x]!=='S')continue;
+  if(inClouds(player.x))for(let y=Math.max(0,y0);y<=Math.min(H-1,y1);y++)for(let x=Math.max(45,x0);x<=x1;x++){if(map[y][x]!=='S')continue;
     const p=state.plots[x+','+y],wet=p&&p.w&&stageOf(p)<3,sx=SX(x),sy=SY(y);
     ctx.fillStyle=wet?'#a993d9':'#cbb8ef';rr(sx+s*.06,sy+s*.08,s*.88,s*.84,s*.18);ctx.fill();
     ctx.strokeStyle='rgba(255,255,255,.7)';ctx.lineWidth=Math.max(1,s*.03);ctx.stroke();
@@ -40,7 +40,7 @@ function drawPonyEnt(id,t){
 function ch2Layer(L,t,x0,y0,x1,y1){
   const s=ts;
   if(inClouds(player.x)){
-    for(let y=Math.max(0,y0-1);y<=Math.min(29,y1+2);y++)for(let x=Math.max(45,x0-1);x<=Math.min(W-1,x1+1);x++){const c=map[y][x];
+    for(let y=Math.max(0,y0-1);y<=Math.min(H-1,y1+2);y++)for(let x=Math.max(45,x0-1);x<=Math.min(W-1,x1+1);x++){const c=map[y][x];
       if(c==='h')L.push([y+.85,()=>drawHedge(x,y)]);else if(c==='p')L.push([y+.9,()=>drawPuffCloud(x,y,t)]);}
     L.push([10,()=>drawCloudCastle(t)]);
     const pr=ents.princess;pr.flip=player.x<pr.x;

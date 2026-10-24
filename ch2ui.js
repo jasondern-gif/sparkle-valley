@@ -48,7 +48,11 @@ function refreshPonyMenu(){if(!menuPony)return;const id=menuPony,p=state.ponies[
   $('pmName').textContent=ponyName(id);$('pmFill').style.width=(p.hearts*10)+'%';
   const f=feedChoice(id);$('pmFeed').innerHTML=f?iconHTML(f):'🍽️';
   $('pmFollow').textContent=state.follower===id?'🏠':'🐾';
-  $('ponyMenu').querySelector('[data-act=play]').textContent=id==='puff'?'🙈':'⚽';}
+  $('ponyMenu').querySelector('[data-act=play]').textContent=id==='puff'?'🙈':'⚽';
+  updateCooldowns();}
+function updateCooldowns(){if(!menuPony)return;
+  $('ponyMenu').querySelectorAll('[data-act]').forEach(b=>{const a=b.dataset.act;if(a==='follow')return;const left=coolLeft(menuPony,a);
+    b.classList.toggle('cool',left>0);b.style.setProperty('--p',(left/PONY_COOLDOWN*100).toFixed(1)+'%');b.dataset.left=left>0?Math.ceil(left):'';});}
 function positionPonyMenu(){const e=ents[menuPony],m=$('ponyMenu');
   const x=e.x*ts-cam.x,y=(e.y-1.5*(PONIES[menuPony].look.scale||1))*ts-cam.y;
   m.style.left=clamp(x-m.offsetWidth/2,8,vw-m.offsetWidth-8)+'px';m.style.top=clamp(y-m.offsetHeight-6,86,vh-m.offsetHeight-90)+'px';}

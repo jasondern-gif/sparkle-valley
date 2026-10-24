@@ -1,6 +1,6 @@
 'use strict';
 // ---------- Chapter 2 drawing ----------
-const cloudy=(x,y)=>{const c=map[y]&&map[y][x];return c==='c'||c==='h'||c==='p'||c==='Q'||(c==='S'&&x>=45);};
+const cloudy=(x,y)=>{const c=map[y]&&map[y][x];return c==='c'||c==='h'||c==='p'||c==='Q'||c==='n'||c==='U'||c==='Z'||(c==='S'&&x>=45);};
 function drawTileExtra(c,x,y,sx,sy,s,h,t){
   if(x<45)return false;
   if(c==='X')return true;

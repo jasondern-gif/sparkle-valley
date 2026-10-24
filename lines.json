@@ -1700,6 +1700,11 @@
   "text": "The Cloud Kingdom is so happy you came!"
  },
  {
+  "key": "10ec0il",
+  "who": "narrator",
+  "text": "Wait a little bit! Try something else!"
+ },
+ {
   "key": "1ardhk",
   "who": "cloudberry",
   "text": "Tap the little bluebird to read the letter!"

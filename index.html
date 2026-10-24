@@ -98,6 +98,11 @@ button{font-family:inherit;color:inherit;cursor:pointer;border:none;touch-action
 .pmBtns{display:flex;gap:8px;margin-top:6px;}
 .pmBtns button{width:62px;height:62px;border-radius:50%;background:#fff6fb;border:3px solid #ffd0e8;font-size:32px;padding:0;}
 .pmBtns button:active{transform:scale(.9);}
+.pmBtns button{position:relative;}
+.pmBtns button.cool{filter:grayscale(.85);opacity:.55;background:conic-gradient(#ffc2e2 var(--p),#fff6fb 0);}
+.pmBtns button.cool::after{content:attr(data-left);position:absolute;right:-4px;bottom:-4px;font-size:15px;font-weight:bold;background:#fff;color:#d94f9b;border-radius:10px;padding:0 6px;border:2px solid #ffc2e2;}
+.pmBtns button.shake{animation:shake .4s;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 .pmBtns .ico{width:36px;height:36px;}
 .item.pick{cursor:pointer;}
 .item .por{width:120px;height:120px;border-radius:50%;}
