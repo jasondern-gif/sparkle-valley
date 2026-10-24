@@ -57,7 +57,7 @@ function nextDlg(){
 }
 function showLine([who,text]){
   const sp=SPK[who]||SPK.narrator;curLine=[who,fillName(text),text];dlgOpen=true;
-  $('dlgFace').textContent=sp.f;$('dlgName').textContent=sp.n;$('dlgText').textContent=curLine[1];
+  setFace(who);$('dlgName').textContent=spName(who);$('dlgText').textContent=curLine[1];
   $('dialog').style.display='flex';$('bar').style.display='none';dlgReadyAt=performance.now()+400;
   say(text,who,$('dlgText'));
 }
@@ -80,10 +80,11 @@ function completeQuest(){
   setTimeout(()=>talk(q.start||[],()=>{updateObjective();sayObjective();}),1500);
 }
 function checkQuest(){
+  if(DECOR.every(d=>state.decor[d.id])&&!state.allDecorSaid&&!dlgOpen){state.allDecorSaid=true;celebrate();
+    talk([['hops',"Wow, {name}! You bought EVERYTHING! You're a super farmer! 🏆"]]);}
   const q=Q[state.quest];if(!q.goal)return;
+  if(q.handin){state.qprog=q.prog();return;}
   state.qprog=Math.max(state.qprog,q.prog());
-  if(q.id==='free'){if(state.qprog>=q.goal&&!state.allDecorSaid&&!dlgOpen){state.allDecorSaid=true;celebrate();
-    talk([['hops',"Wow, {name}! You bought EVERYTHING! You're a super farmer! 🏆"]]);}return;}
   if(state.qprog>=q.goal&&!dlgOpen)completeQuest();
 }
 
@@ -108,6 +109,7 @@ function hearts(e){burst(e.x,e.y-1,'💖',5);}
 
 function interactGrandma(){
   const id=qid();hearts(ents.grandma);
+  if(ch2Grandma())return;
   if(id==='meet'){talk([
     ['grandma',"Hello, my sweet {name}! I'm so happy you're here!"],
     ['grandma','A long time ago, a big beautiful rainbow shined over Sparkle Valley. And a magic unicorn lived here too!'],
@@ -158,12 +160,14 @@ function interactHops(){
     else talk([['hops','Hippity hop! Do you have 3 eggs for me?']]);
     return;}
   if(state.quest<qi('market')){talk([['hops','Hippity hop! My market is not open yet. Come back later!']]);return;}
+  if(ch2Hops())return;
   openShop();
 }
 function interactUnicorn(){
   const id=qid();
   if(!state.gateOpen){talk([['narrator','The magic gate is locked. Maybe Grandma can help later!']]);return;}
   hearts(ents.unicorn);
+  if(ch2Unicorn())return;
   if(id==='unicorn'){talk([
     ['stardust','Oh! Hello there! Is that a flower crown? For ME?'],
     ['narrator','You put the flower crown on the unicorn. She looks so pretty!'],
@@ -189,9 +193,9 @@ function interactStone(){
 }
 function interactSoil(tx,ty){
   const k=tx+','+ty,p=state.plots[k],cx=tx+.5,cy=ty+.5;
-  if(!p){if(!state.seeds[state.seed])state.seed='carrot';state.plots[k]={c:state.seed,w:false,g:0};sfx('pop');burst(cx,cy,'🟤',3,.5);return;}
-  if(!p.w){p.w=true;sfx('water');burst(cx,cy-.2,'💧',5,.6);return;}
-  if(stageOf(p)>=3){delete state.plots[k];state.inv[p.c]++;sfx('harvest');floatText(cx,cy-.3,'+1 '+CROPS[p.c].e);return;}
+  if(!p){state.plots[k]={c:validSeed(),w:false,g:0};sfx('pop');burst(cx,cy,'🟤',3,.5);return;}
+  if(!p.w){p.w=true;rainAt(cx,cy);return;}
+  if(stageOf(p)>=3){delete state.plots[k];state.inv[p.c]++;sfx('harvest');floatText(cx,cy-.3,'+1 '+(p.c==='rcarrot'?'🌈':CROPS[p.c].e));return;}
   floatText(cx,cy-.3,'🌱 growing!');say(GROWING,'narrator');
 }
 function collectEgg(i){const e=state.eggs[i];state.eggs.splice(i,1);state.inv.egg++;sfx('harvest');floatText(e.x,e.y-.3,'+1 🥚');}
@@ -201,12 +205,12 @@ function collectStar(i){const st=STARS[i];state.stars.push(i);sfx('sparkle');bur
 
 // ---------- Shop ----------
 function sellable(){const keep={flower:state.quest<=qi('crown')?1e9:0,strawberry:state.quest<=qi('feedUni')?1:0};const out={};
-  for(const k of Object.keys(ICON)){const n=Math.max(0,state.inv[k]-(keep[k]||0));if(n>0)out[k]=n;}return out;}
+  for(const k of Object.keys(ICON)){const n=Math.max(0,state.inv[k]-Math.max(keep[k]||0,keepFor(k)));if(n>0)out[k]=n;}return out;}
 function openShop(){renderShop();$('shop').classList.add('show');
   say(SHOP_HELLO,'hops');}
 function closeShop(){$('shop').classList.remove('show');stopSpeech();}
 function renderShop(){
-  const s=sellable();let total=0,what='';for(const k in s){total+=s[k]*PRICE[k];what+=`${ICON[k]}×${s[k]} `;}
+  const s=sellable();let total=0,what='';for(const k in s){total+=s[k]*PRICE[k];what+=`${iconHTML(k)}×${s[k]} `;}
   let html=`<div class="sell" data-say="${total?SELL_SAY:BASKET_EMPTY}" data-who="hops"><span class="what">${what||'🧺 Your basket is empty'}</span>
     <button class="big green" id="sellBtn" ${total?'':'disabled'}>🧺 Sell${total?` for 🪙 ${total}`:''}</button></div><div class="items">`;
   for(const d of DECOR){const own=state.decor[d.id],can=state.coins>=d.price;

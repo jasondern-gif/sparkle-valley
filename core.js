@@ -1,6 +1,8 @@
 'use strict';
 // ---------- Core: map, data, state, audio, speech ----------
-const W = 44, H = 30;
+// The world grid holds three places: Sparkle Valley (x0-43,y0-29), Pony Village (south, y30-47)
+// and the Cloud Kingdom (east, x45-79, y0-29) which is only reached by the Rainbow Balloon.
+const W = 80, H = 48, VW = 44, VH = 30;
 const SAVE_KEY = 'sparkleValley_v1';
 const GROW = 5; // seconds per growth stage
 const $ = id => document.getElementById(id);
@@ -13,12 +15,14 @@ const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 
 // ---------- Map ----------
 // . grass  = path  S soil  W water  T tree  F fence  G magic gate  H house  B barn  C coop hut
-// M market  m meadow  g glade  K wishing stone
+// M market  m meadow  g glade  K wishing stone  X sky (nothing)  c cloud ground  h flower hedge
+// p fluffy cloud puff  Q cloud castle  b broken bridge  r rainbow bridge  Y cottage
 const map=[];
-for(let y=0;y<H;y++) map.push(new Array(W).fill('.'));
+for(let y=0;y<H;y++) map.push(new Array(W).fill('X'));
 function rect(x0,y0,x1,y1,c){for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++)map[y][x]=c;}
 function fenceRect(x0,y0,x1,y1){for(let x=x0;x<=x1;x++){map[y0][x]='F';map[y1][x]='F';}for(let y=y0;y<=y1;y++){map[y][x0]='F';map[y][x1]='F';}}
-rect(0,0,W-1,1,'T');rect(0,H-2,W-1,H-1,'T');rect(0,0,1,H-1,'T');rect(W-2,0,W-1,H-1,'T');
+rect(0,0,VW-1,VH-1,'.');
+rect(0,0,VW-1,1,'T');rect(0,VH-2,VW-1,VH-1,'T');rect(0,0,1,VH-1,'T');rect(VW-2,0,VW-1,VH-1,'T');
 rect(29,2,40,7,'m');
 rect(3,2,6,5,'H');
 rect(9,3,16,6,'S');
@@ -30,6 +34,20 @@ rect(16,21,18,22,'M');
 rect(33,11,41,27,'g');for(let y=10;y<=27;y++)map[y][32]='F';for(let x=32;x<=41;x++)map[10][x]='F';map[24][32]='G';
 map[14][37]='K';
 const STONE={x:37.5,y:14.9};
+// Pony Village: a meadow south of the farm, reached by the road past the market
+rect(0,30,VW-1,H-1,'T');rect(4,31,39,44,'.');rect(20,25,20,32,'=');
+const VILLAGE={x0:4,y0:31,x1:39,y1:44};
+// Cloud Kingdom
+rect(48,8,66,20,'c');rect(55,8,59,9,'Q');rect(50,17,54,18,'S');
+['hhhhhhhhhhhhhhh','hcccccchcccccch','hchhhhchchhhhch','hchcccccchcchch','hchchhhhchchhch','hccchcccccchcch','hhhhcchhhhhhhhh']
+  .forEach((row,j)=>{for(let i=0;i<row.length;i++)map[1+j][59+i]=row[i];});
+rect(67,15,69,15,'b');rect(70,11,77,19,'c');rect(57,21,58,21,'c');rect(53,22,76,28,'c');
+for(const[x,y0,y1]of[[60,22,26],[64,24,28],[68,22,26],[72,24,28]])rect(x,y0,x,y1,'p');
+[[76,12],[71,18],[54,23],[55,27],[49,9],[65,19]].forEach(([x,y])=>map[y][x]='p');
+[[48,8],[66,8],[48,20],[66,20],[70,11],[77,11],[70,19],[77,19],[53,22],[53,28],[76,22],[76,28]].forEach(([x,y])=>map[y][x]='X');
+const CLOUD_AREA={x0:45,y0:0,x1:W,y1:30},GROUND_AREA={x0:0,y0:0,x1:VW,y1:H};
+const inClouds=x=>x>=45;
+const inVillage=(x,y)=>y>=30&&!inClouds(x);
 
 const STARS=[
   {n:'red',c:'#ff4d4d',x:7.5,y:17.5},{n:'orange',c:'#ff9a3c',x:14.5,y:14.5},{n:'yellow',c:'#ffd83d',x:39.5,y:4.5},
@@ -40,11 +58,15 @@ const STARS=[
 const SIGNS=[
   {x:8.5,y:9.6,text:'Welcome to Sparkle Valley!'},{x:3.5,y:7.0,text:"Grandma's House"},{x:8.5,y:3.6,text:'The Farm'},
   {x:6.6,y:10.6,text:'Pony Field'},{x:13.6,y:10.6,text:'Chicken Coop'},{x:21.5,y:11.6,text:'Duck Pond'},
-  {x:28.5,y:7.6,text:'Flower Meadow'},{x:31.5,y:25.6,text:'Magic Garden'},{x:21.5,y:23.6,text:'Market'}];
-function isWalkChar(c,gate){return c==='.'||c==='='||c==='S'||c==='m'||c==='g'||(c==='G'&&gate);}
+  {x:28.5,y:7.6,text:'Flower Meadow'},{x:31.5,y:25.6,text:'Magic Garden'},{x:21.5,y:23.6,text:'Market'},
+  {x:21.6,y:25.7,text:'To Pony Village'},{x:18.6,y:32.7,text:'Future Home of Pony Village!',village:true},
+  {x:15.6,y:10.7,text:'Rainbow Balloon'},
+  {x:53.4,y:10.9,text:"Princess Cloudberry's Castle"},{x:61.6,y:8.8,text:'Flower Maze'},{x:51.4,y:16.6,text:'Cloud Garden'},
+  {x:65.6,y:14.6,text:'Rainbow Bridge'},{x:55.6,y:20.8,text:'Fluffy Clouds'}];
+function isWalkChar(c,gate){return c==='.'||c==='='||c==='S'||c==='m'||c==='g'||c==='c'||c==='r'||(c==='G'&&gate);}
 // scatter trees while keeping every walkable tile reachable
 (function placeTrees(){
-  const noTree=[[2,2,8,10],[8,2,17,7],[17,2,28,7],[9,9,16,16],[1,9,9,19],[21,11,28,19],[13,20,20,23],[19,9,21,25],[24,17,27,20]];
+  const noTree=[[13,9,19,11],[3,30,40,45],[2,2,8,10],[8,2,17,7],[17,2,28,7],[9,9,16,16],[1,9,9,19],[21,11,28,19],[13,20,20,23],[19,9,21,25],[24,17,27,20]];
   const forest=[[7,19,15,23],[28,9,31,23],[21,20,31,23],[3,25,31,27],[2,19,6,23]];
   const inZ=(zs,x,y)=>zs.some(([a,b,c,d])=>x>=a&&x<=c&&y>=b&&y<=d);
   function reach(){const seen=new Uint8Array(W*H);const q=[5+7*W];seen[q[0]]=1;let n=0;
@@ -88,9 +110,10 @@ const SPK={
 
 function defaultState(){return{
   hero:'👧',dress:'#ff7eb6',name:'Friend',quest:0,qprog:0,time:0,
-  inv:{carrot:0,strawberry:0,sunflower:0,egg:0,flower:0},coins:0,
-  seeds:{carrot:true,strawberry:false,sunflower:false},seed:'carrot',
+  inv:{carrot:0,strawberry:0,sunflower:0,egg:0,flower:0,rcarrot:0,cloudberry:0,wood:0},coins:0,
+  seeds:{carrot:true,strawberry:false,sunflower:false,rcarrot:false,cloudberry:false},seed:'carrot',
   plots:{},eggs:[],flowerAt:{},stars:[],decor:{},
+  balloon:0,ponies:{},cottages:[],logsAt:{},bridge:false,follower:null,ch2seen:false,
   gateOpen:false,ponyFriend:false,riding:false,uniFollow:false,uniCrown:false,rainbow:false,allDecorSaid:false,
   px:5.5,py:7.3,settings:{voice:true,music:true}};}
 let state=defaultState();

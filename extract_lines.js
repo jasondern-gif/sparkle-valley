@@ -1,15 +1,15 @@
-// Extracts every spoken line from the game (run with node; writes lines.json)
+﻿// Extracts every spoken line from the game (run with node; writes lines.json)
 const { chromium } = require('playwright-core'); const fs = require('fs');
 (async () => {
   const b = await chromium.launch({ executablePath: 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe' });
   const p = await b.newPage();
-  await p.goto('file:///' + process.cwd().replace(/\\/g, '/') + '/index.html');
-  const src = ['quests.js', 'game.js'].map(f => fs.readFileSync(f, 'utf8')).join('\n');
-  const pairs = [...src.matchAll(/\[\s*['"](grandma|hops|buttercup|stardust|narrator)['"]\s*,\s*(['"])((?:(?!\2).)*)\2\s*\]/g)].map(m => [m[1], m[3]]);
+  const errs=[];p.on('pageerror',e=>errs.push(e.message));await p.goto('http://127.0.0.1:8765/index.html');await p.waitForTimeout(500);if(errs.length)console.log('PAGE ERRORS',errs);
+  const src = ['quests.js', 'game.js', 'ch2data.js', 'ch2logic.js', 'ch2world.js'].map(f => fs.readFileSync(f, 'utf8')).join('\n');
+  const pairs = [...src.matchAll(/\[\s*['"](grandma|hops|buttercup|stardust|narrator|cloudberry|twinkle|peaches|puff)['"]\s*,\s*(['"])((?:(?!\2).)*)\2\s*\]/g)].map(m => [m[1], m[3]]);
   const lines = await p.evaluate((pairs) => {
     const out = []; const add = (w, t) => out.push([w, t]);
     pairs.forEach(([w, t]) => add(w, t));
-    Q.forEach(q => { add('narrator', q.text); if (q.hint) add('grandma', q.hint); (q.start || []).forEach(([w, t]) => add(w, t)); });
+    Q.forEach(q => { add('narrator', q.text); if (q.hint) add('grandma', q.hint); (q.start || []).forEach(l => { if (Array.isArray(l)) add(l[0], l[1]); }); });
     CHEERS.forEach(t => add('grandma', t)); UNI_LINES.forEach(t => add('stardust', t));
     STARS.forEach(s => add('narrator', msgStar(s)));
     Object.values(CROPS).forEach(c => add('narrator', c.name + ' seeds'));
@@ -18,6 +18,7 @@ const { chromium } = require('playwright-core'); const fs = require('fs');
     Object.values(ITEM_NAMES).forEach(n => add('narrator', n)); add('hops', SELL_SAY); add('hops', BASKET_EMPTY);
     DECOR.forEach(d => add('hops', msgItem(d)));
     document.querySelectorAll('[data-say]').forEach(el => add(el.dataset.who || 'narrator', el.dataset.say));
+    extraLines().forEach(([w, t]) => add(w, t)); SIGNS.forEach(s => add('narrator', s.text));
     add('hops', SHOP_HELLO); add('hops', SHOP_THANKS); add('buttercup', 'Giddy up!'); add('narrator', 'Voice is on!'); add('narrator', GREAT_JOB);
     const seen = {}; const res = [];
     for (const [w, t] of out) { const k = voiceKey(t, w); if (seen[k]) continue; seen[k] = 1; res.push({ key: k, who: w, text: voiceText(t) }); }
@@ -27,3 +28,4 @@ const { chromium } = require('playwright-core'); const fs = require('fs');
   console.log('lines:', lines.length, 'pairs from source:', pairs.length);
   await b.close();
 })();
+

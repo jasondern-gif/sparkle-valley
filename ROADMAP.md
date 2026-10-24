@@ -14,6 +14,10 @@ Design rules (apply to everything):
 
 ---
 
+## ✅ Graphics pass (done)
+- [x] Soft continuous grass, rounded paths, garden beds, pond with lily pads, drawn trees, cuter people and ponies (blinking, wings, swishing tails), building details, ambient sparkles
+- [ ] Later: real hand-drawn sprite art (free art pack or AI-generated images) for a bigger jump
+
 ## ✅ Chapter 1: Sparkle Valley (done)
 - [x] Grandma's farm: plant, water, harvest carrots, strawberries and sunflowers
 - [x] Buttercup the pony (befriend and ride)
@@ -22,29 +26,29 @@ Design rules (apply to everything):
 - [x] 7 rainbow stars and the Wishing Stone ending
 - [x] Natural voices, word highlighting, 🔊 on all text, signposts
 
-## 🚧 Release 1 of Chapter 2: The Rainbow Balloon and Pony Village (in progress)
-- [ ] A bluebird delivers a letter from Princess Cloudberry: the sky kingdom's ponies need help
-- [ ] Build the Rainbow Balloon step by step, and watch it change as each part is added
-  - [ ] Basket: bring Mr. Hops 5 carrots
-  - [ ] Balloon and ribbons: 3 sunflowers and 4 flowers to Grandma
-  - [ ] Magic: Stardust makes it fly
-  - [ ] First flight animation over the valley, through the rainbow, into the clouds
-- [ ] Cloud Kingdom (a separate area) with Princess Cloudberry
-- [ ] A storm scattered the kingdom's ponies. Rescue 3:
-  - [ ] **Twinkle**, a shy baby pony hiding in a flower maze. Grow a rainbow carrot to earn her trust.
-  - [ ] **Peaches**, a playful pony stuck across a broken bridge. Grow sunflowers to fix the bridge.
-  - [ ] **Puff**, lost in a giant fluffy cloud. Follow sparkly hoofprints and bring a cloudberry treat.
-- [ ] Cloud farming with new crops (rainbow carrots, cloudberries), watered by a little raincloud
-- [ ] She chooses each rescued pony's name: spoken picture options, or a grown-up types a custom name
-- [ ] **My Pony Village**: an empty meadow beyond Grandma's farm with a sign, "Future Home of Pony Village!"
-  - [ ] Collect wood, pick a cottage color, tap where it goes, and watch it get built
-  - [ ] Choose which pony lives in which cottage
-  - [ ] Ponies wander the village and live their own little lives
-- [ ] Tap a pony for picture buttons: 💗 pet, 🥕 feed, 🪮 brush, ⚽ play, 🐾 follow
-  - [ ] Ponies react with hearts, sounds, animations and short spoken responses
-  - [ ] Friendship heart fills up and unlocks a personal reward, like a cute accessory
-- [ ] Puff greets her when she comes back: "You're back! I missed you!" and plays hide-and-seek
-- [ ] The balloon stays available for return trips to Cloud Kingdom
+## ✅ Release 1 of Chapter 2: The Rainbow Balloon and Pony Village (done)
+- [x] A bluebird delivers a letter from Princess Cloudberry: the sky kingdom's ponies need help
+- [x] Build the Rainbow Balloon step by step, and watch it change as each part is added
+  - [x] Basket: bring Mr. Hops 5 carrots
+  - [x] Balloon and ribbons: 3 sunflowers and 4 flowers to Grandma
+  - [x] Magic: Stardust makes it fly
+  - [x] First flight animation over the valley, through the rainbow, into the clouds
+- [x] Cloud Kingdom (a separate area) with Princess Cloudberry
+- [x] A storm scattered the kingdom's ponies. Rescue 3:
+  - [x] **Twinkle**, a shy baby pony hiding in a flower maze. Grow a rainbow carrot to earn her trust.
+  - [x] **Peaches**, a playful pony stuck across a broken bridge. Grow sunflowers to fix the bridge.
+  - [x] **Puff**, lost in a giant fluffy cloud. Follow sparkly hoofprints and bring a cloudberry treat.
+- [x] Cloud farming with new crops (rainbow carrots, cloudberries), watered by a little raincloud
+- [x] She chooses each rescued pony's name: spoken picture options, or a grown-up types a custom name
+- [x] **My Pony Village**: an empty meadow beyond Grandma's farm with a sign, "Future Home of Pony Village!"
+  - [x] Collect wood, pick a cottage color, tap where it goes, and watch it get built
+  - [x] Choose which pony lives in which cottage
+  - [x] Ponies wander the village and live their own little lives
+- [x] Tap a pony for picture buttons: 💗 pet, 🥕 feed, 🪮 brush, ⚽ play, 🐾 follow
+  - [x] Ponies react with hearts, sounds, animations and short spoken responses
+  - [x] Friendship heart fills up and unlocks a personal reward, like a cute accessory
+- [x] Puff greets her when she comes back: "You're back! I missed you!" and plays hide-and-seek
+- [x] The balloon stays available for return trips to Cloud Kingdom
 
 ## Release 2: More of the Cloud Kingdom
 - [ ] Princess Cloudberry's Magical Rain Fountain: find 3 sparkle drops so a giant smiling raincloud wakes up

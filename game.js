@@ -47,7 +47,9 @@ function follow(e,d,dt){const p=trailPoint(d);if(!p){e.moving=false;return;}cons
 
 // ---------- Tapping ----------
 function tapWorld(sx,sy){
+  if(flight)return;
   const wx=(sx+cam.x)/ts,wy=(sy+cam.y)/ts;tapMark={x:wx,y:wy,life:.5};
+  if(ch2Tap(wx,wy))return;
   for(const sg of SIGNS)if(Math.abs(wx-sg.x)<1.2&&wy>sg.y-1.05&&wy<sg.y-.25){sg.hit=state.time;sfx('tap');say(sg.text,'narrator',sg);return;}
   if(state.riding&&dist(wx,wy,player.x,player.y-.6)<.8){toggleRide();return;}
   const cands=[['grandma',interactGrandma,1.6],['hops',interactHops,1.6],['unicorn',interactUnicorn,1.6]];
@@ -88,13 +90,14 @@ function questTarget(){
     case 'feedUni':return state.inv.strawberry>0?ents.unicorn:(nearest(plotList(p=>stageOf(p)>=3))||FARM);
     case 'stars':return nearest(STARS.filter((s,i)=>!state.stars.includes(i)));
     case 'finale':return STONE;
-  }return null;
+  }return ch2Target();
 }
 
 // ---------- Update ----------
 let saveT=0,eggT=0;
 function update(dt){
   state.time+=dt;
+  if(flight){flightUpdate(dt);return;}
   // player
   const speed=state.riding?6.5:4;
   if(player.path.length){const p=player.path[0];if(moveToward(player,p.x,p.y,speed,dt))player.path.shift();}else player.moving=false;
@@ -126,6 +129,7 @@ function update(dt){
     if(qid()==='unicorn'&&state.gateOpen&&dist(player.x,player.y,ents.unicorn.x,ents.unicorn.y)<2){player.path=[];interactUnicorn();}
     else if(qid()==='finale'&&dist(player.x,player.y,STONE.x,STONE.y)<1.7){player.path=[];interactStone();}
   }
+  ch2Update(dt);
   checkQuest();
   // effects
   for(let i=particles.length-1;i>=0;i--){const p=particles[i];p.life-=dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=p.g*dt;if(p.life<=0)particles.splice(i,1);}
@@ -141,17 +145,20 @@ const UNI_SAD=['#d8d0e8','#cfc6e0'],UNI_HAPPY=['#ffc2e2','#c9b6ff','#bfe6ff','#f
 function render(){
   const t=state.time;
   ctx.setTransform(dpr,0,0,dpr,0,0);
-  cam.x=W*ts<vw?(W*ts-vw)/2:clamp(player.x*ts-vw/2,0,W*ts-vw);
-  cam.y=H*ts<vh?(H*ts-vh)/2:clamp(player.y*ts-vh/2,0,H*ts-vh);
-  ctx.fillStyle='#4f9a3e';ctx.fillRect(0,0,vw,vh);
+  if(flight){drawFlight(t);return;}
+  const A=inClouds(player.x)?CLOUD_AREA:GROUND_AREA,aw=(A.x1-A.x0)*ts,ah=(A.y1-A.y0)*ts;
+  cam.x=aw<vw?A.x0*ts-(vw-aw)/2:clamp(player.x*ts-vw/2,A.x0*ts,A.x1*ts-vw);
+  cam.y=ah<vh?A.y0*ts-(vh-ah)/2:clamp(player.y*ts-vh/2,A.y0*ts,A.y1*ts-vh);
+  if(A===CLOUD_AREA)drawBackdrop();else{ctx.fillStyle='#4f9a3e';ctx.fillRect(0,0,vw,vh);}
   const x0=Math.max(0,Math.floor(cam.x/ts)),y0=Math.max(0,Math.floor(cam.y/ts)),x1=Math.min(W-1,Math.ceil((cam.x+vw)/ts)),y1=Math.min(H-1,Math.ceil((cam.y+vh)/ts));
   drawGround(x0,y0,x1,y1,t);
+  ch2Ground(t,x0,y0,x1,y1);
   const s=ts;
   // crops
   for(const k in state.plots){const[x,y]=k.split(',').map(Number);if(x<x0-1||x>x1+1||y<y0-1||y>y1+1)continue;
     const p=state.plots[k],st=stageOf(p),cx=SX(x)+s/2,cy=SY(y)+s/2;
     if(st===0){ctx.fillStyle='#4a2c1a';for(let i=0;i<3;i++){circ(cx+(i-1)*s*.15,cy+(i%2)*s*.06,s*.04);ctx.fill();}}
-    else{const sz=[0,.42,.58,.72][st]*s,b=st===3?Math.sin(t*4+x)*s*.04:0;drawEmoji(CROPS[p.c].st[st],cx,cy-s*.1+b,sz);
+    else{const sz=[0,.42,.58,.72][st]*s,b=st===3?Math.sin(t*4+x)*s*.04:0;drawCrop(p.c,st,cx,cy-s*.1+b,sz,t);
       if(st===3&&Math.sin(t*3+x*2+y)>.7)drawStar(cx+s*.3,cy-s*.35,s*.07,'#fff6a8',true);}
     if(!p.w){const b=Math.sin(t*4+x)*s*.05;ctx.fillStyle='rgba(255,255,255,.9)';circ(cx+s*.25,cy-s*.4+b,s*.17);ctx.fill();drawEmoji('💧',cx+s*.25,cy-s*.4+b,s*.24);}
   }
@@ -181,10 +188,12 @@ function render(){
     drawPerson(SX(player.x)+(player.flip?s*.05:-s*.05),SY(player.y)-s*.36,state.hero,state.dress,player.flip,0,false,{seated:true});}]);}
   else{L.push([pony.y,()=>{const o=ponyOpts();o.flip=pony.flip;o.walkT=pony.walkT;o.moving=pony.moving;drawHorse(SX(pony.x),SY(pony.y),o);}]);
     L.push([player.y,()=>drawPerson(SX(player.x),SY(player.y),state.hero,state.dress,player.flip,player.walkT,player.moving)]);}
+  ch2Layer(L,t,x0,y0,x1,y1);
   L.sort((a,b)=>a[0]-b[0]);for(const[,f]of L)f();
   for(const b of butterflies)if(b.x*s>cam.x-s&&b.x*s<cam.x+vw+s)drawEmoji('🦋',SX(b.x),SY(b.y)-s*.8,s*.35*(.8+.2*Math.abs(Math.sin(t*10+b.p))));
   for(const p of particles){const al=clamp(p.life/p.max*1.5,0,1);
-    if(p.e)drawEmoji(p.e,SX(p.x),SY(p.y),s*p.size,false,al);
+    if(p.draw)p.draw(p,al);
+    else if(p.e)drawEmoji(p.e,SX(p.x),SY(p.y),s*p.size,false,al);
     else{ctx.save();ctx.globalAlpha=al;ctx.font=`bold ${Math.round(s*.36)}px "Chalkboard SE","Comic Sans MS",sans-serif`;ctx.textAlign='center';ctx.lineWidth=5;ctx.strokeStyle='#fff';
       ctx.strokeText(p.text,SX(p.x),SY(p.y));ctx.fillStyle='#d94f9b';ctx.fillText(p.text,SX(p.x),SY(p.y));ctx.restore();}}
   drawRainbow();
@@ -196,16 +205,19 @@ function render(){
 let barSig='';
 function refreshBar(force){
   $('coins').textContent='🪙 '+state.coins;
-  const sig=JSON.stringify([state.inv,state.seeds,state.seed,state.ponyFriend,state.riding]);
+  const sig=JSON.stringify([state.inv,state.seeds,state.seed,state.ponyFriend,state.riding,seedsHere(),!!placing,!!flight,inVillage(player.x,player.y),Object.keys(state.ponies).length,qid()]);
   if(!force&&sig===barSig)return;barSig=sig;
   const bar=$('bar');let h='';
-  for(const k of Object.keys(CROPS))if(state.seeds[k])h+=`<button class="slot ${state.seed===k?'sel':''}" data-seed="${k}"><span class="lbl">seeds</span>${CROPS[k].e}</button>`;
-  h+='<div class="sep"></div>';
-  for(const k of Object.keys(ICON))if(state.inv[k]>0)h+=`<button class="slot" data-item="${k}">${ICON[k]}<span class="n">${state.inv[k]}</span></button>`;
+  const sh=seedsHere();if(sh.length&&!sh.includes(state.seed))state.seed=sh[0];
+  for(const k of sh)h+=`<button class="slot ${state.seed===k?'sel':''}" data-seed="${k}"><span class="lbl">seeds</span>${iconHTML(k)}</button>`;
+  if(sh.length)h+='<div class="sep"></div>';
+  for(const k of Object.keys(ICON))if(state.inv[k]>0)h+=`<button class="slot" data-item="${k}">${iconHTML(k)}<span class="n">${state.inv[k]}</span></button>`;
+  if(inVillage(player.x,player.y)&&Object.keys(state.ponies).length)h+=`<div class="sep"></div><button class="slot hammer ${qid()==='build'&&state.inv.wood>=3&&!placing?'pulse':''}" data-build="1"><span class="lbl">${placing?'stop':'build'}</span>${placing?'✖':'🔨'}</button>`;
   if(state.ponyFriend)h+=`<div class="sep"></div><button class="slot ride" data-ride="1"><span class="lbl">${state.riding?'walk':'ride'}</span>${state.riding?'🚶':'🐴'}</button>`;
-  bar.innerHTML=h;bar.style.display=dlgOpen||!started?'none':'flex';
+  bar.innerHTML=h;bar.style.display=dlgOpen||!started||flight?'none':'flex';
   bar.querySelectorAll('[data-seed]').forEach(b=>b.onpointerdown=e=>{e.stopPropagation();state.seed=b.dataset.seed;sfx('tap');say(CROPS[state.seed].name+' seeds','narrator');refreshBar(true);});
   bar.querySelectorAll('[data-item]').forEach(b=>b.onpointerdown=e=>{e.stopPropagation();sfx('tap');say(ITEM_NAMES[b.dataset.item],'narrator');});
+  bar.querySelectorAll('[data-build]').forEach(b=>b.onpointerdown=e=>{e.stopPropagation();sfx('tap');openBuild();});
   bar.querySelectorAll('[data-ride]').forEach(b=>b.onpointerdown=e=>{e.stopPropagation();toggleRide();});
 }
 // Adds a 🔊 button to every element with data-say, so any text on screen can be read out loud.
@@ -242,11 +254,12 @@ function begin(isNew){
   player.x=state.px;player.y=state.py;player.path=[];player.action=null;trail.length=0;
   if(state.ponyFriend&&!state.riding){ents.pony.x=player.x-1;ents.pony.y=player.y;}
   if(state.uniFollow){ents.unicorn.x=player.x-1.6;ents.unicorn.y=player.y+.2;}
+  if(isNew)ch2Begin(true);
   updateObjective();refreshBar(true);updateMenu();
   if(isNew)talk([['narrator',"Once upon a time, {name} came to visit Grandma's farm in Sparkle Valley."],
     ['narrator','Tap on the grass to walk. Tap on things to use them!'],
     ['narrator',"Look! There's Grandma. Tap on her to say hi!"]],()=>{updateObjective();sayObjective();});
-  else talk([['narrator','Welcome back, {name}!']],()=>sayObjective());
+  else{talk([['narrator','Welcome back, {name}!']]);ch2Begin(false);talk([],()=>sayObjective());}
   saveGame();
 }
 function updateMenu(){$('voiceBtn').textContent=state.settings.voice?'🔊 Voice: ON':'🔇 Voice: OFF';$('musicBtn').textContent=state.settings.music?'🎵 Music: ON':'🎵 Music: OFF';}
@@ -271,7 +284,7 @@ window.addEventListener('resize',resize);
 
 let last=performance.now();
 function frame(now){const dt=Math.min(.05,(now-last)/1000);last=now;hlTick();if(started)update(dt);render();requestAnimationFrame(frame);}
-resize();buildStart();addSayButtons(document);requestAnimationFrame(frame);
+ch2Init();resize();buildStart();addSayButtons(document);requestAnimationFrame(frame);
 if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost'))navigator.serviceWorker.register('sw.js').catch(()=>{});
 window.__game={get state(){return state;},player,ents,Q,completeQuest,map};
 

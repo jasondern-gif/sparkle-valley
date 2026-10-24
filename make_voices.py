@@ -7,6 +7,10 @@ VOICES = {
     'hops':      ('en-US-RogerNeural',   '+0%',  '+12Hz'),
     'buttercup': ('en-GB-MaisieNeural',  '-5%',  '+0Hz'),
     'stardust':  ('en-US-AnaNeural',     '-5%',  '+0Hz'),
+    'cloudberry':('en-US-EmmaNeural',    '-5%',  '+2Hz'),
+    'twinkle':   ('en-US-AnaNeural',     '-14%', '+14Hz'),
+    'peaches':   ('en-AU-NatashaNeural', '+5%',  '+18Hz'),
+    'puff':      ('en-GB-MaisieNeural',  '+4%',  '+22Hz'),
 }
 lines = json.load(open('lines.json', encoding='utf-8'))
 os.makedirs('audio', exist_ok=True)
