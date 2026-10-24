@@ -1260,6 +1260,11 @@
   "text": "Tap Play to start your adventure!"
  },
  {
+  "key": "bz35is",
+  "who": "narrator",
+  "text": "My Magic Quest Book"
+ },
+ {
   "key": "kerxic",
   "who": "narrator",
   "text": "Twinkle"
@@ -1778,6 +1783,36 @@
   "key": "1bwui8i",
   "who": "cloudberry",
   "text": "Visit your ponies, fly the balloon to the Cloud Kingdom, or buy fun things from Mr. Hops!"
+ },
+ {
+  "key": "m5t3yo",
+  "who": "narrator",
+  "text": "This is your adventure right now!"
+ },
+ {
+  "key": "j14h2q",
+  "who": "narrator",
+  "text": "You did it!"
+ },
+ {
+  "key": "4srosr",
+  "who": "narrator",
+  "text": "Coming next!"
+ },
+ {
+  "key": "12hxjkd",
+  "who": "narrator",
+  "text": "It is a secret! Keep playing to find out!"
+ },
+ {
+  "key": "z25syd",
+  "who": "narrator",
+  "text": "Sparkle Valley"
+ },
+ {
+  "key": "ws8cry",
+  "who": "narrator",
+  "text": "The Rainbow Balloon"
  },
  {
   "key": "7io7in",
