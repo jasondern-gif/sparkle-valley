@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Sparkle Valley">
+<meta name="theme-color" content="#ff8cc6">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-180.png">
+<link rel="manifest" href="manifest.json">
+<title>Sparkle Valley</title>
+<style>
+:root{--pink:#ff7eb6;--ink:#4a2c5e;}
+*{box-sizing:border-box;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;}
+html,body{margin:0;height:100%;overflow:hidden;background:#8fd16a;touch-action:none;overscroll-behavior:none;
+  font-family:"Chalkboard SE","Comic Sans MS","Marker Felt","Trebuchet MS",system-ui,sans-serif;color:var(--ink);}
+#game{position:fixed;left:0;top:0;display:block;}
+button{font-family:inherit;color:inherit;cursor:pointer;border:none;touch-action:manipulation;}
+.panel{background:rgba(255,255,255,.94);border:4px solid #ffc2e2;border-radius:24px;box-shadow:0 5px 0 rgba(120,60,120,.25);}
+#hud{position:fixed;left:0;right:0;top:0;padding:calc(env(safe-area-inset-top) + 10px) 12px 0;display:none;gap:10px;align-items:flex-start;pointer-events:none;z-index:5;}
+#objective{pointer-events:auto;display:flex;align-items:center;gap:10px;padding:8px 10px;max-width:min(660px,70vw);}
+#objIcon{font-size:42px;line-height:1;animation:bob 1.6s ease-in-out infinite;}
+#objText{font-size:22px;line-height:1.2;font-weight:bold;}
+#objProg{font-size:22px;color:#d94f9b;white-space:nowrap;font-weight:bold;}
+#objSay{font-size:26px;background:#ffe3f2;border-radius:50%;width:50px;height:50px;flex:none;}
+#spacer{flex:1;}
+#coins{pointer-events:auto;font-size:26px;font-weight:bold;padding:8px 16px;white-space:nowrap;}
+#menuBtn{pointer-events:auto;font-size:28px;width:60px;height:60px;}
+#bar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom) + 10px);display:none;gap:8px;padding:8px 10px;align-items:center;max-width:96vw;z-index:5;}
+.slot{position:relative;min-width:66px;height:66px;border-radius:18px;background:#fff6fb;border:3px solid #ffd0e8;font-size:34px;display:flex;align-items:center;justify-content:center;padding:0 6px;}
+.slot .n{position:absolute;right:2px;bottom:0;font-size:17px;font-weight:bold;background:#fff;border-radius:10px;padding:0 5px;}
+.slot.sel{background:#ffe08a;border-color:#ff9a3c;transform:scale(1.1);}
+.slot .lbl{position:absolute;top:-9px;left:50%;transform:translateX(-50%);font-size:12px;background:#8b5a2b;color:#fff;border-radius:8px;padding:0 6px;white-space:nowrap;}
+.slot.ride{background:#e3f4ff;border-color:#9fd3ff;}
+.sep{width:3px;height:52px;background:#ffd0e8;border-radius:2px;}
+#dialog{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom) + 12px);width:min(840px,94vw);display:none;gap:14px;padding:14px 18px;align-items:center;z-index:20;}
+#dlgFace{font-size:64px;line-height:1;flex:none;width:96px;height:96px;border-radius:50%;background:#ffe9f5;display:flex;align-items:center;justify-content:center;}
+#dlgBody{flex:1;min-height:80px;}
+#dlgName{font-size:20px;font-weight:bold;color:#d94f9b;}
+#dlgText{font-size:27px;line-height:1.3;font-weight:bold;}
+#dlgSide{display:flex;flex-direction:column;align-items:center;gap:8px;}
+#dlgSay{font-size:24px;background:#ffe3f2;border-radius:50%;width:48px;height:48px;}
+#dlgNext{font-size:30px;color:#ff7eb6;animation:bob 1s ease-in-out infinite;}
+#toast{position:fixed;left:50%;top:36%;transform:translate(-50%,-50%) scale(.6);font-size:46px;font-weight:bold;color:#fff;
+  text-shadow:0 3px 0 #d94f9b,0 0 18px #ff7eb6,0 0 4px #b03a7d;opacity:0;pointer-events:none;transition:all .35s cubic-bezier(.3,1.6,.5,1);z-index:25;text-align:center;width:94vw;}
+#toast.show{opacity:1;transform:translate(-50%,-50%) scale(1);}
+.modal{position:fixed;inset:0;background:rgba(80,40,100,.35);display:none;align-items:center;justify-content:center;z-index:30;}
+.modal.show{display:flex;}
+.box{width:min(760px,94vw);max-height:92vh;overflow:auto;padding:16px 20px;position:relative;}
+.box h2{margin:0 0 10px;font-size:32px;text-align:center;}
+.close{position:absolute;right:10px;top:10px;font-size:28px;width:54px;height:54px;border-radius:50%;background:#ffe3f2;}
+.big{font-size:26px;font-weight:bold;padding:14px 24px;border-radius:20px;background:#ff7eb6;color:#fff;box-shadow:0 5px 0 #d94f9b;}
+.big:active{transform:translateY(3px);box-shadow:0 2px 0 #d94f9b;}
+.big.green{background:#5fc96b;box-shadow:0 5px 0 #3c9a47;}
+.big:disabled{opacity:.5;}
+.small{font-size:18px;padding:8px 16px;border-radius:14px;background:#fff;border:3px solid #ffc2e2;}
+.sell{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;background:#fff8e6;border-radius:20px;padding:10px;border:3px solid #ffe0a0;}
+.sell .what{font-size:30px;}
+.items{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-top:14px;}
+.item{background:#fff6fb;border:3px solid #ffd0e8;border-radius:20px;padding:10px;display:flex;flex-direction:column;align-items:center;font-size:18px;font-weight:bold;gap:2px;}
+.item .e{font-size:58px;line-height:1.1;}
+.item.cant{opacity:.45;}
+.item.owned{background:#e7ffe9;border-color:#9be3a6;}
+.row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:10px 0;}
+.note{font-size:16px;text-align:center;opacity:.8;margin-top:10px;font-family:system-ui,sans-serif;}
+#start{position:fixed;inset:0;z-index:40;display:flex;align-items:center;justify-content:center;background:linear-gradient(#bfe6ff,#ffd6ec 55%,#c9f2b5);overflow:auto;}
+.startBox{text-align:center;padding:20px;max-width:760px;}
+.title{font-size:clamp(40px,8vw,72px);font-weight:bold;color:#fff;text-shadow:0 4px 0 #d94f9b,0 0 20px #ff7eb6;}
+.sub{font-size:22px;margin:4px 0 16px;font-weight:bold;}
+.label{font-size:22px;font-weight:bold;margin:14px 0 6px;}
+.choices{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;}
+.choice{width:72px;height:72px;border-radius:20px;background:#fff;border:4px solid #ffd0e8;font-size:42px;}
+.choice.sel{border-color:#ff7eb6;background:#ffe9f5;transform:scale(1.12);}
+.swatch{width:56px;height:56px;border-radius:50%;border:4px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.2);}
+.swatch.sel{transform:scale(1.2);border-color:#4a2c5e;}
+#nameIn{font-family:inherit;font-size:28px;padding:10px 16px;border-radius:16px;border:4px solid #ffc2e2;text-align:center;width:260px;-webkit-user-select:text;user-select:text;}
+#playBtn,#continueBtn{margin-top:20px;font-size:34px;padding:16px 40px;}
+.sayBtn{font-size:22px;width:46px;height:46px;border-radius:50%;background:#ffe3f2;border:3px solid #ffc2e2;margin-left:10px;vertical-align:middle;flex:none;line-height:1;padding:0;}
+.sayBtn:active{transform:scale(.9);}
+.sayRow{display:inline-flex;align-items:center;}
+.item .sayBtn{margin:4px 0 0;}
+.item .buy{font-size:18px;font-weight:bold;}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+</style>
+</head>
+<body>
+<canvas id="game"></canvas>
+
+<div id="hud">
+  <div id="objective" class="panel"><span id="objIcon">👵</span><span id="objText"></span><span id="objProg"></span><button id="objSay" aria-label="Read out loud">🔊</button></div>
+  <div id="spacer"></div>
+  <div id="coins" class="panel">🪙 0</div>
+  <button id="menuBtn" class="panel" aria-label="Menu">⚙️</button>
+</div>
+
+<div id="bar" class="panel"></div>
+
+<div id="dialog" class="panel">
+  <div id="dlgFace"></div>
+  <div id="dlgBody"><div id="dlgName"></div><div id="dlgText"></div></div>
+  <div id="dlgSide"><button id="dlgSay" aria-label="Read again">🔊</button><div id="dlgNext">▶</div></div>
+</div>
+
+<div id="toast"></div>
+
+<div id="shop" class="modal"><div class="panel box">
+  <button class="close" id="shopClose">✖</button>
+  <h2 data-say="Hippity hop! Welcome to my market! Tap the basket to sell your food. Then pick something fun to buy!" data-who="hops">🐰 Mr. Hops' Market</h2>
+  <div id="shopBody"></div>
+</div></div>
+
+<div id="menu" class="modal"><div class="panel box">
+  <button class="close" id="menuClose">✖</button>
+  <h2>⚙️ Settings</h2>
+  <div class="row">
+    <div class="sayRow" data-say="This button turns the talking on or off."><button class="big" id="voiceBtn"></button></div>
+    <div class="sayRow" data-say="This button turns the music on or off."><button class="big" id="musicBtn"></button></div>
+  </div>
+  <div class="row"><div class="sayRow" data-say="This starts a brand new game. Ask a grown-up first!"><button class="small" id="resetBtn">Start a new game (grown-ups)</button></div></div>
+  <div class="note">Tip for grown-ups: in Safari, tap the Share button, then “Add to Home Screen” to play full screen like an app. Progress saves automatically.</div>
+</div></div>
+
+<div id="start"><div class="startBox">
+  <div class="title">🌈 Sparkle Valley 🦄</div>
+  <div class="sub" data-say="Sparkle Valley! A farm adventure with ponies and unicorns!">A farm adventure with ponies and unicorns!</div>
+  <div id="continueWrap"><div data-say="Tap Keep Playing to go back to your farm!"><button id="continueBtn" class="big">▶ Keep Playing</button></div><div class="row"><button class="small" id="newBtn">New game</button></div></div>
+  <div id="newWrap">
+    <div class="label" data-say="Pick your farmer!">Pick your farmer:</div><div id="heroes" class="choices"></div>
+    <div class="label" data-say="Pick a color!">Pick a color:</div><div id="colors" class="choices"></div>
+    <div class="label" data-say="Type your name. Ask a grown-up for help!">Your name:</div><input id="nameIn" maxlength="14" placeholder="Name" autocomplete="off" autocorrect="off" spellcheck="false">
+    <div data-say="Tap Play to start your adventure!"><button id="playBtn" class="big">▶ Play!</button></div>
+  </div>
+</div></div>
+
+<script src="core.js"></script>
+<script src="draw.js"></script>
+<script src="quests.js"></script>
+<script src="game.js"></script>
+</body>
+</html>

@@ -1,0 +1,812 @@
+[
+ {
+  "key": "xzsefe",
+  "who": "grandma",
+  "text": "Good job! Seeds get thirsty. Tap each seed to give it water."
+ },
+ {
+  "key": "1h38g3l",
+  "who": "grandma",
+  "text": "Now the sunshine and water will help them grow. Watch them get big!"
+ },
+ {
+  "key": "5poq38",
+  "who": "grandma",
+  "text": "When you see an orange carrot, tap it to pick it."
+ },
+ {
+  "key": "lycukh",
+  "who": "grandma",
+  "text": "Yummy carrots! You know who LOVES carrots? Buttercup the pony!"
+ },
+ {
+  "key": "m45fae",
+  "who": "grandma",
+  "text": "She lives in the pony field, by the red barn."
+ },
+ {
+  "key": "mswc29",
+  "who": "grandma",
+  "text": "The chickens are laying eggs! Can you find 3 eggs in the chicken coop?"
+ },
+ {
+  "key": "gteknl",
+  "who": "grandma",
+  "text": "Wonderful! Take the eggs to Mr. Hops. His market is down the road."
+ },
+ {
+  "key": "1skvme8",
+  "who": "narrator",
+  "text": "Tap the strawberry seeds at the bottom. Then plant them in the dirt and water them!"
+ },
+ {
+  "key": "10a00af",
+  "who": "grandma",
+  "text": "Mmm, sweet strawberries! Oh! I just remembered something."
+ },
+ {
+  "key": "4mgkw",
+  "who": "grandma",
+  "text": "Unicorns LOVE flower crowns. Can you pick 5 flowers in the meadow?"
+ },
+ {
+  "key": "tnhxe0",
+  "who": "grandma",
+  "text": "The meadow is at the end of the road, past the big pond."
+ },
+ {
+  "key": "5n7xuk",
+  "who": "narrator",
+  "text": "What pretty flowers! Bring them to Grandma."
+ },
+ {
+  "key": "womy8i",
+  "who": "stardust",
+  "text": "The rainbow broke into 7 rainbow stars. They fell all over Sparkle Valley."
+ },
+ {
+  "key": "tw5zqa",
+  "who": "stardust",
+  "text": "If we find all 7, the rainbow will come back! I'll come with you!"
+ },
+ {
+  "key": "1up3220",
+  "who": "narrator",
+  "text": "Follow the yellow arrow to find the stars!"
+ },
+ {
+  "key": "1lzamss",
+  "who": "stardust",
+  "text": "You found them ALL! Let's put them on the Wishing Stone in my magic garden!"
+ },
+ {
+  "key": "1wlvw2f",
+  "who": "narrator",
+  "text": "THE END! But the fun keeps going!"
+ },
+ {
+  "key": "1c4f3ud",
+  "who": "narrator",
+  "text": "Grow food and sell it to Mr. Hops. Then buy fun things for your farm, like a real castle!"
+ },
+ {
+  "key": "1bjffjw",
+  "who": "hops",
+  "text": "Wow! You bought EVERYTHING! You're a super farmer!"
+ },
+ {
+  "key": "jb33ol",
+  "who": "grandma",
+  "text": "Hello, my sweetheart! I'm so happy you're here!"
+ },
+ {
+  "key": "2ppbvi",
+  "who": "grandma",
+  "text": "A long time ago, a big beautiful rainbow shined over Sparkle Valley. And a magic unicorn lived here too!"
+ },
+ {
+  "key": "euszgq",
+  "who": "grandma",
+  "text": "But one stormy night, the rainbow broke into pieces. The unicorn got sad and went away to hide."
+ },
+ {
+  "key": "1bp8wko",
+  "who": "grandma",
+  "text": "Maybe if we take good care of the farm and make lots of friends, the magic will come back!"
+ },
+ {
+  "key": "gd5jnu",
+  "who": "grandma",
+  "text": "Let's start by planting some carrots. Here are some carrot seeds!"
+ },
+ {
+  "key": "1eywirk",
+  "who": "grandma",
+  "text": "Tap the brown dirt to plant a seed."
+ },
+ {
+  "key": "1k1k9i4",
+  "who": "grandma",
+  "text": "Ooh, what pretty flowers! Let me make them into a flower crown..."
+ },
+ {
+  "key": "1ef8duw",
+  "who": "grandma",
+  "text": "Twist, twist, twist... Ta-da! A flower crown!"
+ },
+ {
+  "key": "1ck4gfy",
+  "who": "grandma",
+  "text": "Last night, I saw sparkly hoof prints by the magic gate. Here is the key!"
+ },
+ {
+  "key": "1qgly3p",
+  "who": "grandma",
+  "text": "The magic gate is at the end of the bottom road. Go find the unicorn!"
+ },
+ {
+  "key": "gg8u5t",
+  "who": "grandma",
+  "text": "And bring a strawberry. Unicorns get hungry!"
+ },
+ {
+  "key": "nh0p3i",
+  "who": "grandma",
+  "text": "You did it! The rainbow is back! I'm so proud of you!"
+ },
+ {
+  "key": "166m1ax",
+  "who": "buttercup",
+  "text": "Neigh! Crunch, crunch... Yum!"
+ },
+ {
+  "key": "nh6frk",
+  "who": "buttercup",
+  "text": "Thank you! Will you be my best friend?"
+ },
+ {
+  "key": "owkm5y",
+  "who": "buttercup",
+  "text": "I'll follow you everywhere!"
+ },
+ {
+  "key": "85xz20",
+  "who": "narrator",
+  "text": "Buttercup is your friend now! Tap on her to ride her!"
+ },
+ {
+  "key": "17be5aj",
+  "who": "buttercup",
+  "text": "Neigh? I'm hungry! Do you have a carrot?"
+ },
+ {
+  "key": "1xn2c3v",
+  "who": "hops",
+  "text": "Hippity hop! Hello there! Are those fresh eggs?"
+ },
+ {
+  "key": "4qac1h",
+  "who": "hops",
+  "text": "I will buy them! Here are some shiny coins!"
+ },
+ {
+  "key": "1ineykd",
+  "who": "hops",
+  "text": "And here is something special: strawberry seeds and sunflower seeds!"
+ },
+ {
+  "key": "7hfg99",
+  "who": "hops",
+  "text": "Come back any time to sell your food. You can buy fun things for your farm!"
+ },
+ {
+  "key": "168rpuf",
+  "who": "hops",
+  "text": "Hippity hop! Do you have 3 eggs for me?"
+ },
+ {
+  "key": "1p4nsdv",
+  "who": "hops",
+  "text": "Hippity hop! My market is not open yet. Come back later!"
+ },
+ {
+  "key": "xvr47v",
+  "who": "narrator",
+  "text": "The magic gate is locked. Maybe Grandma can help later!"
+ },
+ {
+  "key": "7t06mr",
+  "who": "stardust",
+  "text": "Oh! Hello there! Is that a flower crown? For ME?"
+ },
+ {
+  "key": "692qxq",
+  "who": "narrator",
+  "text": "You put the flower crown on the unicorn. She looks so pretty!"
+ },
+ {
+  "key": "ewkk2f",
+  "who": "stardust",
+  "text": "Thank you! My name is Stardust. I used to sparkle and shine."
+ },
+ {
+  "key": "r7dayu",
+  "who": "stardust",
+  "text": "But when the rainbow broke, I lost my sparkle. And now I'm sooo hungry."
+ },
+ {
+  "key": "1w42xb4",
+  "who": "stardust",
+  "text": "Do you have a strawberry? Strawberries are my favorite!"
+ },
+ {
+  "key": "febis",
+  "who": "stardust",
+  "text": "Mmm! Sweet and yummy! I feel a little bit better already!"
+ },
+ {
+  "key": "16mm1vl",
+  "who": "stardust",
+  "text": "I'm so hungry... Can you grow a strawberry for me?"
+ },
+ {
+  "key": "ptkxmf",
+  "who": "narrator",
+  "text": "You put the 7 rainbow stars on the Wishing Stone..."
+ },
+ {
+  "key": "ybnjca",
+  "who": "stardust",
+  "text": "Look! Look! The RAINBOW is back! And my sparkle too!"
+ },
+ {
+  "key": "1h9lyvm",
+  "who": "stardust",
+  "text": "you are the kindest and bravest friend in all of Sparkle Valley!"
+ },
+ {
+  "key": "fatspt",
+  "who": "stardust",
+  "text": "Thank you for bringing the magic back. I love you!"
+ },
+ {
+  "key": "1wkjd21",
+  "who": "narrator",
+  "text": "The Wishing Stone glows with rainbow magic!"
+ },
+ {
+  "key": "16anpo5",
+  "who": "narrator",
+  "text": "This is the Wishing Stone. It looks like something is missing..."
+ },
+ {
+  "key": "3bbzcz",
+  "who": "narrator",
+  "text": "Once upon a time, a little farmer came to visit Grandma's farm in Sparkle Valley."
+ },
+ {
+  "key": "g61rjd",
+  "who": "narrator",
+  "text": "Tap on the grass to walk. Tap on things to use them!"
+ },
+ {
+  "key": "bk7kd7",
+  "who": "narrator",
+  "text": "Look! There's Grandma. Tap on her to say hi!"
+ },
+ {
+  "key": "1ds95su",
+  "who": "narrator",
+  "text": "Welcome back!"
+ },
+ {
+  "key": "6ftzp7",
+  "who": "narrator",
+  "text": "Say hi to Grandma! Tap on her."
+ },
+ {
+  "key": "iv8b9n",
+  "who": "narrator",
+  "text": "Plant 3 carrot seeds. Tap the brown dirt!"
+ },
+ {
+  "key": "n531af",
+  "who": "grandma",
+  "text": "Tap the brown dirt next to the house to plant a seed."
+ },
+ {
+  "key": "16jkuv0",
+  "who": "narrator",
+  "text": "Water your seeds. Tap each seed!"
+ },
+ {
+  "key": "i33ysr",
+  "who": "grandma",
+  "text": "See the water drops? Tap the seeds to water them."
+ },
+ {
+  "key": "a1v6rb",
+  "who": "narrator",
+  "text": "Watch the carrots grow, then pick 3!"
+ },
+ {
+  "key": "10u07sp",
+  "who": "grandma",
+  "text": "Carrots need a little time to grow. If a seed has a water drop, tap it to water it!"
+ },
+ {
+  "key": "1wro8zs",
+  "who": "narrator",
+  "text": "Give Buttercup the pony a carrot."
+ },
+ {
+  "key": "ujo0wd",
+  "who": "grandma",
+  "text": "Buttercup is in the pony field by the red barn. Tap on her!"
+ },
+ {
+  "key": "xfn2r6",
+  "who": "narrator",
+  "text": "Find 3 eggs in the chicken coop."
+ },
+ {
+  "key": "12pb8q5",
+  "who": "grandma",
+  "text": "The chicken coop is next to the farm. Look for white eggs!"
+ },
+ {
+  "key": "r2141w",
+  "who": "narrator",
+  "text": "Take the eggs to Mr. Hops at the market."
+ },
+ {
+  "key": "11kz1bd",
+  "who": "grandma",
+  "text": "Mr. Hops the bunny has a market at the bottom of the road."
+ },
+ {
+  "key": "155snav",
+  "who": "narrator",
+  "text": "Grow and pick 3 strawberries."
+ },
+ {
+  "key": "25lytm",
+  "who": "grandma",
+  "text": "Pick the strawberry seeds at the bottom of the screen. Then plant and water them!"
+ },
+ {
+  "key": "b3mrob",
+  "who": "narrator",
+  "text": "Pick 5 flowers in the meadow."
+ },
+ {
+  "key": "1ip69pc",
+  "who": "grandma",
+  "text": "The flower meadow is at the end of the top road."
+ },
+ {
+  "key": "y602le",
+  "who": "narrator",
+  "text": "Bring the flowers to Grandma."
+ },
+ {
+  "key": "emkoow",
+  "who": "narrator",
+  "text": "Go through the magic gate and find the unicorn!"
+ },
+ {
+  "key": "1v23yly",
+  "who": "grandma",
+  "text": "The magic gate is at the end of the bottom road. The unicorn is inside!"
+ },
+ {
+  "key": "141jfq1",
+  "who": "narrator",
+  "text": "Give Stardust a strawberry."
+ },
+ {
+  "key": "mxy5yx",
+  "who": "grandma",
+  "text": "Stardust is hungry. Bring her a strawberry! You can grow more on the farm."
+ },
+ {
+  "key": "1amawn1",
+  "who": "narrator",
+  "text": "Find the 7 rainbow stars!"
+ },
+ {
+  "key": "1xm3zvb",
+  "who": "grandma",
+  "text": "Follow the yellow arrow to find the rainbow stars!"
+ },
+ {
+  "key": "68eyub",
+  "who": "narrator",
+  "text": "Put the stars on the Wishing Stone in the magic garden."
+ },
+ {
+  "key": "7v1w74",
+  "who": "grandma",
+  "text": "The Wishing Stone is in the magic garden, where you met Stardust."
+ },
+ {
+  "key": "gm11ce",
+  "who": "narrator",
+  "text": "Free play! Sell food to Mr. Hops and buy fun things for your farm."
+ },
+ {
+  "key": "19adlyi",
+  "who": "grandma",
+  "text": "Grow food and sell it to Mr. Hops. Then buy fun things, like a castle!"
+ },
+ {
+  "key": "1h6alu1",
+  "who": "grandma",
+  "text": "You're doing great!"
+ },
+ {
+  "key": "19dd3fe",
+  "who": "grandma",
+  "text": "I love you, sweetie!"
+ },
+ {
+  "key": "1ndeuih",
+  "who": "grandma",
+  "text": "The farm looks so pretty!"
+ },
+ {
+  "key": "l4sdcd",
+  "who": "grandma",
+  "text": "What a good helper you are!"
+ },
+ {
+  "key": "11gj66k",
+  "who": "stardust",
+  "text": "I love you!"
+ },
+ {
+  "key": "eilm9i",
+  "who": "stardust",
+  "text": "Sparkle, sparkle!"
+ },
+ {
+  "key": "f1eebv",
+  "who": "stardust",
+  "text": "Let's go on an adventure!"
+ },
+ {
+  "key": "18bndwr",
+  "who": "stardust",
+  "text": "You are my best friend!"
+ },
+ {
+  "key": "szc7po",
+  "who": "narrator",
+  "text": "You found the red star!"
+ },
+ {
+  "key": "3qkjy9",
+  "who": "narrator",
+  "text": "You found the orange star!"
+ },
+ {
+  "key": "1b7u993",
+  "who": "narrator",
+  "text": "You found the yellow star!"
+ },
+ {
+  "key": "15h5lz4",
+  "who": "narrator",
+  "text": "You found the green star!"
+ },
+ {
+  "key": "1qovapf",
+  "who": "narrator",
+  "text": "You found the blue star!"
+ },
+ {
+  "key": "17nxoih",
+  "who": "narrator",
+  "text": "You found the purple star!"
+ },
+ {
+  "key": "1tkqxg3",
+  "who": "narrator",
+  "text": "You found the pink star!"
+ },
+ {
+  "key": "1ii3mep",
+  "who": "narrator",
+  "text": "carrot seeds"
+ },
+ {
+  "key": "ty012z",
+  "who": "narrator",
+  "text": "strawberry seeds"
+ },
+ {
+  "key": "knu3h3",
+  "who": "narrator",
+  "text": "sunflower seeds"
+ },
+ {
+  "key": "guwwqf",
+  "who": "hops",
+  "text": "Yay! You got the Tulip garden! Go see it next to your farm!"
+ },
+ {
+  "key": "9vno0j",
+  "who": "hops",
+  "text": "You already have the Tulip garden!"
+ },
+ {
+  "key": "1ywwno",
+  "who": "hops",
+  "text": "The Tulip garden costs 5 coins. Grow more food to sell!"
+ },
+ {
+  "key": "thqpx6",
+  "who": "hops",
+  "text": "Yay! You got the Bow for Buttercup! Buttercup looks so pretty!"
+ },
+ {
+  "key": "2mwtq1",
+  "who": "hops",
+  "text": "You already have the Bow for Buttercup!"
+ },
+ {
+  "key": "x2e7up",
+  "who": "hops",
+  "text": "The Bow for Buttercup costs 8 coins. Grow more food to sell!"
+ },
+ {
+  "key": "1s3ukq3",
+  "who": "hops",
+  "text": "Yay! You got the Kitty friend! Go see it next to your farm!"
+ },
+ {
+  "key": "g9nqi3",
+  "who": "hops",
+  "text": "You already have the Kitty friend!"
+ },
+ {
+  "key": "z5ocg2",
+  "who": "hops",
+  "text": "The Kitty friend costs 12 coins. Grow more food to sell!"
+ },
+ {
+  "key": "1npn6de",
+  "who": "hops",
+  "text": "Yay! You got the Fountain! Go see it next to your farm!"
+ },
+ {
+  "key": "b5jzws",
+  "who": "hops",
+  "text": "You already have the Fountain!"
+ },
+ {
+  "key": "1r2kidk",
+  "who": "hops",
+  "text": "The Fountain costs 20 coins. Grow more food to sell!"
+ },
+ {
+  "key": "1v2na1w",
+  "who": "hops",
+  "text": "Yay! You got the Carousel! Go see it next to your farm!"
+ },
+ {
+  "key": "121v56u",
+  "who": "hops",
+  "text": "You already have the Carousel!"
+ },
+ {
+  "key": "4wtuu9",
+  "who": "hops",
+  "text": "The Carousel costs 30 coins. Grow more food to sell!"
+ },
+ {
+  "key": "p8pjl9",
+  "who": "hops",
+  "text": "Yay! You got the Princess castle! Go see it next to your farm!"
+ },
+ {
+  "key": "1fvjqet",
+  "who": "hops",
+  "text": "You already have the Princess castle!"
+ },
+ {
+  "key": "14y0yqo",
+  "who": "hops",
+  "text": "The Princess castle costs 50 coins. Grow more food to sell!"
+ },
+ {
+  "key": "1f2jnwl",
+  "who": "narrator",
+  "text": "Welcome to Sparkle Valley!"
+ },
+ {
+  "key": "s6qj5u",
+  "who": "narrator",
+  "text": "Grandma's House"
+ },
+ {
+  "key": "1d06lyx",
+  "who": "narrator",
+  "text": "The Farm"
+ },
+ {
+  "key": "a47ec0",
+  "who": "narrator",
+  "text": "Pony Field"
+ },
+ {
+  "key": "6bpvyk",
+  "who": "narrator",
+  "text": "Chicken Coop"
+ },
+ {
+  "key": "p0x7gc",
+  "who": "narrator",
+  "text": "Duck Pond"
+ },
+ {
+  "key": "8fbpfo",
+  "who": "narrator",
+  "text": "Flower Meadow"
+ },
+ {
+  "key": "18cknt8",
+  "who": "narrator",
+  "text": "Magic Garden"
+ },
+ {
+  "key": "12tf81w",
+  "who": "narrator",
+  "text": "Market"
+ },
+ {
+  "key": "1fyziei",
+  "who": "narrator",
+  "text": "It is still growing. Wait a little bit!"
+ },
+ {
+  "key": "nnz9x9",
+  "who": "narrator",
+  "text": "These are your coins! Sell food to Mr. Hops to get more."
+ },
+ {
+  "key": "1p26vbk",
+  "who": "narrator",
+  "text": "Carrots"
+ },
+ {
+  "key": "1z0r9q9",
+  "who": "narrator",
+  "text": "Strawberries"
+ },
+ {
+  "key": "19xs0ty",
+  "who": "narrator",
+  "text": "Sunflowers"
+ },
+ {
+  "key": "1oilrza",
+  "who": "narrator",
+  "text": "Eggs"
+ },
+ {
+  "key": "1kzg0c8",
+  "who": "narrator",
+  "text": "Flowers"
+ },
+ {
+  "key": "qr3yro",
+  "who": "hops",
+  "text": "Tap here to sell your food for coins!"
+ },
+ {
+  "key": "2yb1fg",
+  "who": "hops",
+  "text": "Your basket is empty. Grow some food to sell!"
+ },
+ {
+  "key": "1o38uh8",
+  "who": "hops",
+  "text": "Tulip garden. It costs 5 coins."
+ },
+ {
+  "key": "ft77cr",
+  "who": "hops",
+  "text": "Bow for Buttercup. It costs 8 coins."
+ },
+ {
+  "key": "b9dyiy",
+  "who": "hops",
+  "text": "Kitty friend. It costs 12 coins."
+ },
+ {
+  "key": "1w943ho",
+  "who": "hops",
+  "text": "Fountain. It costs 20 coins."
+ },
+ {
+  "key": "gl0zsd",
+  "who": "hops",
+  "text": "Carousel. It costs 30 coins."
+ },
+ {
+  "key": "101bh12",
+  "who": "hops",
+  "text": "Princess castle. It costs 50 coins."
+ },
+ {
+  "key": "1gmbc3d",
+  "who": "hops",
+  "text": "Hippity hop! Welcome to my market! Tap the basket to sell your food. Then pick something fun to buy!"
+ },
+ {
+  "key": "1kz8hdk",
+  "who": "narrator",
+  "text": "This button turns the talking on or off."
+ },
+ {
+  "key": "swhupz",
+  "who": "narrator",
+  "text": "This button turns the music on or off."
+ },
+ {
+  "key": "c20rxn",
+  "who": "narrator",
+  "text": "This starts a brand new game. Ask a grown-up first!"
+ },
+ {
+  "key": "gal8ng",
+  "who": "narrator",
+  "text": "Sparkle Valley! A farm adventure with ponies and unicorns!"
+ },
+ {
+  "key": "18bhn1n",
+  "who": "narrator",
+  "text": "Tap Keep Playing to go back to your farm!"
+ },
+ {
+  "key": "194ebc2",
+  "who": "narrator",
+  "text": "Pick your farmer!"
+ },
+ {
+  "key": "jao7x4",
+  "who": "narrator",
+  "text": "Pick a color!"
+ },
+ {
+  "key": "5qrppo",
+  "who": "narrator",
+  "text": "Type your name. Ask a grown-up for help!"
+ },
+ {
+  "key": "1bzhcco",
+  "who": "narrator",
+  "text": "Tap Play to start your adventure!"
+ },
+ {
+  "key": "7io7in",
+  "who": "hops",
+  "text": "Thank you! Here are your coins!"
+ },
+ {
+  "key": "1etd8xe",
+  "who": "buttercup",
+  "text": "Giddy up!"
+ },
+ {
+  "key": "vukbjq",
+  "who": "narrator",
+  "text": "Voice is on!"
+ },
+ {
+  "key": "1arbde1",
+  "who": "narrator",
+  "text": "Great job!"
+ }
+]
