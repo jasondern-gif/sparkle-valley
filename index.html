@@ -83,6 +83,10 @@ button{font-family:inherit;color:inherit;cursor:pointer;border:none;touch-action
 .sayRow{display:inline-flex;align-items:center;}
 .item .sayBtn{margin:4px 0 0;}
 .item .buy{font-size:18px;font-weight:bold;}
+.w{display:inline-block;border-radius:10px;padding:0 3px;margin:0 1px;transition:background-color .12s,color .12s,transform .12s;}
+.w.lit{background:#ffe14d;color:#4a2c5e;transform:scale(1.08);box-shadow:0 2px 0 #f0b400;}
+.w.read{color:#d94f9b;}
+#toast .w.lit{color:#d94f9b;text-shadow:none;}
 @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
 </style>
 </head>

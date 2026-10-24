@@ -161,24 +161,89 @@ function voiceText(t){return cleanSpeech(t.replace(/^Once upon a time, \{name\}/
   .replace(/\{name\}, /g,'').replace(/,\s*\{name\}/g,'').replace(/\{name\}/g,'friend'));}
 function voiceKey(t,who){const s=(who||'narrator')+'|'+voiceText(t);let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return (h>>>0).toString(36);}
 function speaking(){return (!voiceEl.paused&&!voiceEl.ended)||(hasSpeech&&speechSynthesis.speaking);}
-function say(text,who){
+// target (optional) is the text being read: a DOM element, or a sign object drawn on the canvas.
+function say(text,who,target){
   if(!state.settings.voice)return;who=SPK[who]?who:'narrator';
   stopSpeech();
-  const f=VOICE[voiceKey(text,who)];
-  if(f){voiceEl.src='audio/'+f;const pr=voiceEl.play();if(pr)pr.catch(()=>ttsSay(text,who));return;}
-  ttsSay(text,who);
+  const v=VOICE[voiceKey(text,who)],f=typeof v==='string'?v:v&&v.f;
+  if(f){hlStart(target,'audio',v.w);voiceEl.src='audio/'+f;const pr=voiceEl.play();if(pr)pr.catch(()=>ttsSay(text,who,target));return;}
+  ttsSay(text,who,target);
 }
-function ttsSay(text,who){
+function ttsSay(text,who,target){
   if(!hasSpeech)return;
   const words=cleanSpeech(text.replace(/\{name\}/g,state.name));if(!words)return;
   const sp=SPK[who]||SPK.narrator;
   const u=new SpeechSynthesisUtterance(words);if(voice){u.voice=voice;u.lang=voice.lang;}else u.lang='en-US';
   u.pitch=sp.p;u.rate=sp.r;
+  // built-in voices report each word's position in the sentence as they say it
+  const starts=[];words.replace(/\S+/g,(m,o)=>{starts.push([o,0,m]);return m;});
+  hlStart(target,'tts',starts);
+  u.onboundary=e=>{if(e.name&&e.name!=='word')return;let k=-1;for(let i=0;i<starts.length&&starts[i][0]<=e.charIndex;i++)k=i;if(k>=0)HL.ttsIdx=HL.map[k];};
+  u.onend=()=>{if(HL.utt===u)hlClear();};HL.utt=u;
   clearTimeout(speakTimer);
   try{
     if(speechSynthesis.speaking||speechSynthesis.pending){speechSynthesis.cancel();speakTimer=setTimeout(()=>speechSynthesis.speak(u),90);}
     else speechSynthesis.speak(u);
   }catch(e){}
 }
-function stopSpeech(){try{voiceEl.pause();}catch(e){}if(hasSpeech){clearTimeout(speakTimer);try{speechSynthesis.cancel();}catch(e){}}}
+function stopSpeech(){hlClear();try{voiceEl.pause();}catch(e){}if(hasSpeech){clearTimeout(speakTimer);try{speechSynthesis.cancel();}catch(e){}}}
 
+// ---------- Word highlighting: each word lights up while it is spoken ----------
+const HL={target:null,spans:null,map:[],times:[],idx:-1,mode:null,started:false,ttsIdx:-1,utt:null};
+const normW=w=>w.toLowerCase().replace(/[^a-z0-9]/g,'');
+function wrapWords(el){
+  if(el._words&&el._words.length&&el._words.every(s=>el.contains(s)))return el._words;
+  const spans=[];
+  const walk=n=>{for(const c of [...n.childNodes]){
+    if(c.nodeType===3){const parts=c.textContent.split(/(\s+)/);if(!parts.some(p=>normW(p)))continue;
+      const frag=document.createDocumentFragment();
+      for(const p of parts){if(!p)continue;if(!normW(p)){frag.appendChild(document.createTextNode(p));continue;}
+        const s=document.createElement('span');s.className='w';s.textContent=p;frag.appendChild(s);spans.push(s);}
+      c.replaceWith(frag);}
+    else if(c.nodeType===1&&!c.classList.contains('sayBtn')&&!c.classList.contains('w'))walk(c);}};
+  walk(el);el._words=spans;return spans;
+}
+// Match spoken words to the words on screen (the screen may show the player's name or emoji the voice skips).
+function alignWords(disp,spoken){
+  const res=[];let p=0;
+  for(const sw of spoken){let hit=-1;
+    for(let j=p;j<Math.min(disp.length,p+5);j++){const d=disp[j];
+      if(d===sw||(d.length>=3&&sw.length>=3&&(d.startsWith(sw)||sw.startsWith(d)))){hit=j;break;}}
+    res.push(hit);if(hit>=0)p=hit+1;}
+  // spoken words with no match (e.g. "a little farmer" read in place of her name) light up the skipped word(s) on screen
+  for(let i=0;i<res.length;i++){if(res[i]>=0)continue;
+    let a=-1;for(let k=i-1;k>=0;k--)if(res[k]>=0){a=res[k];break;}
+    let z=disp.length;for(let k=i+1;k<res.length;k++)if(res[k]>=0){z=res[k];break;}
+    if(a+1<z&&a+1<disp.length&&(z<disp.length||a+1===disp.length-1))res[i]=a+1;}
+  return res;
+}
+// Sometimes several words arrive with one timing; split them and share out the time.
+function splitTimes(times){const out=[];
+  for(const [s,e,txt] of times){const ws=txt.split(/\s+/).filter(Boolean);if(ws.length<2){out.push([s,e,txt]);continue;}
+    const tot=ws.reduce((n,w)=>n+w.length+1,0);let c=s;
+    for(const w of ws){const d=(e-s)*(w.length+1)/tot;out.push([Math.round(c),Math.round(c+d),w]);c+=d;}}
+  return out;}
+function hlStart(target,mode,times){
+  hlClear();if(!target||!times||!times.length)return;
+  let disp;
+  if(target.nodeType===1){HL.spans=wrapWords(target);disp=HL.spans.map(s=>normW(s.textContent));}
+  else disp=target.text.split(/\s+/).map(normW);
+  if(mode==='audio')times=splitTimes(times);
+  HL.target=target;HL.mode=mode;HL.times=times;HL.map=alignWords(disp,times.map(w=>normW(w[2])));
+  HL.idx=-1;HL.ttsIdx=-1;HL.started=false;
+}
+function hlSet(cur){
+  if(cur===HL.idx)return;HL.idx=cur;
+  if(HL.spans)HL.spans.forEach((s,k)=>{s.classList.toggle('lit',k===cur);s.classList.toggle('read',cur>=0&&k<cur);});
+}
+function hlClear(){if(!HL.target)return;hlSet(-1);HL.target=null;HL.spans=null;HL.utt=null;}
+voiceEl.addEventListener('playing',()=>{HL.started=true;});
+function hlTick(){
+  if(!HL.target)return;
+  if(HL.mode==='audio'){
+    if(voiceEl.ended||(HL.started&&voiceEl.paused)){hlClear();return;}
+    const t=voiceEl.currentTime*1000+40;let cur=HL.idx;
+    for(let i=0;i<HL.times.length&&HL.times[i][0]<=t;i++)if(HL.map[i]>=0)cur=HL.map[i];
+    hlSet(cur);
+  }else hlSet(HL.ttsIdx);
+}

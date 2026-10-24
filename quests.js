@@ -59,16 +59,16 @@ function showLine([who,text]){
   const sp=SPK[who]||SPK.narrator;curLine=[who,fillName(text),text];dlgOpen=true;
   $('dlgFace').textContent=sp.f;$('dlgName').textContent=sp.n;$('dlgText').textContent=curLine[1];
   $('dialog').style.display='flex';$('bar').style.display='none';dlgReadyAt=performance.now()+400;
-  say(text,who);
+  say(text,who,$('dlgText'));
 }
 function closeDlg(){dlgOpen=false;curLine=null;$('dialog').style.display='none';refreshBar(true);}
 function advanceDlg(){if(performance.now()<dlgReadyAt)return;sfx('tap');nextDlg();}
 
 let toastTimer=null;
 function showToast(text,speak){const el=$('toast');el.textContent=text;el.classList.add('show');clearTimeout(toastTimer);
-  toastTimer=setTimeout(()=>el.classList.remove('show'),2000);if(speak!==false)say(text,'narrator');}
+  toastTimer=setTimeout(()=>el.classList.remove('show'),2000);if(speak!==false)say(text,'narrator',el);}
 
-function sayObjective(){say(Q[state.quest].text,'narrator');}
+function sayObjective(){say(Q[state.quest].text,'narrator',$('objText'));}
 function updateObjective(){
   const q=Q[state.quest];$('objIcon').textContent=q.icon;$('objText').textContent=q.text;
   $('objProg').textContent=q.goal?`${Math.min(state.qprog,q.goal)}/${q.goal}`:'';

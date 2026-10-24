@@ -172,7 +172,11 @@ function drawSign(sg,t){
   shadow(x,y,s*.15,s*.05);
   ctx.fillStyle='#a86d36';ctx.fillRect(x-s*.04,by+h-2,s*.08,y-(by+h)+2);
   ctx.lineWidth=Math.max(1,s*.03);ctx.fillStyle='#f3d9a4';ctx.strokeStyle='#8e5a2e';rr(x-w/2,by,w,h,s*.08);ctx.fill();ctx.stroke();
-  ctx.fillStyle='#6b3f1d';ctx.textAlign='left';ctx.textBaseline='middle';ctx.fillText(sg.text,x-w/2+s*.08,by+h/2+1);
+  ctx.textAlign='left';ctx.textBaseline='middle';
+  const cur=HL.target===sg?HL.idx:-1,sp=ctx.measureText(' ').width;let wx=x-w/2+s*.08;
+  sg.text.split(' ').forEach((wd,i)=>{const ww=ctx.measureText(wd).width;
+    if(i===cur){ctx.fillStyle='#ffe14d';rr(wx-s*.04,by+s*.03,ww+s*.08,h-s*.06,s*.06);ctx.fill();}
+    ctx.fillStyle=cur>=0&&i<cur?'#d94f9b':'#6b3f1d';ctx.fillText(wd,wx,by+h/2+1);wx+=ww+sp;});
   drawEmoji('🔊',x+w/2-s*.17,by+h/2,s*.22);
 }
 function drawArrow(tx,ty,t,icon){

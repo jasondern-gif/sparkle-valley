@@ -1,4 +1,4 @@
-const CACHE='sparkle-valley-v2';
+const CACHE='sparkle-valley-v3';
 const FILES=['./','index.html','core.js','draw.js','quests.js','game.js','manifest.json','icon-180.png','icon-512.png','audio/manifest.json'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(async c=>{
   await c.addAll(FILES);

@@ -1,4 +1,5 @@
-"""Generates natural-sounding voice recordings for every line in lines.json (uses Microsoft neural voices via edge-tts)."""
+"""Generates natural-sounding voice recordings for every line in lines.json (Microsoft neural voices via edge-tts).
+Also saves when each word is spoken, so the game can light up words as they are read."""
 import asyncio, json, os, edge_tts
 VOICES = {
     'narrator':  ('en-US-AvaNeural',     '-5%',  '+0Hz'),
@@ -9,16 +10,27 @@ VOICES = {
 }
 lines = json.load(open('lines.json', encoding='utf-8'))
 os.makedirs('audio', exist_ok=True)
+try: old = json.load(open('audio/manifest.json', encoding='utf-8'))
+except Exception: old = {}
+manifest = {}
 sem = asyncio.Semaphore(6)
 async def make(l):
-    path = f"audio/{l['key']}.mp3"
-    if os.path.exists(path) and os.path.getsize(path) > 0: return
+    k = l['key']; path = f"audio/{k}.mp3"
+    prev = old.get(k)
+    if isinstance(prev, dict) and prev.get('w') and os.path.exists(path):
+        manifest[k] = prev; return
     v, rate, pitch = VOICES[l['who']]
     async with sem:
         for attempt in range(4):
             try:
-                await edge_tts.Communicate(l['text'], v, rate=rate, pitch=pitch).save(path); return
-            except Exception as e:
+                audio, words = bytearray(), []
+                async for ch in edge_tts.Communicate(l['text'], v, rate=rate, pitch=pitch, boundary='WordBoundary').stream():
+                    if ch['type'] == 'audio': audio += ch['data']
+                    elif ch['type'] == 'WordBoundary':
+                        s = ch['offset'] / 10000; words.append([round(s), round(s + ch['duration'] / 10000), ch['text']])
+                open(path, 'wb').write(audio)
+                manifest[k] = {'f': f"{k}.mp3", 'w': words}; return
+            except Exception:
                 await asyncio.sleep(2 * (attempt + 1))
         print('FAILED', l)
 async def main():
@@ -26,7 +38,6 @@ async def main():
     keep = {f"{l['key']}.mp3" for l in lines}
     for f in os.listdir('audio'):
         if f.endswith('.mp3') and f not in keep: os.remove(os.path.join('audio', f))
-    manifest = {l['key']: f"{l['key']}.mp3" for l in lines if os.path.exists(f"audio/{l['key']}.mp3")}
-    json.dump(manifest, open('audio/manifest.json', 'w'), indent=0)
-    print('recorded', len(manifest), 'of', len(lines))
+    json.dump(manifest, open('audio/manifest.json', 'w', encoding='utf-8'), separators=(',', ':'), ensure_ascii=False)
+    print('recorded', len(manifest), 'of', len(lines), '| with word timings:', sum(1 for m in manifest.values() if m['w']))
 asyncio.run(main())

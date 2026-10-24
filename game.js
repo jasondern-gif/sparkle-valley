@@ -48,7 +48,7 @@ function follow(e,d,dt){const p=trailPoint(d);if(!p){e.moving=false;return;}cons
 // ---------- Tapping ----------
 function tapWorld(sx,sy){
   const wx=(sx+cam.x)/ts,wy=(sy+cam.y)/ts;tapMark={x:wx,y:wy,life:.5};
-  for(const sg of SIGNS)if(Math.abs(wx-sg.x)<1.2&&wy>sg.y-1.05&&wy<sg.y-.25){sg.hit=state.time;sfx('tap');say(sg.text,'narrator');return;}
+  for(const sg of SIGNS)if(Math.abs(wx-sg.x)<1.2&&wy>sg.y-1.05&&wy<sg.y-.25){sg.hit=state.time;sfx('tap');say(sg.text,'narrator',sg);return;}
   if(state.riding&&dist(wx,wy,player.x,player.y-.6)<.8){toggleRide();return;}
   const cands=[['grandma',interactGrandma,1.6],['hops',interactHops,1.6],['unicorn',interactUnicorn,1.6]];
   if(!state.riding)cands.push(['pony',interactPony,1.5]);
@@ -214,7 +214,7 @@ function addSayButtons(root){
     if(el.querySelector(':scope > .sayBtn'))return;
     const b=document.createElement('button');b.className='sayBtn';b.textContent='🔊';b.setAttribute('aria-label','Read out loud');
     b.addEventListener('pointerdown',e=>e.stopPropagation());
-    b.addEventListener('click',e=>{e.stopPropagation();e.preventDefault();initAudio();say(el.dataset.say,el.dataset.who||'narrator');});
+    b.addEventListener('click',e=>{e.stopPropagation();e.preventDefault();initAudio();say(el.dataset.say,el.dataset.who||'narrator',el);});
     el.appendChild(b);});
 }
 
@@ -254,7 +254,7 @@ function updateMenu(){$('voiceBtn').textContent=state.settings.voice?'🔊 Voice
 // ---------- Wiring ----------
 canvas.addEventListener('pointerdown',e=>{if(!started)return;initAudio();if(dlgOpen){advanceDlg();return;}tapWorld(e.clientX,e.clientY);});
 $('dialog').addEventListener('pointerdown',e=>{e.stopPropagation();advanceDlg();});
-$('dlgSay').addEventListener('pointerdown',e=>{e.stopPropagation();if(curLine)say(curLine[2],curLine[0]);});
+$('dlgSay').addEventListener('pointerdown',e=>{e.stopPropagation();if(curLine)say(curLine[2],curLine[0],$('dlgText'));});
 $('objSay').onclick=()=>{initAudio();sayObjective();};
 $('coins').onclick=()=>{initAudio();sfx('coin');say(COINS_SAY,'narrator');};
 $('menuBtn').onclick=()=>{updateMenu();$('menu').classList.add('show');};
@@ -270,7 +270,7 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden&&started)sa
 window.addEventListener('resize',resize);
 
 let last=performance.now();
-function frame(now){const dt=Math.min(.05,(now-last)/1000);last=now;if(started)update(dt);render();requestAnimationFrame(frame);}
+function frame(now){const dt=Math.min(.05,(now-last)/1000);last=now;hlTick();if(started)update(dt);render();requestAnimationFrame(frame);}
 resize();buildStart();addSayButtons(document);requestAnimationFrame(frame);
 if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost'))navigator.serviceWorker.register('sw.js').catch(()=>{});
 window.__game={get state(){return state;},player,ents,Q,completeQuest,map};
