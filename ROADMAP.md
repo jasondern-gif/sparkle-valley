@@ -106,6 +106,11 @@ Design rules (apply to everything):
 - [x] Every new pony has a replayable game from the pony menu's play button
 - [x] Every new object is drawn by a named function in a per-land drawing table (`LandArt` in lands.js, forest.js, lagoon.js, meadow.js), ready to be swapped for sprite art
 
+## ✅ Candy Castle adventure (Chapter 7, first increment)
+- [x] Fly to Candy Castle, find its scattered decorations, and choose a roof and topper
+- [x] Befriend and name Toffee, make her a Pony Village cottage, and replay the decoration hunt
+- [x] Castle choices and quest progress survive saving; new lines use the device's speech fallback
+
 ## 💡 Ideas for later
-- More lands (a candy castle, a snowy mountain), and more Pony Village buildings for the new ponies' favorite things
+- More lands (such as a snowy mountain), and more Pony Village buildings for the new ponies' favorite things
 - Real hand-drawn sprite art for the new lands (see the `LandArt` tables)
