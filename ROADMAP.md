@@ -135,6 +135,12 @@ Design rules (apply to everything):
 - [x] The glowing orchard, pony, and progress persist; new lines use device speech fallback
 - [x] Browser journey checks cover old saves, interrupted progress, new games, and replay in `tests/orchard.test.js`; Linux CI runs `npm test`
 
+## ✅ Cloud Carnival adventure (Chapter 12)
+- [x] Balance a wobbly cloud carousel in three untimed rounds to rescue Pippin
+- [x] Befriend and name Pippin, build her a village cottage, and replay the balancing game for friendship
+- [x] The restored carousel, pony, and completed rounds persist; spoken directions use device speech fallback
+- [x] Browser journeys cover migration, interrupted progress, new games, and replay in `tests/carnival.test.js`; run `npm ci` and `npm test`, setting `CHROMIUM_PATH` if needed
+
 ## 💡 Ideas for later
 - More lands and more Pony Village buildings for the new ponies' favorite things
 - Real hand-drawn sprite art for the new lands (see the `LandArt` tables)

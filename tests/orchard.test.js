@@ -120,11 +120,11 @@ test('Starlight Orchard migration, guided rescue, persistence and replay',async(
     await page.locator('#c2body .pick').first().click();
     const spot=await page.evaluate(()=>[placing.spots[0].x+1.5,placing.spots[0].y+1]);
     await world(...spot);await page.locator('#c2body .pick[data-id="luma"]').click();
-    await page.waitForFunction(()=>dlgOpen||qid()==='freeEnd',null,{timeout:15000});await dialog();await quest('freeEnd');
+    await page.waitForFunction(()=>dlgOpen||qid()==='c12fly',null,{timeout:15000});await dialog();await quest('c12fly');
     assert.equal(await page.evaluate(()=>state.cottages[state.ponies.luma.home].pony),'luma');
     assert.equal(await page.evaluate(()=>state.ch11.done),true);
     await page.evaluate(()=>saveGame());await reload();
-    assert.equal(await page.evaluate(()=>qid()),'freeEnd');
+    assert.equal(await page.evaluate(()=>qid()),'c12fly');
     assert.equal(await page.evaluate(()=>state.ch11.steps),3);
     assert.equal(await page.evaluate(()=>state.coins),73);
     assert.deepEqual(await page.evaluate(()=>state.ch10.beacon),{color:'blue',topper:'star'});
