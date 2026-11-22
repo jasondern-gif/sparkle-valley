@@ -111,6 +111,12 @@ Design rules (apply to everything):
 - [x] Befriend and name Toffee, make her a Pony Village cottage, and replay the decoration hunt
 - [x] Castle choices and quest progress survive saving; new lines use the device's speech fallback
 
+## ✅ Snowy Mountain adventure (Chapter 8)
+- [x] Find five magic snowflakes, play the mountain bells, and customize the guiding lantern
+- [x] Befriend and name Frost, build her a village cottage, and replay the snowflake hunt
+- [x] The lantern, new friend, and progress persist; new lines use device speech fallback
+- [x] Browser journey checks: `npm ci`, then `node --test tests/candy.test.js` (uses installed Chromium/Edge or `CHROMIUM_PATH`)
+
 ## 💡 Ideas for later
-- More lands (such as a snowy mountain), and more Pony Village buildings for the new ponies' favorite things
+- More lands and more Pony Village buildings for the new ponies' favorite things
 - Real hand-drawn sprite art for the new lands (see the `LandArt` tables)

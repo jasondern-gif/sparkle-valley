@@ -57,7 +57,7 @@ function serve(){
   });
 }
 
-test('Candy Castle adventure',async()=>{
+test('Candy Castle and Snowy Mountain adventures',async()=>{
   const server=await serve();
   let browser;
   try{
@@ -141,12 +141,12 @@ test('Candy Castle adventure',async()=>{
     const spot=await page.evaluate(()=>[placing.spots[0].x+1.5,placing.spots[0].y+1]);
     await world(...spot);
     await page.locator('#c2body .pick[data-id="toffee"]').click();
-    await page.waitForFunction(()=>dlgOpen||qid()==='freeEnd',null,{timeout:15000});await dialog();
-    await quest('freeEnd');
+    await page.waitForFunction(()=>dlgOpen||qid()==='c8fly',null,{timeout:15000});await dialog();
+    await quest('c8fly');
     assert.equal(await page.evaluate(()=>state.cottages[state.ponies.toffee.home].pony),'toffee');
     assert.equal(await page.evaluate(()=>state.ch7.done),true);
     await page.evaluate(()=>saveGame());await page.reload();await page.locator('#continueBtn').click();await dialog();
-    assert.equal(await page.evaluate(()=>qid()),'freeEnd');
+    assert.equal(await page.evaluate(()=>qid()),'c8fly');
     assert.deepEqual(await page.evaluate(()=>state.ch7.castle),{roof:'blue',topper:'star'});
     assert.equal(await page.evaluate(()=>state.coins),37);
     const home=await page.evaluate(()=>{const e=ents.toffee;e.pause=state.time+20;return [e.x,e.y-.5,e.x,e.y+1];});
@@ -163,7 +163,108 @@ test('Candy Castle adventure',async()=>{
     }
     await page.waitForFunction(()=>!LG.active());
     assert.ok(await page.evaluate(()=>state.ponies.toffee.hearts)>hearts);
+    // Continue naturally from Candy Castle into the new chapter.
+    assert.equal(await page.evaluate(()=>LG.dests().includes('mountain')),true);
+    await world(17.5,9,18.8,10.7);
+    await page.locator('#lgPick .lgCard[data-a="mountain"]').click({force:true});
+    await page.evaluate(()=>{flight.t=flight.dur-.05;});
+    await quest('c8flakes');
+    assert.equal(await page.evaluate(()=>hereArea()),'mountain');
+    assert.equal(await page.evaluate(()=>[[13,190],[19,197],[24,192],[30,198],[34,190],[16,194],[22,185],[28,190]]
+      .every(([x,y])=>bfsTiles(10,185,x,y).length>0)),true);
+    await page.waitForFunction(()=>LG.active()&&LG.active().id==='mountainFlakes');
+    for(let i=0;i<2;i++){
+      const p=await page.evaluate(()=>{const it=LG.active().items.find(x=>x.st==='on');return [it.x,it.y-.5,it.x,it.y+1];});
+      await world(...p);
+    }
+    await page.waitForFunction(()=>$('objProg').textContent==='2/5');
+    await page.evaluate(()=>saveGame());await page.reload();await page.locator('#continueBtn').click();await dialog();
+    await page.waitForFunction(()=>LG.active()&&LG.active().id==='mountainFlakes');
+    assert.equal(await page.evaluate(()=>state.ch8.flakes.length),2);
+    for(let i=0;i<3;i++){
+      const p=await page.evaluate(()=>{const it=LG.active().items.find(x=>x.st==='on');return [it.x,it.y-.5,it.x,it.y+1];});
+      await world(...p);
+    }
+    await quest('c8bells');
+    await world(16.5,194,16.5,195.5);
+    await page.locator('#lgOpts [data-k="heart"]').click();
+    assert.equal(await page.evaluate(()=>LG.active().i),0);
+    for(const choice of ['star','heart','star'])await page.locator(`#lgOpts [data-k="${choice}"]`).click();
+    await quest('c8lantern');
+    await page.evaluate(()=>saveGame());await page.reload();await page.locator('#continueBtn').click();await dialog();
+    assert.equal(await page.evaluate(()=>qid()),'c8lantern');
+    assert.equal(await page.evaluate(()=>state.ch8.bells),true);
+    await world(22.5,184,22.5,186.5);
+    await page.locator('#lgGameClose').click();
+    assert.equal(await page.evaluate(()=>state.ch8.lantern),null);
+    await world(22.5,184,22.5,186.5);
+    await page.locator('#lgOpts [data-k="pink"]').click();await page.locator('#lgOpts .go').click({force:true});
+    await page.locator('#lgOpts [data-k="heart"]').click();await page.locator('#lgOpts .go').click({force:true});
+    await quest('c8friend');
+    assert.deepEqual(await page.evaluate(()=>state.ch8.lantern),{color:'pink',topper:'heart'});
+    const frost=await page.evaluate(()=>[ents.frost.x,ents.frost.y-.3,ents.frost.x,ents.frost.y+1]);
+    await world(...frost);await dialog();
+    await page.locator('#c2body .pick[data-name="Frost"]').click();await dialog();
+    await quest('c8home');
+    assert.equal(await page.evaluate(()=>rescued('frost')),true);
+    assert.ok(await page.evaluate(()=>state.inv.wood>=3));
+    await world(9.5,184,10.8,185.8);
+    await page.locator('#lgPick .lgCard[data-a="valley"]').click({force:true});
+    await page.evaluate(()=>{flight.t=flight.dur-.05;});
+    await quest('c8build');
+    await page.evaluate(()=>{player.x=20.5;player.y=34.5;refreshBar(true);});
+    await page.waitForTimeout(500);
+    await page.locator('#bar [data-build]').click({force:true});
+    await page.locator('#c2body .pick').first().click();
+    const frostSpot=await page.evaluate(()=>[placing.spots[0].x+1.5,placing.spots[0].y+1]);
+    await world(...frostSpot);
+    await page.locator('#c2body .pick[data-id="frost"]').click();
+    await page.waitForFunction(()=>dlgOpen||qid()==='freeEnd',null,{timeout:15000});await dialog();
+    await quest('freeEnd');
+    assert.equal(await page.evaluate(()=>state.cottages[state.ponies.frost.home].pony),'frost');
+    assert.equal(await page.evaluate(()=>state.ch8.done),true);
+    await page.evaluate(()=>saveGame());await page.reload();await page.locator('#continueBtn').click();await dialog();
+    assert.equal(await page.evaluate(()=>qid()),'freeEnd');
+    assert.deepEqual(await page.evaluate(()=>state.ch8.lantern),{color:'pink',topper:'heart'});
+    assert.deepEqual(await page.evaluate(()=>state.ch7.castle),{roof:'blue',topper:'star'});
+    assert.equal(await page.evaluate(()=>state.coins),37);
+    const frostHome=await page.evaluate(()=>{const e=ents.frost;e.pause=state.time+20;return [e.x,e.y-.5,e.x,e.y+1];});
+    await world(...frostHome);
+    await page.waitForTimeout(1000);
+    await page.locator('#ponyMenu [data-act="play"]').click();
+    await page.waitForFunction(()=>LG.active()&&LG.active().mode==='play');
+    const frostCount=await page.evaluate(()=>LG.active().items.length);
+    assert.ok(frostCount>0);
+    const frostHearts=await page.evaluate(()=>state.ponies.frost.hearts);
+    for(let i=0;i<frostCount;i++){
+      const p=await page.evaluate(()=>{const it=LG.active().items.find(x=>x.st==='on');return [it.x,it.y-.5,it.x,it.y+1];});
+      await world(...p);
+    }
+    await page.waitForFunction(()=>!LG.active());
+    assert.ok(await page.evaluate(()=>state.ponies.frost.hearts)>frostHearts);
+    await world(17.5,9,18.8,10.7);
+    await page.locator('#lgPick .lgCard[data-a="mountain"]').click({force:true});
+    await page.evaluate(()=>{flight.t=flight.dur-.05;});
+    await page.waitForFunction(()=>!flight&&hereArea()==='mountain');
+    assert.deepEqual(await page.evaluate(()=>state.ch8.lantern),{color:'pink',topper:'heart'});
+    assert.equal(await page.evaluate(()=>qid()),'freeEnd');
     assert.deepEqual(errors,[]);
+    // An existing completed Candy Castle save starts the new chapter, without losing its rewards.
+    await page.evaluate(()=>{
+      const s=defaultState();s.quest=qi('freeEnd')-7;s.questId='freeEnd';s.balloon=3;
+      s.ch4={done:true};s.ch5={done:true};s.ch6={done:true};
+      s.ch7={done:true,sweets:[0,1,2,3,4],castle:{roof:'blue',topper:'star'}};
+      s.coins=59;s.settings.voice=false;started=false;localStorage.setItem(SAVE_KEY,JSON.stringify(s));
+    });
+    await page.reload();await page.locator('#continueBtn').click();await dialog();
+    assert.equal(await page.evaluate(()=>qid()),'c8fly');
+    assert.equal(await page.evaluate(()=>state.coins),59);
+    assert.deepEqual(await page.evaluate(()=>state.ch7.castle),{roof:'blue',topper:'star'});
+    await page.evaluate(()=>{window.utterances=[];speechSynthesis.speak=u=>window.utterances.push(u.text);state.settings.voice=true;});
+    await page.locator('#objSay').click();
+    await page.waitForFunction(()=>window.utterances.length>0);
+    assert.match(await page.evaluate(()=>window.utterances[0]),/Snowy Mountain/);
+    await page.evaluate(()=>{state.settings.voice=false;stopSpeech();});
     await page.evaluate(()=>{
       const s=defaultState();s.quest=qi('n6bells');s.questId='n6bells';s.balloon=3;
       s.ch4={done:true};s.ch5={done:true};s.ch6={done:false,duskAwake:false};s.coins=21;
@@ -174,6 +275,21 @@ test('Candy Castle adventure',async()=>{
     assert.equal(await page.evaluate(()=>state.coins),21);
     await page.evaluate(()=>{state.quest=qi('n6build');completeQuest();});
     assert.equal(await page.evaluate(()=>qid()),'c7fly');
+    await page.evaluate(()=>{
+      const s=defaultState();s.quest=qi('c7sweets');s.questId='c7sweets';s.balloon=3;
+      s.ch7={sweets:[0,1],castle:null,done:false};s.settings.voice=false;
+      started=false;localStorage.setItem(SAVE_KEY,JSON.stringify(s));
+    });
+    await page.reload();await page.locator('#continueBtn').click();await dialog();
+    assert.equal(await page.evaluate(()=>qid()),'c7sweets');
+    assert.deepEqual(await page.evaluate(()=>state.ch7.sweets),[0,1]);
+    assert.equal(await page.evaluate(()=>LG.dests().includes('mountain')),false);
+    await page.evaluate(()=>{started=false;localStorage.removeItem(SAVE_KEY);});
+    await page.reload();await page.locator('#playBtn').click();await dialog();
+    assert.equal(await page.evaluate(()=>state.quest),0);
+    assert.equal(await page.evaluate(()=>LG.dests().includes('mountain')),false);
+    assert.equal(await page.evaluate(()=>Q[qi('c7build')+1].id),'c8fly');
+    assert.deepEqual(errors,[]);
   }finally{
     try{if(browser)await browser.close();}
     finally{await new Promise((resolve,reject)=>server.close(err=>err?reject(err):resolve()));}

@@ -82,7 +82,7 @@ function stageOf(p){return p.w?Math.min(3,1+Math.floor(p.g/GROW)):0;}
 // ---------- Ground: smooth color field + cached chunks ----------
 function tileAt(x,y){const r=map[y];return r?r[x]:undefined;}
 function groundClass(x,y){const c=tileAt(x,y);if(c===undefined)return 0;
-  if(y>=48&&x<45){if(y<80)return 3;if(y<112)return c==='u'||c==='w'?5:4;return y<144?6:7;}
+  if(y>=48&&x<45){if(y<80)return 3;if(y<112)return c==='u'||c==='w'?5:4;return y<144?6:y<176?7:8;}
   if(c==='g'||inGlade(x,y))return 2;if(c==='m')return 1;return 0;}
 function fieldPal(h,s,l,dh,dl,dl2){const b=hslRgb(h,s,l),a=hslRgb(h+dh/2,s,l+dl/2),z=hslRgb(h-dh/2,s,l-dl/2),p=hslRgb(h,s,l+dl2/2),q=hslRgb(h,s,l-dl2/2);
   return[b,[0,1,2].map(i=>a[i]-z[i]),[0,1,2].map(i=>p[i]-q[i])];}
@@ -90,7 +90,7 @@ function buildField(){
   const Hm=map.length,Wm=map[0].length,fw=Wm*FP,fh=Hm*FP,n=fw*fh,R=new Float32Array(n),G=new Float32Array(n),B=new Float32Array(n),rb=!!state.rainbow;
   const cls=new Uint8Array(Wm*Hm);for(let y=0;y<Hm;y++)for(let x=0;x<Wm;x++)cls[y*Wm+x]=groundClass(x,y);
   const pals=[fieldPal(99,54,57.5,16,7,3),fieldPal(78,64,65,14,6,2.5),rb?fieldPal(322,74,85,70,4,2):fieldPal(267,44,83,26,5,2),
-    fieldPal(118,40,38,22,8,3),fieldPal(44,74,81,10,6,2),fieldPal(186,52,60,16,7,2.5),fieldPal(232,34,38,20,7,3),fieldPal(338,61,83,15,7,3)];
+    fieldPal(118,40,38,22,8,3),fieldPal(44,74,81,10,6,2),fieldPal(186,52,60,16,7,2.5),fieldPal(232,34,38,20,7,3),fieldPal(338,61,83,15,7,3),fieldPal(200,45,91,10,4,2)];
   const a3=hslRgb(336,74,85),b3=hslRgb(308,74,85),D3=[0,1,2].map(i=>(a3[i]-b3[i])/2);
   for(let py=0;py<fh;py++){const wy=(py+.5)/FP,ty=Math.floor(wy);
     for(let px=0;px<fw;px++){const wx=(px+.5)/FP,cl=cls[ty*Wm+Math.floor(wx)],P=pals[cl];
@@ -129,7 +129,7 @@ const isGrassy=c=>c==='.'||c==='m'||c==='g'||c==='T'||c==='F'||c==='G'||c==='K'|
 
 function grassTexture(x,y,c,s){
   const r=mulberry32(x*92821+y*68917+13),X=x*s,Y=y*s,cl=groundClass(x,y);
-  const dark=cl===2?(state.rainbow?'rgba(220,110,180,.22)':'rgba(140,105,200,.22)'):cl===1?'rgba(105,150,35,.26)':cl===3?'rgba(20,70,25,.30)':cl===6?'rgba(15,20,60,.30)':cl===4||cl===5?'rgba(150,120,60,.18)':'rgba(45,120,40,.22)';
+  const dark=cl===8?'rgba(140,190,210,.16)':cl===2?(state.rainbow?'rgba(220,110,180,.22)':'rgba(140,105,200,.22)'):cl===1?'rgba(105,150,35,.26)':cl===3?'rgba(20,70,25,.30)':cl===6?'rgba(15,20,60,.30)':cl===4||cl===5?'rgba(150,120,60,.18)':'rgba(45,120,40,.22)';
   const lite=cl===2?'rgba(255,255,255,.38)':cl===3?'rgba(170,230,140,.26)':cl===6?'rgba(190,210,255,.30)':'rgba(240,255,200,.30)';
   if(r()<.3){ctx.fillStyle=r()<.5?'rgba(255,255,255,.05)':cl===2?'rgba(150,100,200,.04)':'rgba(40,110,30,.035)';ell(X+r()*s,Y+r()*s,s*(.25+r()*.25),s*(.15+r()*.15));ctx.fill();}
   ctx.lineCap='round';ctx.lineWidth=Math.max(1,s*.022);
