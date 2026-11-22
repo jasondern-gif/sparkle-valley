@@ -1,9 +1,67 @@
-// Run with a local server on port 8765: node tests/candy.test.js
+// Run with: node --test tests/candy.test.js
 const {chromium}=require('playwright-core');
 const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const http=require('node:http');
+const path=require('node:path');
+const test=require('node:test');
 
-(async()=>{
-  const browser=await chromium.launch({executablePath:'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe',headless:true});
+function browserPath(){
+  const isFile=p=>{try{return fs.statSync(p).isFile();}catch(e){if(e.code==='ENOENT'||e.code==='ENOTDIR')return false;throw e;}};
+  if(process.env.CHROMIUM_PATH){
+    if(!isFile(process.env.CHROMIUM_PATH))throw new Error('CHROMIUM_PATH does not point to a browser executable');
+    return process.env.CHROMIUM_PATH;
+  }
+  const names=process.platform==='win32'?['msedge.exe','chrome.exe','chromium.exe']:
+    ['chromium','chromium-browser','google-chrome','google-chrome-stable','microsoft-edge','microsoft-edge-stable'];
+  const candidates=[];
+  if(process.platform==='win32'){
+    for(const dir of [process.env['PROGRAMFILES(X86)'],process.env.PROGRAMFILES,process.env.LOCALAPPDATA].filter(Boolean)){
+      candidates.push(path.join(dir,'Microsoft','Edge','Application','msedge.exe'),path.join(dir,'Google','Chrome','Application','chrome.exe'));
+    }
+  }else if(process.platform==='darwin'){
+    candidates.push('/Applications/Google Chrome.app/Contents/MacOS/Google Chrome','/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge');
+  }
+  for(const dir of (process.env.PATH||'').split(path.delimiter).filter(Boolean))for(const name of names)candidates.push(path.join(dir,name));
+  const found=candidates.find(isFile);
+  if(!found)throw new Error('No Chromium or Edge browser found. Install Playwright Chromium or set CHROMIUM_PATH.');
+  return found;
+}
+
+async function launchBrowser(){
+  if(process.env.CHROMIUM_PATH)return chromium.launch({executablePath:browserPath(),headless:true});
+  try{return await chromium.launch({headless:true});}
+  catch(e){
+    if(!e.message.includes("Executable doesn't exist"))throw e;
+    return chromium.launch({executablePath:browserPath(),headless:true});
+  }
+}
+
+function serve(){
+  const root=path.resolve(__dirname,'..');
+  const types={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8',
+    '.json':'application/json','.webmanifest':'application/manifest+json','.png':'image/png','.mp3':'audio/mpeg'};
+  const server=http.createServer((req,res)=>{
+    let pathname;
+    try{pathname=decodeURIComponent(new URL(req.url,'http://127.0.0.1').pathname);}catch(e){res.writeHead(400);res.end('Bad URL');return;}
+    const file=path.resolve(root,'.'+(pathname==='/'?'/index.html':pathname));
+    if(file!==root&&!file.startsWith(root+path.sep)){res.writeHead(403);res.end('Forbidden');return;}
+    fs.readFile(file,(err,data)=>{
+      if(err){res.writeHead(err.code==='ENOENT'?404:500);res.end(err.code==='ENOENT'?'Not found':'Server error');return;}
+      res.writeHead(200,{'Content-Type':types[path.extname(file)]||'application/octet-stream'});res.end(data);
+    });
+  });
+  return new Promise((resolve,reject)=>{
+    server.once('error',reject);
+    server.listen(0,'127.0.0.1',()=>{server.removeListener('error',reject);resolve(server);});
+  });
+}
+
+test('Candy Castle adventure',async()=>{
+  const server=await serve();
+  let browser;
+  try{
+  browser=await launchBrowser();
   const page=await browser.newPage({viewport:{width:1200,height:800}});
   const errors=[];
   page.on('pageerror',e=>errors.push(e.message));
@@ -24,8 +82,7 @@ const assert=require('node:assert/strict');
     const p=await page.evaluate(([x,y])=>({x:x*ts-cam.x,y:y*ts-cam.y}),[x,y]);
     await page.mouse.click(p.x,p.y);
   }
-  try{
-    await page.goto('http://127.0.0.1:8765/');
+    await page.goto(`http://127.0.0.1:${server.address().port}/`);
     await page.evaluate(()=>{
       const s=defaultState();s.quest=qi('freeEnd');s.questId='freeEnd';s.balloon=3;s.balloonAt='valley';
       s.ch4={done:true};s.ch5={done:true};s.ch6={done:true};s.coins=37;s.settings.voice=false;
@@ -117,6 +174,8 @@ const assert=require('node:assert/strict');
     assert.equal(await page.evaluate(()=>state.coins),21);
     await page.evaluate(()=>{state.quest=qi('n6build');completeQuest();});
     assert.equal(await page.evaluate(()=>qid()),'c7fly');
-    console.log('Candy Castle: old save, spoken objective, flight, collection/resume, builder, pony, cottage, replay and completed save passed.');
-  }finally{await browser.close();}
-})().catch(e=>{console.error(e);process.exitCode=1;});
+  }finally{
+    try{if(browser)await browser.close();}
+    finally{await new Promise((resolve,reject)=>server.close(err=>err?reject(err):resolve()));}
+  }
+});
