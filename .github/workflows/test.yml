@@ -1,7 +1,11 @@
 name: Tests
+
 on:
   push:
   pull_request:
+
+permissions:
+  contents: read
 
 jobs:
   test:
@@ -14,4 +18,5 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx --no-install playwright-core install --with-deps chromium
+      - run: echo "CHROMIUM_PATH=$(node -p "require('playwright-core').chromium.executablePath()")" >> "$GITHUB_ENV"
       - run: npm test
