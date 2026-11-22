@@ -264,6 +264,7 @@ function begin(isNew){
   if(state.ponyFriend&&!state.riding){ents.pony.x=player.x-1;ents.pony.y=player.y;}
   if(state.uniFollow){ents.unicorn.x=player.x-1.6;ents.unicorn.y=player.y+.2;}
   if(state.questId&&qi(state.questId)>=0)state.quest=qi(state.questId);
+  HOOK.restore.forEach(f=>f());
   if(isNew){ch2Begin(true);HOOK.begin.forEach(f=>f(true));}
   updateObjective();refreshBar(true);updateMenu();
   if(isNew)talk([['narrator',"Once upon a time, {name} came to visit Grandma's farm in Sparkle Valley."],

@@ -3,6 +3,7 @@
 // Every module lives in its own file wrapped in an IIFE, and only exposes names with its own prefix.
 const HOOK={
   init:[],        // f()                      once at startup, after chapter 2 setup
+  restore:[],     // f()                      restore map changes before validating the saved position
   begin:[],       // f(isNew)                 when a game starts or a save is continued
   update:[],      // f(dt)                    every frame while playing (not during the balloon flight)
   tap:[],         // f(wx,wy) -> true if used world tap (runs before chapter 2 taps)

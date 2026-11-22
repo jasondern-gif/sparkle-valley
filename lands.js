@@ -6,7 +6,7 @@
 //     const prev=LandArt.forest.fairyHouse; LandArt.forest.fairyHouse=function(...a){ if(Assets.has('fairy_house')) ...; else prev(...a); };
 // - LG: mini-game engines shared by the land chapters (world tap fields, picture picks, staged builders, screen games)
 //   and chapter helpers (guiding arrow to the right place, cottages for new ponies, moving old saves into new chapters).
-const LandArt={shared:{},forest:{},lagoon:{},meadow:{},candy:{},mountain:{}};
+const LandArt={shared:{},forest:{},lagoon:{},meadow:{},candy:{},mountain:{},garden:{}};
 const LG=(()=>{
 const R=reg,A=LandArt.shared;
 const art=key=>{const[a,b]=key.split('.');return LandArt[a][b];};
@@ -15,7 +15,7 @@ const art=key=>{const[a,b]=key.split('.');return LandArt[a][b];};
 Object.assign(AREAS.valley,{name:R('narrator','Sparkle Valley'),icon:'🏡',unlocked:()=>true,sky:['#7cc8ff','#d6f0ff'],
   go:R('narrator','Home we go! Back to Sparkle Valley!')});
 Object.assign(AREAS.clouds,{name:R('narrator','Cloud Kingdom'),icon:'🏰',unlocked:()=>state.balloon>=3,sky:['#b8a6ff','#ffe1f2'],go:N2.up});
-const LANDS=['forest','lagoon','meadow','candy','mountain'];
+const LANDS=['forest','lagoon','meadow','candy','mountain','garden'];
 const SAY={
   where:R('narrator','Where should we fly? Tap a picture!'),
   stop:R('narrator','Okay! We can play again later.'),
@@ -108,7 +108,7 @@ A.scene_clouds=function(iy,s,t){ctx.fillStyle='#fdfbff';ell(vw/2,iy+vh*.12,vw*.6
 {const prev=drawTree;drawTree=function(x,y){if(y>=48&&x<45){const f=LandArt[areaAt(x,y)].tree;if(f)return f(x,y);}return prev(x,y);};}
 // Sparkle Valley's big rainbow belongs to the valley sky; the far lands have their own skies
 {const prev=drawRainbow;drawRainbow=function(){const a=hereArea();if(LANDS.includes(a)){drawAmbient();return;}return prev();};}
-const grassDeco=(x,y,c,s,cl,r)=>{const f=LandArt[cl===3?'forest':cl===6?'meadow':cl===7?'candy':cl===8?'mountain':'lagoon'].grassDeco;if(f)f(x,y,c,s,r);};
+const grassDeco=(x,y,c,s,cl,r)=>{const f=LandArt[cl===3?'forest':cl===6?'meadow':cl===7?'candy':cl===8?'mountain':cl===9?'garden':'lagoon'].grassDeco;if(f)f(x,y,c,s,r);};
 
 // ===== Mini-game engines =====
 // Only one LG mini-game runs at a time. mode 'story' belongs to a quest; mode 'play' is a replay game from the pony menu.

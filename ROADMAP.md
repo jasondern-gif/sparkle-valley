@@ -117,6 +117,12 @@ Design rules (apply to everything):
 - [x] The lantern, new friend, and progress persist; new lines use device speech fallback
 - [x] Browser journey checks: `npm ci`, then `node --test tests/candy.test.js` (uses installed Chromium/Edge or `CHROMIUM_PATH`)
 
+## ✅ Secret Garden adventure (Chapter 9)
+- [x] Open a hidden path, find five seeds, and choose flowers and a decoration for the garden
+- [x] Befriend and name Bloom, build her a village cottage, and replay the seed hunt
+- [x] The open path, planted garden, and progress persist; new lines use device speech fallback
+- [x] Browser journey checks cover earlier saves, new games, reloads, and replay in `tests/candy.test.js`
+
 ## 💡 Ideas for later
 - More lands and more Pony Village buildings for the new ponies' favorite things
 - Real hand-drawn sprite art for the new lands (see the `LandArt` tables)

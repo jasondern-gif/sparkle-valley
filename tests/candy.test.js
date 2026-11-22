@@ -219,12 +219,12 @@ test('Candy Castle and Snowy Mountain adventures',async()=>{
     const frostSpot=await page.evaluate(()=>[placing.spots[0].x+1.5,placing.spots[0].y+1]);
     await world(...frostSpot);
     await page.locator('#c2body .pick[data-id="frost"]').click();
-    await page.waitForFunction(()=>dlgOpen||qid()==='freeEnd',null,{timeout:15000});await dialog();
-    await quest('freeEnd');
+    await page.waitForFunction(()=>dlgOpen||qid()==='c9fly',null,{timeout:15000});await dialog();
+    await quest('c9fly');
     assert.equal(await page.evaluate(()=>state.cottages[state.ponies.frost.home].pony),'frost');
     assert.equal(await page.evaluate(()=>state.ch8.done),true);
     await page.evaluate(()=>saveGame());await page.reload();await page.locator('#continueBtn').click();await dialog();
-    assert.equal(await page.evaluate(()=>qid()),'freeEnd');
+    assert.equal(await page.evaluate(()=>qid()),'c9fly');
     assert.deepEqual(await page.evaluate(()=>state.ch8.lantern),{color:'pink',topper:'heart'});
     assert.deepEqual(await page.evaluate(()=>state.ch7.castle),{roof:'blue',topper:'star'});
     assert.equal(await page.evaluate(()=>state.coins),37);
@@ -247,7 +247,7 @@ test('Candy Castle and Snowy Mountain adventures',async()=>{
     await page.evaluate(()=>{flight.t=flight.dur-.05;});
     await page.waitForFunction(()=>!flight&&hereArea()==='mountain');
     assert.deepEqual(await page.evaluate(()=>state.ch8.lantern),{color:'pink',topper:'heart'});
-    assert.equal(await page.evaluate(()=>qid()),'freeEnd');
+    assert.equal(await page.evaluate(()=>qid()),'c9fly');
     assert.deepEqual(errors,[]);
     // An existing completed Candy Castle save starts the new chapter, without losing its rewards.
     await page.evaluate(()=>{
@@ -289,6 +289,148 @@ test('Candy Castle and Snowy Mountain adventures',async()=>{
     assert.equal(await page.evaluate(()=>state.quest),0);
     assert.equal(await page.evaluate(()=>LG.dests().includes('mountain')),false);
     assert.equal(await page.evaluate(()=>Q[qi('c7build')+1].id),'c8fly');
+    assert.deepEqual(errors,[]);
+  }finally{
+    try{if(browser)await browser.close();}
+    finally{await new Promise((resolve,reject)=>server.close(err=>err?reject(err):resolve()));}
+  }
+});
+
+test('Secret Garden migration, adventure, persistence and replay',async()=>{
+  const server=await serve();
+  let browser;
+  try{
+    browser=await launchBrowser();
+    const page=await browser.newPage({viewport:{width:1200,height:800}});
+    const errors=[];
+    page.on('pageerror',e=>errors.push(e.message));
+    async function dialog(){
+      for(let i=0;i<30;i++){
+        if(await page.locator('#dialog').isVisible()){await page.waitForTimeout(450);await page.locator('#dialog').click();}
+        else {await page.waitForTimeout(200);if(!await page.locator('#dialog').isVisible())return;}
+      }
+      throw new Error('dialog did not finish');
+    }
+    async function quest(id){
+      await page.waitForFunction(id=>qid()===id,id,{timeout:15000});
+      await page.waitForTimeout(1700);await dialog();
+    }
+    async function world(x,y,px=x,py=y+1){
+      await page.evaluate(([px,py])=>{player.x=px;player.y=py;player.path=[];player.action=null;},[px,py]);
+      await page.waitForTimeout(350);
+      const p=await page.evaluate(([x,y])=>({x:x*ts-cam.x,y:y*ts-cam.y}),[x,y]);
+      await page.mouse.click(p.x,p.y);
+    }
+    await page.goto(`http://127.0.0.1:${server.address().port}/`);
+    await page.evaluate(()=>{
+      const s=defaultState();s.quest=qi('c9fly');s.questId='freeEnd';s.balloon=3;s.balloonAt='valley';
+      s.ch4={done:true};s.ch5={done:true};s.ch6={done:true};
+      s.ch7={done:true,sweets:[0,1,2,3,4],castle:{roof:'blue',topper:'star'}};
+      s.ch8={done:true,flakes:[0,1,2,3,4],bells:true,lantern:{color:'pink',topper:'heart'}};
+      s.coins=59;s.settings.voice=false;localStorage.setItem(SAVE_KEY,JSON.stringify(s));
+    });
+    await page.reload();await page.locator('#continueBtn').click();await dialog();
+    assert.equal(await page.evaluate(()=>qid()),'c9fly');
+    assert.equal(await page.evaluate(()=>state.coins),59);
+    assert.deepEqual(await page.evaluate(()=>state.ch8.lantern),{color:'pink',topper:'heart'});
+    assert.equal(await page.evaluate(()=>LG.dests().includes('garden')),true);
+    await page.evaluate(()=>{window.utterances=[];speechSynthesis.speak=u=>window.utterances.push(u.text);state.settings.voice=true;});
+    await page.locator('#objSay').click();
+    await page.waitForFunction(()=>window.utterances.length>0);
+    assert.match(await page.evaluate(()=>window.utterances[0]),/Secret Garden/);
+    await page.evaluate(()=>{state.settings.voice=false;stopSpeech();});
+    await world(17.5,9,18.8,10.7);
+    await page.locator('#lgPick .lgCard[data-a="garden"]').click({force:true});
+    await page.evaluate(()=>{flight.t=flight.dur-.05;});
+    await quest('c9path');
+    assert.equal(await page.evaluate(()=>hereArea()),'garden');
+    assert.equal(await page.evaluate(()=>bfsTiles(10,217,23,226).length),0);
+    await world(22.5,220,22.5,220.5);
+    await page.locator('#lgOpts [data-k="flower"]').click();
+    assert.equal(await page.evaluate(()=>LG.active().i),0);
+    for(const choice of ['leaf','flower','leaf'])await page.locator(`#lgOpts [data-k="${choice}"]`).click();
+    await quest('c9seeds');
+    assert.equal(await page.evaluate(()=>[[12,226],[17,232],[23,234],[30,234],[34,227],[22,229],[28,231]]
+      .every(([x,y])=>bfsTiles(10,217,x,y).length>0)),true);
+    await page.waitForFunction(()=>LG.active()&&LG.active().id==='gardenSeeds');
+    await world(22.5,223.5,22.5,220.5);
+    await page.waitForFunction(()=>player.y>223,null,{timeout:10000});
+    for(let i=0;i<2;i++){
+      const p=await page.evaluate(()=>{const it=LG.active().items.find(x=>x.st==='on');return [it.x,it.y-.5,it.x,it.y+1];});
+      await world(...p);
+    }
+    await page.waitForFunction(()=>$('objProg').textContent==='2/5');
+    // Saving on the opened path must not send the player back to the valley.
+    await page.evaluate(()=>{player.x=22.5;player.y=222.5;saveGame();});
+    await page.reload();await page.locator('#continueBtn').click();await dialog();
+    assert.equal(await page.evaluate(()=>hereArea()),'garden');
+    assert.equal(await page.evaluate(()=>map[222][22]),'.');
+    assert.deepEqual(await page.evaluate(()=>state.ch9.seeds),[0,1]);
+    await page.waitForFunction(()=>LG.active()&&LG.active().id==='gardenSeeds');
+    for(let i=0;i<3;i++){
+      const p=await page.evaluate(()=>{const it=LG.active().items.find(x=>x.st==='on');return [it.x,it.y-.5,it.x,it.y+1];});
+      await world(...p);
+    }
+    await quest('c9garden');
+    await world(22.5,229,22.5,230.5);
+    await page.locator('#lgGameClose').click();
+    assert.equal(await page.evaluate(()=>state.ch9.garden),null);
+    await world(22.5,229,22.5,230.5);
+    await page.locator('#lgOpts [data-k="yellow"]').click();await page.locator('#lgOpts .go').click({force:true});
+    await page.locator('#lgOpts [data-k="butterfly"]').click();await page.locator('#lgOpts .go').click({force:true});
+    await quest('c9friend');
+    assert.deepEqual(await page.evaluate(()=>state.ch9.garden),{color:'yellow',center:'butterfly'});
+    const bloom=await page.evaluate(()=>[ents.bloom.x,ents.bloom.y-.3,ents.bloom.x,ents.bloom.y+1]);
+    await world(...bloom);await dialog();
+    await page.locator('#c2body .pick[data-name="Bloom"]').click();await dialog();
+    await quest('c9home');
+    assert.equal(await page.evaluate(()=>rescued('bloom')),true);
+    assert.ok(await page.evaluate(()=>state.inv.wood>=3));
+    await world(9.5,216,10.8,217.8);
+    await page.locator('#lgPick .lgCard[data-a="valley"]').click({force:true});
+    await page.evaluate(()=>{flight.t=flight.dur-.05;});
+    await quest('c9build');
+    await page.evaluate(()=>{player.x=20.5;player.y=34.5;refreshBar(true);});
+    await page.waitForTimeout(500);
+    await page.locator('#bar [data-build]').click({force:true});
+    await page.locator('#c2body .pick').first().click();
+    const spot=await page.evaluate(()=>[placing.spots[0].x+1.5,placing.spots[0].y+1]);
+    await world(...spot);
+    await page.locator('#c2body .pick[data-id="bloom"]').click();
+    await page.waitForFunction(()=>dlgOpen||qid()==='freeEnd',null,{timeout:15000});await dialog();
+    await quest('freeEnd');
+    assert.equal(await page.evaluate(()=>state.cottages[state.ponies.bloom.home].pony),'bloom');
+    assert.equal(await page.evaluate(()=>state.ch9.done),true);
+    await page.evaluate(()=>saveGame());await page.reload();await page.locator('#continueBtn').click();await dialog();
+    assert.equal(await page.evaluate(()=>qid()),'freeEnd');
+    assert.equal(await page.evaluate(()=>state.coins),59);
+    assert.deepEqual(await page.evaluate(()=>state.ch7.castle),{roof:'blue',topper:'star'});
+    assert.deepEqual(await page.evaluate(()=>state.ch9.garden),{color:'yellow',center:'butterfly'});
+    const home=await page.evaluate(()=>{const e=ents.bloom;e.pause=state.time+20;return [e.x,e.y-.5,e.x,e.y+1];});
+    await world(...home);await page.waitForTimeout(1000);
+    await page.locator('#ponyMenu [data-act="play"]').click();
+    await page.waitForFunction(()=>LG.active()&&LG.active().mode==='play');
+    const count=await page.evaluate(()=>LG.active().items.length);
+    assert.ok(count>0);
+    const hearts=await page.evaluate(()=>state.ponies.bloom.hearts);
+    for(let i=0;i<count;i++){
+      const p=await page.evaluate(()=>{const it=LG.active().items.find(x=>x.st==='on');return [it.x,it.y-.5,it.x,it.y+1];});
+      await world(...p);
+    }
+    await page.waitForFunction(()=>!LG.active());
+    assert.ok(await page.evaluate(()=>state.ponies.bloom.hearts)>hearts);
+    await world(17.5,9,18.8,10.7);
+    await page.locator('#lgPick .lgCard[data-a="garden"]').click({force:true});
+    await page.evaluate(()=>{flight.t=flight.dur-.05;});
+    await page.waitForFunction(()=>!flight&&hereArea()==='garden');
+    assert.equal(await page.evaluate(()=>map[222][22]),'.');
+    assert.deepEqual(await page.evaluate(()=>state.ch9.garden),{color:'yellow',center:'butterfly'});
+    // A new game must not unlock the garden or skip earlier chapters.
+    await page.evaluate(()=>{started=false;localStorage.removeItem(SAVE_KEY);});
+    await page.reload();await page.locator('#playBtn').click();await dialog();
+    assert.equal(await page.evaluate(()=>qid()),'meet');
+    assert.equal(await page.evaluate(()=>LG.dests().includes('garden')),false);
+    assert.equal(await page.evaluate(()=>Q[qi('c8build')+1].id),'c9fly');
     assert.deepEqual(errors,[]);
   }finally{
     try{if(browser)await browser.close();}
