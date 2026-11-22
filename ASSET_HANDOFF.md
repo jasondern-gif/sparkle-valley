@@ -98,3 +98,5 @@ Coordinates below are in tiles relative to the anchor point; +x = right, +y = do
 3. Open the game normally and with `?assets=off` to compare; the console shows one `[assets]` warning
    per problem (bad size, missing file, missing animation) and that object keeps its drawn art.
 4. `node assets/make_placeholders.js` regenerates the placeholder images (overwrites the art files).
+5. Run `npm test` for browser and service-worker regression checks. Set `CHROMIUM_PATH` if the browser
+   is not installed at a standard location; CI installs Chromium automatically.

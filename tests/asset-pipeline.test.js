@@ -1,0 +1,102 @@
+const {test,before,after}=require('node:test');
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const http=require('node:http');
+const path=require('node:path');
+const {chromium}=require('playwright-core');
+
+const root=path.resolve(__dirname,'..');
+const types={'.html':'text/html','.js':'text/javascript','.json':'application/json','.png':'image/png','.mp3':'audio/mpeg'};
+const missing=new Set();
+let server,browser,base;
+
+before(async()=>{
+  server=http.createServer((req,res)=>{
+    const name=decodeURIComponent(new URL(req.url,'http://localhost').pathname);
+    if(missing.has(name)){res.writeHead(404);res.end();return;}
+    const file=path.resolve(root,'.'+(name==='/'?'/index.html':name));
+    if(!file.startsWith(root+path.sep)||!fs.existsSync(file)||!fs.statSync(file).isFile()){
+      res.writeHead(404);res.end();return;
+    }
+    res.setHeader('content-type',types[path.extname(file)]||'application/octet-stream');
+    fs.createReadStream(file).pipe(res);
+  });
+  await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
+  base=`http://localhost:${server.address().port}/index.html`;
+  const candidates=[
+    process.env.CHROMIUM_PATH,
+    process.platform==='win32'&&path.join(process.env['ProgramFiles(x86)']||'C:\\Program Files (x86)','Microsoft','Edge','Application','msedge.exe'),
+    '/usr/bin/google-chrome','/usr/bin/chromium','/usr/bin/chromium-browser'
+  ];
+  const executablePath=candidates.find(p=>p&&fs.existsSync(p));
+  browser=await chromium.launch(executablePath?{executablePath}:{});
+});
+
+after(async()=>{
+  if(browser)await browser.close();
+  if(server)await new Promise((resolve,reject)=>server.close(err=>err?reject(err):resolve()));
+});
+
+async function open(suffix=''){
+  const context=await browser.newContext({viewport:{width:1180,height:820}});
+  const page=await context.newPage(),errors=[],warnings=[];
+  page.on('pageerror',err=>errors.push(err.message));
+  page.on('console',msg=>{if(msg.type()==='warning')warnings.push(msg.text());});
+  await page.clock.install();
+  await page.goto(base+suffix);
+  const status=await page.evaluate(()=>Assets.ready);
+  return{context,page,status,errors,warnings};
+}
+
+test('prototype assets load and preserve travel and saves in both art modes',async()=>{
+  for(const mode of ['on','off']){
+    const {context,page,status,errors}=await open(mode==='off'?'?assets=off':'');
+    try{
+      if(mode==='on')assert.deepEqual(status.ready.sort(),['buttercup','crop_carrot','farmhouse','tree']);
+      else assert.equal(status.manifest,'off');
+      await page.locator('#playBtn').click();
+      await page.evaluate(()=>{dq.length=0;closeDlg();state.settings.voice=false;state.settings.music=false;state.balloon=3;});
+      for(const area of ['forest','lagoon','meadow','valley']){
+        await page.evaluate(area=>{dq.length=0;closeDlg();startFlight(area);},area);
+        await page.clock.runFor(7600);
+        assert.deepEqual(await page.evaluate(()=>({area:hereArea(),flight:!!flight,balloon:state.balloonAt})),
+          {area,flight:false,balloon:area});
+      }
+      await page.evaluate(()=>saveGame());
+      const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('sparkleValley_v1')));
+      assert.equal(saved.balloonAt,'valley');
+      await page.reload();
+      await page.locator('#continueBtn').click();
+      assert.deepEqual(await page.evaluate(()=>({x:player.x,y:player.y,balloon:state.balloonAt})),
+        {x:saved.px,y:saved.py,balloon:'valley'});
+      assert.deepEqual(errors,[]);
+    }finally{await context.close();}
+  }
+});
+
+test('missing manifest installs the worker and still works offline',async()=>{
+  missing.add('/assets/manifest.json');
+  const {context,page,status,errors,warnings}=await open();
+  try{
+    assert.equal(status.manifest,'failed');
+    assert.equal(warnings.filter(w=>w.includes('could not load manifest')).length,1);
+    await page.waitForFunction(()=>navigator.serviceWorker.controller,{timeout:15000});
+    await context.setOffline(true);
+    await page.reload();
+    assert.equal(await page.evaluate(()=>Assets.ready.then(s=>s.manifest)),'failed');
+    assert.equal(await page.title(),'Sparkle Valley');
+    assert.deepEqual(errors,[]);
+  }finally{missing.clear();await context.close();}
+});
+
+test('a missing image falls back without affecting other assets',async()=>{
+  missing.add('/assets/characters/buttercup.png');
+  const {context,page,status,errors,warnings}=await open();
+  try{
+    assert.deepEqual(status.failed,['buttercup']);
+    assert.deepEqual(status.ready.sort(),['crop_carrot','farmhouse','tree']);
+    assert.equal(await page.evaluate(()=>Array.from({length:10},()=>Assets.has('buttercup')).some(Boolean)),false);
+    assert.equal(warnings.filter(w=>w.includes('"buttercup"')).length,1);
+    assert.deepEqual(errors,[]);
+  }finally{missing.clear();await context.close();}
+});
