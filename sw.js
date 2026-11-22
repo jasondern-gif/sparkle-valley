@@ -1,5 +1,5 @@
-const CACHE='sparkle-valley-v16';
-const FILES=['./','index.html','core.js','draw.js','assets/assetManager.js','quests.js','ch2data.js','ch2logic.js','ch2world.js','ch2ui.js','ch2draw.js','ch2draw2.js','assets/wrappers.js','hooks.js','lands.js','ch3.js','village.js','forest.js','lagoon.js','meadow.js','candy.js','mountain.js','garden.js','island.js','orchard.js','carnival.js','questbook.js','glue.js','game.js','holdmove.js','manifest.json','icon-180.png','icon-512.png','audio/manifest.json'];
+const CACHE='sparkle-valley-v17';
+const FILES=['./','index.html','core.js','draw.js','assets/assetManager.js','quests.js','ch2data.js','ch2logic.js','ch2world.js','ch2ui.js','ch2draw.js','ch2draw2.js','assets/wrappers.js','hooks.js','lands.js','ch3.js','village.js','forest.js','lagoon.js','meadow.js','candy.js','mountain.js','garden.js','island.js','orchard.js','carnival.js','villageplay.js','questbook.js','glue.js','game.js','holdmove.js','manifest.json','icon-180.png','icon-512.png','audio/manifest.json'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(async c=>{
   await c.addAll(FILES);
   // every image listed in the art manifest (a missing image only means that object keeps its drawn art)

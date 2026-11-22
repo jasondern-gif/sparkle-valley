@@ -145,3 +145,14 @@ Design rules (apply to everything):
 ## 💡 Ideas for later
 - More lands and more Pony Village buildings for the new ponies' favorite things
 - Real hand-drawn sprite art for the new lands (see the `LandArt` tables)
+
+## ✅ Friendship Pavilion (bounded village expansion)
+- [x] The first rescued friend from chapters 7–12 brings a free pavilion in the decoration treasure box; place, move or store it with the existing village tools
+- [x] Open activities from the pavilion, the village heart button, or the new heart button on those ponies; each friend's activity unlocks on rescue
+- [x] Toffee shares chosen picnic treats; Frost echoes three snow bells; Bloom plants and waters a flower basket
+- [x] Skye steers a kite to three stars; Luma lights a landmark walking route; Pippin composes and listens to a four-sound parade
+- [x] Untimed, cost-free play with spoken prompts, keyboard controls, large buttons, saved drafts and finished keepsakes; pavilion badges grow with completed activities
+- [x] Existing chapter replay games remain on the original Play button; old saves, cottages, artwork and story progression are preserved
+- [x] Automated journeys in `tests/villageplay.test.js` cover migration, free placement and access, interrupted play, six completed keepsakes, replay, speech fallback and small-screen controls; `npm test` also runs in Linux CI
+
+This adds one building and six activities, not more story quests. It is **not a verified doubling of the game's content**. New speech uses device fallback rather than new recorded voices, and the pavilion uses procedural artwork.
