@@ -30,6 +30,8 @@ test('caches the manifest and prototype images',async()=>{
   assert.ok(cached.includes('assets/manifest.json'));
   assert.ok(cached.includes('assets/tiles/tree.png'));
   assert.ok(cached.includes('assets/buildings/farmhouse.png'));
+  for(const script of ['assets/assetManager.js','assets/wrappers.js','lands.js','forest.js','lagoon.js','meadow.js'])
+    assert.ok(cached.includes(script),`${script} must be available offline`);
   assert.deepEqual(warnings,[]);
 });
 

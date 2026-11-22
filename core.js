@@ -1,8 +1,9 @@
 'use strict';
 // ---------- Core: map, data, state, audio, speech ----------
-// The world grid holds three places: Sparkle Valley (x0-43,y0-29), Pony Village (south, y30-47)
-// and the Cloud Kingdom (east, x45-79, y0-29) which is only reached by the Rainbow Balloon.
-const W = 80, H = 48, VW = 44, VH = 30;
+// The world grid holds: Sparkle Valley (x0-43,y0-29), Pony Village (south, y30-47), the Cloud Kingdom (east, x45-79, y0-47),
+// and the far lands below the village (x0-43): Fairy Forest (y48-79), Mermaid Lagoon (y80-111), Moonlight Meadow (y112-143).
+// The Cloud Kingdom and the far lands are only reached by the Rainbow Balloon.
+const W = 80, H = 144, VW = 44, VH = 30;
 const SAVE_KEY = 'sparkleValley_v1';
 const GROW = 5; // seconds per growth stage
 const $ = id => document.getElementById(id);
@@ -17,6 +18,7 @@ const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 // . grass  = path  S soil  W water  T tree  F fence  G magic gate  H house  B barn  C coop hut
 // M market  m meadow  g glade  K wishing stone  X sky (nothing)  c cloud ground  h flower hedge
 // p fluffy cloud puff  Q cloud castle  b broken bridge  r rainbow bridge  Y cottage
+// far lands: d sand  u reef floor (walkable, under the sea)  w deep sea  j fairy stepping stones
 const map=[];
 for(let y=0;y<H;y++) map.push(new Array(W).fill('X'));
 function rect(x0,y0,x1,y1,c){for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++)map[y][x]=c;}
@@ -35,7 +37,7 @@ rect(33,11,41,27,'g');for(let y=10;y<=27;y++)map[y][32]='F';for(let x=32;x<=41;x
 map[14][37]='K';
 const STONE={x:37.5,y:14.9};
 // Pony Village: a meadow south of the farm, reached by the road past the market
-rect(0,30,VW-1,H-1,'T');rect(4,31,39,44,'.');rect(20,25,20,32,'=');
+rect(0,30,VW-1,47,'T');rect(4,31,39,44,'.');rect(20,25,20,32,'=');
 const VILLAGE={x0:4,y0:31,x1:39,y1:44};
 // Cloud Kingdom
 rect(48,8,66,20,'c');rect(55,8,59,9,'Q');rect(50,17,54,18,'S');
@@ -45,9 +47,20 @@ rect(67,15,69,15,'b');rect(70,11,77,19,'c');rect(57,21,58,21,'c');rect(53,22,76,
 for(const[x,y0,y1]of[[60,22,26],[64,24,28],[68,22,26],[72,24,28]])rect(x,y0,x,y1,'p');
 [[76,12],[71,18],[54,23],[55,27],[49,9],[65,19]].forEach(([x,y])=>map[y][x]='p');
 [[48,8],[66,8],[48,20],[66,20],[70,11],[77,11],[70,19],[77,19],[53,22],[53,28],[76,22],[76,28]].forEach(([x,y])=>map[y][x]='X');
-const CLOUD_AREA={x0:45,y0:0,x1:W,y1:H},GROUND_AREA={x0:0,y0:0,x1:VW,y1:H};
+const CLOUD_AREA={x0:45,y0:0,x1:W,y1:48},GROUND_AREA={x0:0,y0:0,x1:VW,y1:48};
 const inClouds=x=>x>=45;
-const inVillage=(x,y)=>y>=30&&!inClouds(x);
+const inVillage=(x,y)=>y>=30&&y<48&&!inClouds(x);
+// Places the camera can be in. cam = camera box, play = where mini-games may put things, fill = color behind the ground.
+// Land modules add more details (pad, seeds, name, unlocked, flight scene) in lands.js and their own files.
+const AREAS={
+  valley:{cam:GROUND_AREA,play:[2.5,2.5,41.5,27.5],fill:'#4f9a3e'},
+  clouds:{cam:CLOUD_AREA,play:[45.5,0.5,79.5,47.5]},
+  forest:{cam:{x0:0,y0:48,x1:44,y1:80},play:[4.5,51.5,39.5,76.5],fill:'#2f5a2a'},
+  lagoon:{cam:{x0:0,y0:80,x1:44,y1:112},play:[4.5,83.5,39.5,108.5],fill:'#2a8fc4'},
+  meadow:{cam:{x0:0,y0:112,x1:44,y1:144},play:[4.5,115.5,39.5,140.5],fill:'#1c2152'}};
+function areaAt(x,y){if(x>=45)return 'clouds';if(y<48)return 'valley';return y<80?'forest':y<112?'lagoon':'meadow';}
+const sameArea=(a,b)=>areaAt(a.x,a.y)===areaAt(b.x,b.y);
+const hereArea=()=>areaAt(player.x,player.y);
 
 const STARS=[
   {n:'red',c:'#ff4d4d',x:7.5,y:17.5},{n:'orange',c:'#ff9a3c',x:14.5,y:14.5},{n:'yellow',c:'#ffd83d',x:39.5,y:4.5},
@@ -63,7 +76,7 @@ const SIGNS=[
   {x:15.6,y:10.7,text:'Rainbow Balloon'},
   {x:53.4,y:10.9,text:"Princess Cloudberry's Castle"},{x:61.6,y:8.8,text:'Flower Maze'},{x:51.4,y:16.6,text:'Cloud Garden'},
   {x:65.6,y:14.6,text:'Rainbow Bridge'},{x:55.6,y:20.8,text:'Fluffy Clouds'}];
-function isWalkChar(c,gate){return c==='.'||c==='='||c==='S'||c==='m'||c==='g'||c==='c'||c==='r'||c==='n'||(c==='G'&&gate);}
+function isWalkChar(c,gate){return c==='.'||c==='='||c==='S'||c==='m'||c==='g'||c==='c'||c==='r'||c==='n'||c==='d'||c==='u'||c==='j'||(c==='G'&&gate);}
 // scatter trees while keeping every walkable tile reachable
 (function placeTrees(){
   const noTree=[[13,9,19,11],[3,30,40,45],[2,2,8,10],[8,2,17,7],[17,2,28,7],[9,9,16,16],[1,9,9,19],[21,11,28,19],[13,20,20,23],[19,9,21,25],[24,17,27,20]];

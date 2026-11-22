@@ -53,13 +53,13 @@ function ch2Tap(wx,wy){
   const b=ents.bird;if(qid()==='letter'&&!b.leaving&&near(b.x,b.y,1)){goDo(b.x,b.y+1.2,2,readLetter,b);return true;}
   const pad=PADS[state.balloonAt||'valley'];
   const coreEnt=['grandma','hops','unicorn','pony'].some(k=>dist(wx,wy,ents[k].x,ents[k].y-.45)<.8);
-  if(!coreEnt&&state.balloon>=1&&(inClouds(pad.x)===inClouds(player.x))&&Math.abs(wx-pad.x)<1.1&&wy>pad.y-3.6&&wy<pad.y+.3){
+  if(!coreEnt&&state.balloon>=1&&areaAt(pad.x,pad.y)===areaAt(player.x,player.y)&&Math.abs(wx-pad.x)<1.1&&wy>pad.y-3.6&&wy<pad.y+.3){
     goDo(pad.x+1.2,pad.y+.3,1.4,tapBalloon);return true;}
   if(inClouds(player.x)){
     const pr=ents.princess;if(near(pr.x,pr.y-.6,1)){goDo(pr.x,pr.y+.4,1.6,talkPrincess);return true;}
     if(!state.bridge&&wx>66.5&&wx<70.5&&wy>14&&wy<16.6){goDo(66.4,15.5,1.4,tapBridge);return true;}
   }
-  for(const id of PONY_IDS){const e=ents[id];if(inClouds(e.x)!==inClouds(player.x)||!near(e.x,e.y-.5,.9))continue;
+  for(const id of PONY_IDS){const e=ents[id];if(!sameArea(e,player)||!near(e.x,e.y-.5,.9))continue;
     if(!rescued(id)){if(id==='peaches'&&!state.bridge){talkCloudPony(id);return true;}goDo(e.x,e.y,1.6,()=>talkCloudPony(id),e);return true;}
     e.pause=state.time+6;goDo(e.x,e.y,1.6,()=>openPonyMenu(id),e);return true;}
   if(inVillage(wx,wy))for(let i=0;i<LOG_SPOTS.length;i++){const[x,y]=LOG_SPOTS[i];if(logUp(i)&&near(x,y,.7)){goDo(x,y,.6,()=>{if(logUp(i))takeLog(i);});return true;}}
@@ -108,10 +108,11 @@ function ch2Target(){
 
 function ch2Begin(isNew){
   if(!walkable(Math.floor(player.x),Math.floor(player.y))){player.x=5.5;player.y=7.3;}
-  if(!state.balloonAt)state.balloonAt=inClouds(player.x)?'clouds':'valley';
+  if(!state.balloonAt||!PADS[state.balloonAt])state.balloonAt=areaAt(player.x,player.y);
+  if(!PADS[state.balloonAt])state.balloonAt='valley';
   if(state.bridge)rect(67,15,69,15,'r');
   placePonies();
   if(!isNew&&qid()==='letter'&&!state.ch2seen)talk(Q[state.quest].start);
-  if(!isNew&&rescued('puff')&&!inClouds(player.x)){const e=ents.puff;e.x=player.x+5;e.y=player.y+.3;e.visitUntil=state.time+40;
+  if(!isNew&&rescued('puff')&&areaAt(player.x,player.y)==='valley'){const e=ents.puff;e.x=player.x+5;e.y=player.y+.3;e.visitUntil=state.time+40;
     talk([['puff',T2.greet]]);}
 }

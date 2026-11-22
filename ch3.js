@@ -338,7 +338,7 @@ function startFlies(mode){const C=C3();let rc,n;
   else{const cl=inClouds(player.x),vil=inVillage(player.x,player.y);
     rc=[player.x-5,player.y-3.2,player.x+5,player.y+3.2];
     if(vil){rc[0]=Math.max(rc[0],VILLAGE.x0+.5);rc[2]=Math.min(rc[2],VILLAGE.x1+.5);rc[1]=Math.max(rc[1],VILLAGE.y0+.5);rc[3]=Math.min(rc[3],VILLAGE.y1+.5);}
-    else if(!cl){rc[0]=Math.max(rc[0],2.5);rc[2]=Math.min(rc[2],41.5);rc[1]=Math.max(rc[1],2.5);rc[3]=Math.min(rc[3],27.5);}
+    else if(!cl){const P=AREAS[areaAt(player.x,player.y)].play;rc[0]=Math.max(rc[0],P[0]);rc[2]=Math.min(rc[2],P[2]);rc[1]=Math.max(rc[1],P[1]);rc[3]=Math.min(rc[3],P[3]);}
     else{rc[0]=Math.max(rc[0],45.5);}
     n=5;say(L.flyStart,'moonbeam');}
   const list=[];for(let i=0;i<n;i++){let x,y,tries=0;
@@ -373,8 +373,8 @@ function startTag(mode){const e=ents.twinkle;if(!rescued('twinkle'))return;
   const px=Math.floor(player.x),py=Math.floor(player.y),cl=inClouds(player.x),vil=inVillage(player.x,player.y);
   let reg2,sx,sy;
   if(mode==='story'||MAZE(px,py)){reg2=MAZE;if(mode==='story'){sx=66;sy=4;}else{sx=Math.floor(e.x);sy=Math.floor(e.y);if(!MAZE(sx,sy)||!walkable(sx,sy)){sx=66;sy=4;}}}
-  else{const x0=px-7,x1=px+7,y0=py-4,y1=py+4;
-    reg2=(x,y)=>x>=x0&&x<=x1&&y>=y0&&y<=y1&&inClouds(x)===cl&&(!vil||inVillage(x,y))&&(vil||cl||y<29);
+  else{const x0=px-7,x1=px+7,y0=py-4,y1=py+4,ar=areaAt(player.x,player.y);
+    reg2=(x,y)=>x>=x0&&x<=x1&&y>=y0&&y<=y1&&areaAt(x,y)===ar&&(!vil||inVillage(x,y))&&(vil||ar!=='valley'||y<29);
     sx=Math.floor(e.x);sy=Math.floor(e.y);if(!reg2(sx,sy)||!walkable(sx,sy)){sx=px;sy=py;}}
   const ok=bfsD(sx,sy,(x,y)=>reg2(x,y)&&walkable(x,y),0);
   tag={mode,ok,x:sx+.5,y:sy+.5,cx:sx,cy:sy,nx:null,px:-1,py:-1,pause:state.time+(mode==='story'?0:1.4),cool:state.time+1.4,n:mode==='story'?C3().tags:0,flip:false,walkT:0,moving:false,teaseT:state.time+4,done:false};
@@ -411,8 +411,8 @@ function tagHit(){const T=tag,t=state.time,e=ents.twinkle;T.n++;sfx('pop');burst
   burst(T.x,T.y-.6,'✨',8,.8);T.cool=t+1.2;T.pause=t+1.1;e.emote={e:'😆',until:t+1.5};}
 
 // ===== Mini-game: rainbow race =====
-function genCourse(n){const cl=inClouds(player.x),vil=inVillage(player.x,player.y);
-  const ok=(x,y)=>walkable(x,y)&&inClouds(x)===cl&&(!vil||inVillage(x,y))&&(vil||cl||y<29)&&!state.plots[x+','+y]&&map[y][x]!=='r'&&map[y][x]!=='S';
+function genCourse(n){const vil=inVillage(player.x,player.y),ar=areaAt(player.x,player.y);
+  const ok=(x,y)=>walkable(x,y)&&areaAt(x,y)===ar&&(!vil||inVillage(x,y))&&(vil||ar!=='valley'||y<29)&&!state.plots[x+','+y]&&map[y][x]!=='r'&&map[y][x]!=='S';
   const pts=[{x:player.x,y:player.y}];let cur=[Math.floor(player.x),Math.floor(player.y)];
   for(let i=0;i<n;i++){const D=bfsD(cur[0],cur[1],ok,8);let best=null,bs=-1e9;
     for(const[k,d]of D){if(d<4||d>7)continue;const x=k%W,y=(k/W)|0,lp=pts[pts.length-1];if(Math.abs(y+.5-lp.y)>3.6||Math.abs(x+.5-lp.x)>6.4)continue;let m=1e9;for(const p of pts)m=Math.min(m,dist(x+.5,y+.5,p.x,p.y));
