@@ -123,6 +123,12 @@ Design rules (apply to everything):
 - [x] The open path, planted garden, and progress persist; new lines use device speech fallback
 - [x] Browser journey checks cover earlier saves, new games, reloads, and replay in `tests/candy.test.js`
 
+## ✅ Rainbow Island adventure (Chapter 10)
+- [x] Mend the bridge, find five rainbow lights, and customize the island beacon
+- [x] Befriend and name Skye, build her a village cottage, and replay the light hunt
+- [x] The bridge, beacon, friend, and progress persist; new lines use device speech fallback
+- [x] Run browser journeys with `npm ci` and `npm test`; set `CHROMIUM_PATH` if no supported browser is discoverable
+
 ## 💡 Ideas for later
 - More lands and more Pony Village buildings for the new ponies' favorite things
 - Real hand-drawn sprite art for the new lands (see the `LandArt` tables)

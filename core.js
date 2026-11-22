@@ -1,9 +1,9 @@
 'use strict';
 // ---------- Core: map, data, state, audio, speech ----------
 // The world grid holds: Sparkle Valley (x0-43,y0-29), Pony Village (south, y30-47), the Cloud Kingdom (east, x45-79, y0-47),
-// and the far lands below the village (x0-43), ending with the Secret Garden.
+// and the far lands below the village (x0-43), ending with Rainbow Island.
 // The Cloud Kingdom and the far lands are only reached by the Rainbow Balloon.
-const W = 80, H = 240, VW = 44, VH = 30;
+const W = 80, H = 272, VW = 44, VH = 30;
 const SAVE_KEY = 'sparkleValley_v1';
 const GROW = 5; // seconds per growth stage
 const $ = id => document.getElementById(id);
@@ -60,8 +60,9 @@ const AREAS={
   meadow:{cam:{x0:0,y0:112,x1:44,y1:144},play:[4.5,115.5,39.5,140.5],fill:'#1c2152'},
   candy:{cam:{x0:0,y0:144,x1:44,y1:176},play:[4.5,147.5,39.5,172.5],fill:'#e5a5c1'},
   mountain:{cam:{x0:0,y0:176,x1:44,y1:208},play:[4.5,179.5,39.5,204.5],fill:'#d7ecf6'},
-  garden:{cam:{x0:0,y0:208,x1:44,y1:240},play:[4.5,211.5,39.5,236.5],fill:'#4a8f55'}};
-function areaAt(x,y){if(x>=45)return 'clouds';if(y<48)return 'valley';return y<80?'forest':y<112?'lagoon':y<144?'meadow':y<176?'candy':y<208?'mountain':'garden';}
+  garden:{cam:{x0:0,y0:208,x1:44,y1:240},play:[4.5,211.5,39.5,236.5],fill:'#4a8f55'},
+  island:{cam:{x0:0,y0:240,x1:44,y1:272},play:[4.5,243.5,39.5,268.5],fill:'#73cbd0'}};
+function areaAt(x,y){if(x>=45)return 'clouds';if(y<48)return 'valley';return y<80?'forest':y<112?'lagoon':y<144?'meadow':y<176?'candy':y<208?'mountain':y<240?'garden':'island';}
 const sameArea=(a,b)=>areaAt(a.x,a.y)===areaAt(b.x,b.y);
 const hereArea=()=>areaAt(player.x,player.y);
 
