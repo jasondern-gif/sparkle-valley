@@ -129,6 +129,12 @@ Design rules (apply to everything):
 - [x] The bridge, beacon, friend, and progress persist; new lines use device speech fallback
 - [x] Run browser journeys with `npm ci` and `npm test`; set `CHROMIUM_PATH` if no supported browser is discoverable
 
+## ✅ Starlight Orchard adventure (Chapter 11)
+- [x] Guide Luma through three landmark crossroads, with spoken hints and saved checkpoints
+- [x] Befriend and name Luma, build her a village cottage, and replay the route for friendship
+- [x] The glowing orchard, pony, and progress persist; new lines use device speech fallback
+- [x] Browser journey checks cover old saves, interrupted progress, new games, and replay in `tests/orchard.test.js`; Linux CI runs `npm test`
+
 ## 💡 Ideas for later
 - More lands and more Pony Village buildings for the new ponies' favorite things
 - Real hand-drawn sprite art for the new lands (see the `LandArt` tables)

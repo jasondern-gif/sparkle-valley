@@ -537,12 +537,12 @@ test('Rainbow Island migration, adventure, persistence and replay',async()=>{
     const spot=await page.evaluate(()=>[placing.spots[0].x+1.5,placing.spots[0].y+1]);
     await world(...spot);
     await page.locator('#c2body .pick[data-id="skye"]').click();
-    await page.waitForFunction(()=>dlgOpen||qid()==='freeEnd',null,{timeout:15000});await dialog();
-    await quest('freeEnd');
+    await page.waitForFunction(()=>dlgOpen||qid()==='c11fly',null,{timeout:15000});await dialog();
+    await quest('c11fly');
     assert.equal(await page.evaluate(()=>state.cottages[state.ponies.skye.home].pony),'skye');
     assert.equal(await page.evaluate(()=>state.ch10.done),true);
     await page.evaluate(()=>saveGame());await page.reload();await page.locator('#continueBtn').click();await dialog();
-    assert.equal(await page.evaluate(()=>qid()),'freeEnd');
+    assert.equal(await page.evaluate(()=>qid()),'c11fly');
     assert.equal(await page.evaluate(()=>state.coins),59);
     assert.deepEqual(await page.evaluate(()=>state.ch9.garden),{color:'yellow',center:'butterfly'});
     assert.deepEqual(await page.evaluate(()=>state.ch10.beacon),{color:'blue',topper:'star'});
