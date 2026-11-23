@@ -44,7 +44,7 @@ Design rules (apply to everything):
 ## ✅ Graphics pass (done)
 - [x] Soft continuous grass, rounded paths, garden beds, pond with lily pads, drawn trees, cuter people and ponies (blinking, wings, swishing tails), building details, ambient sparkles
 - [ ] Later: real hand-drawn sprite art (free art pack or AI-generated images) for a bigger jump
-  - [x] Asset pipeline prototype: `assets/manifest.json` + procedural fallback, `?assets=off` to compare; trees, carrots, farmhouse and Buttercup wired up with placeholder images (spec: `ASSET_HANDOFF.md`)
+  - [x] Asset pipeline prototype: `assets/manifest.json` + procedural fallback, `?assets=off` to compare; trees and farmhouse use sprites, while unfinished carrot and Buttercup placeholders remain disabled (spec: `ASSET_HANDOFF.md`).
 
 ## ✅ Chapter 1: Sparkle Valley (done)
 - [x] Grandma's farm: plant, water, harvest carrots, strawberries and sunflowers
