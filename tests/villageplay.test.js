@@ -244,6 +244,7 @@ test('welcome quilt stories unlock on rescue and preserve interrupted and comple
       s.ch7.castle={roof:'pink',topper:'star'};
       localStorage.setItem(SAVE_KEY,JSON.stringify(s));
     });
+
     await reload();await hub();
     assert.match(await page.locator('[data-story="toffee"]').innerText(),/Caramel/);
     await page.locator('[data-story="frost"]').click();
@@ -297,6 +298,109 @@ test('welcome quilt stories unlock on rescue and preserve interrupted and comple
     await reload();
     assert.equal((await data('frost')).draft,null);
     assert.deepEqual((await data('frost')).keepsake,[0,1,0]);
+    assert.deepEqual(errors,[]);
+  }finally{
+    try{if(browser)await browser.close();}
+    finally{await new Promise((resolve,reject)=>server.close(err=>err?reject(err):resolve()));}
+  }
+});
+
+test('village festival is accessible, resumable and keeps its finished banner during replay',async()=>{
+  const server=await serve();let browser;
+  try{
+    browser=await launchBrowser();
+    const page=await browser.newPage({viewport:{width:390,height:844}});
+    const errors=[];page.on('pageerror',e=>errors.push(e.message));
+    async function dialog(){
+      for(let i=0;i<35;i++){
+        if(await page.locator('#dialog').isVisible()){await page.waitForTimeout(400);await page.locator('#dialog').click();}
+        else{await page.waitForTimeout(100);if(!await page.locator('#dialog').isVisible())return;}
+      }
+      throw new Error('dialog did not finish');
+    }
+    async function reload(){await page.reload();await page.locator('#continueBtn').click();await dialog();}
+    async function hub(){await page.locator('#bar .slot').filter({hasText:'pavilion'}).click();}
+    async function open(){await hub();await page.locator('#villageFestival').click();}
+    async function pick(k){await page.locator(`[data-festival-choice="${k}"]`).click();}
+    async function festival(){return page.evaluate(()=>state.vil.festival);}
+    await page.goto(`http://127.0.0.1:${server.address().port}/?assets=off`);
+    await page.evaluate(()=>{
+      const s=defaultState();s.quest=qi('freeEnd');s.questId='freeEnd';s.balloon=3;s.px=20.5;s.py=34.5;
+      for(let n=4;n<=12;n++)s['ch'+n]={done:true};
+      for(const [i,id] of ['toffee','frost','bloom','skye','luma'].entries()){
+        s.ponies[id]={name:PONIES[id].names[0],hearts:2,home:i,acc:null};
+        s.cottages.push({x:6+i*4,y:37,color:'pink',pony:id,built:-100});
+      }
+      s.coins=73;s.inv.wood=9;s.settings.voice=false;s.settings.music=false;
+      localStorage.setItem(SAVE_KEY,JSON.stringify(s));
+    });
+    await reload();await open();
+    assert.equal(await page.locator('#lgGame').isVisible(),false);
+    assert.deepEqual(await festival(),{draft:null,keepsake:null});
+    await page.locator('#c2close').click();
+    await page.evaluate(()=>{state.ponies.pippin={name:'Pippin',hearts:2,home:5,acc:null};state.cottages.push({x:26,y:37,color:'pink',pony:'pippin',built:-100});refreshBar(true);saveGame();});
+    await page.locator('#bar .slot').filter({hasText:'decorate'}).click();
+    await page.locator('[data-c="shop"]').click();
+    await page.locator('[data-k="pavilion"][data-src="store"]').click();
+    const spot=await page.evaluate(()=>{const s=vilDebug().mode.spots[0];return [s.x+1.5,s.y+1];});
+    await page.evaluate(([x,y])=>{player.x=x;player.y=y+2;player.path=[];},spot);await page.waitForTimeout(350);
+    const hit=await page.evaluate(([x,y])=>({x:x*ts-cam.x,y:y*ts-cam.y}),spot);
+    await page.mouse.click(hit.x,hit.y);
+    await page.waitForFunction(()=>state.vil.decor.some(d=>d.k==='pavilion'));
+    await open();
+    await page.evaluate(()=>{window.spoken=[];speechSynthesis.speak=u=>window.spoken.push(u.text);state.settings.voice=true;});
+    await page.locator('#lgSay .sayBtn').click();
+    await page.waitForFunction(()=>window.spoken.some(t=>t.includes('picture invitation')));
+    await page.evaluate(()=>{state.settings.voice=false;stopSpeech();});
+    assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
+    assert.equal(await page.locator('#lgGame button button').count(),0);
+    await pick('quiet');assert.deepEqual((await festival()).draft.invites,[]);
+    assert.match(await page.locator('#lgSay').innerText(),/try together/i);
+    await page.locator('[data-festival-choice="picture"]').focus();await page.keyboard.press('Enter');
+    await page.evaluate(()=>{const b=document.querySelector('[data-festival-choice="quiet"]');b.click();b.click();});
+    assert.deepEqual((await festival()).draft.invites,['picture','quiet']);
+    await page.locator('#lgGameClose').click();await reload();await open();
+    assert.match(await page.locator('#lgSay').innerText(),/faraway/i);
+    await pick('far');await pick('path');await pick('seat');
+    await page.locator('#lgGameClose').click();await reload();await open();
+    assert.deepEqual((await festival()).draft.features,['path','seat']);
+    await pick('shade');
+    for(const k of ['rose','sky','sun','rose','sky','sun'])await pick(k);
+    await page.locator('#lgGameClose').click();await reload();await open();
+    assert.equal(await page.locator('[data-festival-action="finish"]').count(),1);
+    await page.evaluate(()=>{const b=document.querySelector('[data-festival-action="finish"]');b.click();b.click();});
+    const first=(await festival()).keepsake;
+    assert.deepEqual(first,{invites:['picture','quiet','far'],features:['path','seat','shade'],colors:['rose','sky','sun','rose','sky','sun']});
+    assert.match(await page.locator('#lgSay').innerText(),/festival is open/i);
+    await page.locator('[data-festival-action="again"]').click();await pick('picture');
+    assert.deepEqual((await festival()).keepsake,first);
+    await page.locator('#lgGameClose').click();
+    await page.evaluate(()=>{
+      window.bannerPaint=[];
+      const prev=CanvasRenderingContext2D.prototype.fillRect;
+      CanvasRenderingContext2D.prototype.fillRect=function(...args){
+        if(['#ed568f','#58a8df','#f4c64d'].includes(this.fillStyle))window.bannerPaint.push(this.fillStyle);
+        return prev.apply(this,args);
+      };
+    });
+    await page.waitForFunction(()=>new Set(window.bannerPaint).size===3);
+    await reload();await open();
+    assert.deepEqual((await festival()).draft.invites,['picture']);
+    await pick('quiet');await pick('far');
+    for(const k of ['water','shade','seat','sun','sun','sky','sky','rose','rose'])await pick(k);
+    await page.locator('[data-festival-action="finish"]').click();
+    const second=(await festival()).keepsake;
+    assert.deepEqual(second.features,['water','shade','seat']);
+    await page.locator('#lgGameClose').click();await reload();await hub();
+    assert.match(await page.locator('#villageFestival').innerText(),/⭐/);
+    assert.deepEqual((await festival()).keepsake,second);
+    assert.equal(await page.evaluate(()=>state.coins),73);
+    assert.equal(await page.evaluate(()=>state.inv.wood),9);
+    assert.equal(await page.evaluate(()=>qid()),'freeEnd');
+    await page.locator('#c2close').click();
+    await page.evaluate(()=>{state.vil.festival.draft={invites:['wrong'],features:[],colors:[]};saveGame();});
+    await reload();assert.equal((await festival()).draft,null);
+    assert.deepEqual((await festival()).keepsake,second);
     assert.deepEqual(errors,[]);
   }finally{
     try{if(browser)await browser.close();}

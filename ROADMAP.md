@@ -164,3 +164,10 @@ This adds one building and six activities, not more story quests. It is **not a 
 - [x] The story journey is covered by `tests/villageplay.test.js`, including older saves, rescue gates, interrupted and completed saves, replay, speech and keyboard access
 
 The stories use procedural visuals and device speech fallback. This increment does not establish a doubling of total content.
+
+## ✅ Village friendship festival
+- [x] After all six new friends are rescued, open the free festival from the Friendship Pavilion hub. Toffee and Frost match inclusive invitations; Bloom and Skye plan three site features; Luma and Pippin make a six-flag banner.
+- [x] The finished banner appears on a placed pavilion and the hub marks the festival as complete. Each choice is saved; an interrupted replay preserves the previous finished festival until replaced.
+- [x] Untimed play has spoken instructions and hints, keyboard-operable controls, procedural visuals and device speech fallback. Existing saves and adventures remain intact.
+
+The festival is one additional adventure, not a verified doubling of total content. The pavilion must be placed to see the banner in the village.
