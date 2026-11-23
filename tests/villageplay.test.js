@@ -75,6 +75,7 @@ test('six village activities: old saves, interruption, keepsakes, accessible pla
       s.ch7.castle={roof:'pink',topper:'star'};
       localStorage.setItem(SAVE_KEY,JSON.stringify(s));
     });
+
     await reload();
     assert.equal(await page.evaluate(()=>qid()),'freeEnd');
     assert.equal(await page.evaluate(()=>state.vil.store.pavilion),1);
@@ -205,6 +206,97 @@ test('six village activities: old saves, interruption, keepsakes, accessible pla
     assert.equal(await page.evaluate(()=>qid()),'meet');
     assert.equal(await page.evaluate(()=>!!state.vil.pavilionGift),false);
     assert.equal(await page.locator('#bar .slot').filter({hasText:'pavilion'}).count(),0);
+    assert.deepEqual(errors,[]);
+  }finally{
+    try{if(browser)await browser.close();}
+    finally{await new Promise((resolve,reject)=>server.close(err=>err?reject(err):resolve()));}
+  }
+});
+
+test('welcome quilt stories unlock on rescue and preserve interrupted and completed choices',async()=>{
+  const server=await serve();let browser;
+  try{
+    browser=await launchBrowser();
+    const page=await browser.newPage({viewport:{width:390,height:844}});
+    const errors=[];page.on('pageerror',e=>errors.push(e.message));
+    async function dialog(){
+      for(let i=0;i<35;i++){
+        if(await page.locator('#dialog').isVisible()){await page.waitForTimeout(400);await page.locator('#dialog').click();}
+        else{await page.waitForTimeout(100);if(!await page.locator('#dialog').isVisible())return;}
+      }
+      throw new Error('dialog did not finish');
+    }
+    async function reload(){await page.reload();await page.locator('#continueBtn').click();await dialog();}
+    async function hub(){
+      await page.locator('#bar .slot').filter({hasText:'pavilion'}).click();
+      await page.locator('#friendStories').click();
+    }
+    async function open(id){await hub();await page.locator(`[data-story="${id}"]`).click();}
+    async function choose(n){await page.locator(`[data-choice="${n}"]`).click();}
+    async function data(id){return page.evaluate(id=>state.vil.friendStories[id],id);}
+    await page.goto(`http://127.0.0.1:${server.address().port}/?assets=off`);
+    await page.evaluate(()=>{
+      const s=defaultState();s.quest=qi('freeEnd');s.questId='freeEnd';s.balloon=3;s.px=20.5;s.py=34.5;
+      for(let n=4;n<=12;n++)s['ch'+n]={done:true};
+      s.ponies.toffee={name:'Caramel',hearts:2,home:0,acc:null};
+      s.cottages.push({x:6,y:37,color:'pink',pony:'toffee',built:-100});
+      s.coins=73;s.inv.wood=9;s.settings.voice=false;s.settings.music=false;
+      s.ch7.castle={roof:'pink',topper:'star'};
+      localStorage.setItem(SAVE_KEY,JSON.stringify(s));
+    });
+    await reload();await hub();
+    assert.match(await page.locator('[data-story="toffee"]').innerText(),/Caramel/);
+    await page.locator('[data-story="frost"]').click();
+    assert.equal(await page.locator('#lgGame').isVisible(),false);
+    await page.locator('[data-story="toffee"]').click();
+    await page.evaluate(()=>{window.spoken=[];speechSynthesis.speak=u=>window.spoken.push(u.text);state.settings.voice=true;});
+    await page.locator('#lgSay .sayBtn').click();
+    await page.waitForFunction(()=>window.spoken.some(t=>t.includes('nervous')));
+    await page.evaluate(()=>{state.settings.voice=false;stopSpeech();});
+    assert.equal(await page.locator('#lgGame button button').count(),0);
+    assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
+    await page.locator('[data-choice="1"]').focus();await page.keyboard.press('Enter');
+    assert.deepEqual((await data('toffee')).draft,[1]);
+    await page.locator('#lgGameClose').click();await reload();await open('toffee');
+    assert.match(await page.locator('#lgSay').innerText(),/where to sit/);
+    assert.deepEqual((await data('toffee')).draft,[1]);
+    await page.evaluate(()=>{const b=document.querySelector('[data-choice="0"]');b.click();b.click();});
+    assert.deepEqual((await data('toffee')).draft,[1,0]);
+    await choose(1);
+    await page.locator('#lgGameClose').click();await reload();await open('toffee');
+    assert.equal(await page.locator('[data-story-action="finish"]').count(),1);
+    await page.locator('[data-story-action="finish"]').click();
+    assert.deepEqual((await data('toffee')).keepsake,[1,0,1]);
+    assert.match(await page.locator('#lgSay').innerText(),/room for everyone/);
+    await page.locator('[data-story-action="again"]').click();await choose(0);
+    assert.deepEqual((await data('toffee')).keepsake,[1,0,1]);
+    await page.locator('#lgGameClose').click();await reload();await open('toffee');
+    assert.deepEqual((await data('toffee')).draft,[0]);
+    await choose(1);await choose(0);await page.locator('[data-story-action="finish"]').click();
+    await page.locator('#lgGameClose').click();
+    await page.evaluate(()=>{
+      for(const [i,id] of ['frost','bloom','skye','luma','pippin'].entries())
+        state.ponies[id]={name:PONIES[id].names[0],hearts:2,home:i+1,acc:null};
+      saveGame();
+    });
+    for(const id of IDS.slice(1)){
+      await open(id);await choose(0);await choose(1);await choose(0);
+      await page.locator('[data-story-action="finish"]').click();
+      assert.deepEqual((await data(id)).keepsake,[0,1,0]);
+      await page.locator('#lgGameClose').click();
+    }
+    await reload();await hub();
+    for(const id of IDS)assert.match(await page.locator(`[data-story="${id}"]`).innerText(),/🧵/);
+    assert.equal(await page.evaluate(()=>qid()),'freeEnd');
+    assert.equal(await page.evaluate(()=>state.coins),73);
+    assert.equal(await page.evaluate(()=>state.inv.wood),9);
+    assert.deepEqual(await page.evaluate(()=>state.ch7.castle),{roof:'pink',topper:'star'});
+    assert.equal(await page.evaluate(()=>state.cottages.length),1);
+    await page.locator('#c2close').click();
+    await page.evaluate(()=>{state.vil.friendStories.frost.draft=[7];saveGame();});
+    await reload();
+    assert.equal((await data('frost')).draft,null);
+    assert.deepEqual((await data('frost')).keepsake,[0,1,0]);
     assert.deepEqual(errors,[]);
   }finally{
     try{if(browser)await browser.close();}

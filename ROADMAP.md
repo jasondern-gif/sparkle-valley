@@ -156,3 +156,11 @@ Design rules (apply to everything):
 - [x] Automated journeys in `tests/villageplay.test.js` cover migration, free placement and access, interrupted play, six completed keepsakes, replay, speech fallback and small-screen controls; `npm test` also runs in Linux CI
 
 This adds one building and six activities, not more story quests. It is **not a verified doubling of the game's content**. New speech uses device fallback rather than new recorded voices, and the pavilion uses procedural artwork.
+
+## ✅ Welcome quilt stories (bounded follow-up)
+- [x] Six short, choice-led friendship stories for Toffee, Frost, Bloom, Skye, Luma and Pippin, available from the Friendship Pavilion after each pony's rescue
+- [x] Welcome a nervous neighbor, make room for quiet, care for a shared garden, include a distant friend, light a safe path and celebrate different ways to participate
+- [x] Choices save at each step; finished patches remain visible on the pavilion while a replay is in progress. Stories are free, untimed and do not replace the main quest or existing activities
+- [x] The story journey is covered by `tests/villageplay.test.js`, including older saves, rescue gates, interrupted and completed saves, replay, speech and keyboard access
+
+The stories use procedural visuals and device speech fallback. This increment does not establish a doubling of total content.

@@ -546,6 +546,8 @@ const DECO={
     const ids=['toffee','frost','bloom','skye','luma','pippin'];
     ids.forEach((id,i)=>{if(S().activities&&S().activities[id]&&S().activities[id].keepsake)
       drawEmoji(PONIES[id].acc,X+(i-2.5)*s*.4,Y-s*.55,s*.3);});
+    ids.forEach((id,i)=>{if(S().friendStories&&S().friendStories[id]&&S().friendStories[id].keepsake)
+      drawEmoji('🧵',X+(i-2.5)*s*.4,Y-s*.95,s*.25);});
   }},
   flowers:{n:R('Flower bed'),cost:{flower:2},hg:1,multi:1,vars:4,d:dFlowerBed,tag:'flower'},
   bush:{n:R('Flower bush'),cost:{wood:1},hg:1.1,vars:4,d:dBush,tag:'flower'},

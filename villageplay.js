@@ -77,7 +77,7 @@ function listen(items,g){
 function hub(){
   closePonyMenu();
   openC2(`<h2 data-say="${L.hub}">💗 Friendship Pavilion</h2><p data-say="${L.gift}">${L.gift}</p><div class="vilNames">${IDS.map(id=>
-    `<div data-say="${titles[id]}"><button class="vilName" data-friend="${id}" aria-label="${titles[id]}">${icons[id]} <span class="vpName"></span>${entry(id).keepsake?' 💗':''}${rescued(id)?'':' 🔒'}</button></div>`).join('')}</div>`);
+    `<div data-say="${titles[id]}"><button class="vilName" data-friend="${id}" aria-label="${titles[id]}">${icons[id]} <span class="vpName"></span>${entry(id).keepsake?' 💗':''}${rescued(id)?'':' 🔒'}</button></div>`).join('')}</div><div class="row" data-say="Open the welcome quilt stories"><button class="big" id="friendStories">📖 Welcome quilt stories</button></div>`);
   $('c2body').querySelectorAll('[data-friend]').forEach(b=>{
     const name=ponyName(b.dataset.friend);
     b.querySelector('.vpName').textContent=name;
@@ -85,6 +85,7 @@ function hub(){
     b.parentNode.dataset.say=R(name+': '+titles[b.dataset.friend]);
   });
   say(L.hub,'narrator',$('c2body').querySelector('h2'));
+  $('friendStories').onclick=()=>window.openFriendshipStories();
   $('c2body').querySelectorAll('[data-friend]').forEach(b=>b.onclick=()=>{initAudio();if(rescued(b.dataset.friend))open(b.dataset.friend);else say(L.locked,'narrator');});
 }
 function open(id){
