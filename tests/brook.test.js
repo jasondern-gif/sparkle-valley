@@ -108,15 +108,15 @@ test('Butterfly Brook: both rescues, saved interactions, speech, cottages and re
     assert.deepEqual(await page.evaluate(()=>['ripple','mallow'].map(id=>state.cottages[state.ponies[id].home].pony)),['ripple','mallow']);
     assert.deepEqual(await page.evaluate(()=>[state.coins,state.inv.carrot]),[73,8]);
     for(const [id,keys] of [['ripple',['boat','reeds','float']],['mallow',['spots','stripes','stars']]]){
-      const pos=await page.evaluate(id=>{vilPauseLife(20);const e=ents[id];e.pause=state.time+20;return[e.x,e.y-.5,e.x,e.y+1];},id);
-      await world(...pos);await page.waitForTimeout(1000);
+      const pos=await page.evaluate(id=>{vilPauseLife(20);for(const other of ['ripple','mallow']){const e=ents[other];e.x=other===id?21.5:33.5;e.y=34.5;e.pause=state.time+20;}return[21.5,34,21.5,35.5];},id);
+      await world(...pos);await page.waitForFunction(id=>menuPony===id,id);
       const hearts=await page.evaluate(id=>state.ponies[id].hearts,id);
       await page.locator('#ponyMenu [data-act="play"]').click();await choose(keys[0]);await page.locator('#lgGameClose').click();
       assert.equal(await page.evaluate(id=>state.ponies[id].hearts,id),hearts);
       // Restart an interrupted replay; story checkpoints must not become its starting state.
       await page.waitForFunction(id=>coolLeft(id,'play')===0,id);
-      const nextPos=await page.evaluate(id=>{vilPauseLife(20);const e=ents[id];e.pause=state.time+20;return[e.x,e.y-.5,e.x,e.y+1];},id);
-      await world(...nextPos);await page.waitForTimeout(500);await page.locator('#ponyMenu [data-act="play"]').click();await choose(...keys);
+      const nextPos=await page.evaluate(id=>{vilPauseLife(20);for(const other of ['ripple','mallow']){const e=ents[other];e.x=other===id?21.5:33.5;e.y=34.5;e.pause=state.time+20;}return[21.5,34,21.5,35.5];},id);
+      await world(...nextPos);await page.waitForFunction(id=>menuPony===id,id);await page.locator('#ponyMenu [data-act="play"]').click();await choose(...keys);
       await page.waitForFunction(()=>!LG.active());
       assert.ok(await page.evaluate(id=>state.ponies[id].hearts,id)>hearts);
       assert.deepEqual(await page.evaluate(()=>state.ch14),completed);
