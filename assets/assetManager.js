@@ -57,7 +57,11 @@ const Assets=(()=>{
       catch(err){manifestState='failed';warnOnce('manifest',`could not load manifest "${url}" (${err&&err.message||err}); using procedural art.`);return;}
       if(!m||!m.assets||typeof m.assets!=='object'){manifestState='failed';warnOnce('manifest',`manifest "${url}" has no "assets" object; using procedural art.`);return;}
       const tilePx=typeof m.tilePx==='number'&&m.tilePx>0?m.tilePx:0,jobs=[];
-      for(const id in m.assets){const e=normalize(id,m.assets[id],tilePx);if(!e)continue;entries.set(id,e);jobs.push(loadImage(e,base));}
+      for(const id in m.assets){
+        const d=m.assets[id];
+        if(d&&d.enabled===false){entries.set(id,{id,status:'disabled'});continue;}
+        const e=normalize(id,d,tilePx);if(!e)continue;entries.set(id,e);jobs.push(loadImage(e,base));
+      }
       manifestState='loaded';
       await Promise.all(jobs);
     })().catch(err=>{manifestState='failed';warnOnce('manifest','asset loading failed ('+(err&&err.message||err)+'); using procedural art.');});
@@ -81,9 +85,9 @@ const Assets=(()=>{
     const a=e.anims[anim||'idle']||(!anim&&e.anims[Object.keys(e.anims)[0]]);if(!a)return 0;
     if(!a.fps||a.frames.length===1)return a.frames[0];
     const n=Math.floor(Math.max(0,timeMs||0)/1000*a.fps);return a.frames[a.loop?n%a.frames.length:Math.min(n,a.frames.length-1)];}
-  function status(){const ready=[],failed=[],pending=[];
-    for(const e of entries.values())(e.status==='ready'?ready:e.status==='failed'?failed:pending).push(e.id);
-    return{enabled,manifest:manifestState,ready,failed,pending};}
+  function status(){const ready=[],failed=[],pending=[],disabled=[];
+    for(const e of entries.values())(e.status==='ready'?ready:e.status==='failed'?failed:e.status==='disabled'?disabled:pending).push(e.id);
+    return{enabled,manifest:manifestState,ready,failed,pending,disabled};}
   function setEnabled(on){enabled=!!on;if(enabled&&manifestState==='off'){manifestState='idle';if(manifestUrl)loadManifest(manifestUrl);}}
   return{loadManifest,has,hasAnim,get,getAnimFrame,status,setEnabled,get enabled(){return enabled;},_warnOnce:warnOnce,_lookup:lookup};
 })();

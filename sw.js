@@ -1,4 +1,4 @@
-const CACHE='sparkle-valley-v11';
+const CACHE='sparkle-valley-v12';
 const FILES=['./','index.html','core.js','draw.js','assets/assetManager.js','quests.js','ch2data.js','ch2logic.js','ch2world.js','ch2ui.js','ch2draw.js','ch2draw2.js','assets/wrappers.js','hooks.js','lands.js','ch3.js','village.js','forest.js','lagoon.js','meadow.js','questbook.js','glue.js','game.js','holdmove.js','manifest.json','icon-180.png','icon-512.png','audio/manifest.json'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(async c=>{
   await c.addAll(FILES);
@@ -7,6 +7,7 @@ self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(async c=
     await c.add('assets/manifest.json');
     const m=await (await c.match('assets/manifest.json')).json();
     await Promise.all(Object.entries(m.assets||{}).map(async([id,a])=>{
+      if(a&&a.enabled===false)return;
       try{await c.add('assets/'+a.src);}catch(e){console.warn(`[assets] could not cache "${id}"; using procedural art when offline.`);}
     }));
   }catch(e){console.warn('[assets] could not cache the art manifest; using procedural art when offline.');}

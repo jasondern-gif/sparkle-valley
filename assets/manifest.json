@@ -17,6 +17,7 @@
       }
     },
     "crop_carrot": {
+      "enabled": false,
       "src": "crops/carrot.png",
       "size": [72, 24],
       "frameSize": [24, 24],
@@ -37,6 +38,7 @@
       "pixelArt": true
     },
     "buttercup": {
+      "enabled": false,
       "src": "characters/buttercup.png",
       "size": [180, 36],
       "frameSize": [36, 36],

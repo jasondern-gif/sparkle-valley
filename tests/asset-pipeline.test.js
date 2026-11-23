@@ -37,22 +37,29 @@ after(async()=>{
   if(server)await new Promise((resolve,reject)=>server.close(err=>err?reject(err):resolve()));
 });
 
-async function open(suffix=''){
+async function open(suffix='',manifest=null){
   const context=await browser.newContext({viewport:{width:1180,height:820}});
-  const page=await context.newPage(),errors=[],warnings=[];
+  const page=await context.newPage(),errors=[],warnings=[],requests=[];
   page.on('pageerror',err=>errors.push(err.message));
   page.on('console',msg=>{if(msg.type()==='warning')warnings.push(msg.text());});
+  page.on('request',req=>requests.push(new URL(req.url()).pathname));
   await page.clock.install();
+  if(manifest)await page.route('**/assets/manifest.json',route=>route.fulfill({
+    contentType:'application/json',body:JSON.stringify(manifest)
+  }));
   await page.goto(base+suffix);
   const status=await page.evaluate(()=>Assets.ready);
-  return{context,page,status,errors,warnings};
+  return{context,page,status,errors,warnings,requests};
 }
 
-test('prototype assets load and preserve travel and saves in both art modes',async()=>{
+test('enabled assets preserve travel and saves in both art modes',async()=>{
   for(const mode of ['on','off']){
     const {context,page,status,errors}=await open(mode==='off'?'?assets=off':'');
     try{
-      if(mode==='on')assert.deepEqual(status.ready.sort(),['buttercup','crop_carrot','farmhouse','tree']);
+      if(mode==='on'){
+        assert.deepEqual(status.ready.sort(),['farmhouse','tree']);
+        assert.deepEqual(status.disabled.sort(),['buttercup','crop_carrot']);
+      }
       else assert.equal(status.manifest,'off');
       await page.locator('#playBtn').click();
       await page.evaluate(()=>{dq.length=0;closeDlg();state.settings.voice=false;state.settings.music=false;state.balloon=3;});
@@ -89,14 +96,46 @@ test('missing manifest installs the worker and still works offline',async()=>{
   }finally{missing.clear();await context.close();}
 });
 
+test('disabled placeholder art keeps procedural drawings without warnings',async()=>{
+  const {context,page,status,errors,warnings,requests}=await open();
+  try{
+    assert.deepEqual(status.disabled.sort(),['buttercup','crop_carrot']);
+    assert.deepEqual(status.pending,[]);
+    assert.equal(await page.evaluate(()=>['buttercup','crop_carrot'].every(id=>
+      !Assets.has(id)&&Assets.get(id)===null&&!drawAssetSprite(id,0,0))),true);
+    assert.equal(requests.includes('/assets/characters/buttercup.png'),false);
+    assert.equal(requests.includes('/assets/crops/carrot.png'),false);
+    await page.waitForFunction(()=>navigator.serviceWorker.controller,{timeout:15000});
+    assert.equal(await page.evaluate(async()=>Boolean(
+      await caches.match('assets/characters/buttercup.png')||await caches.match('assets/crops/carrot.png')
+    )),false);
+    assert.deepEqual(warnings.filter(w=>w.startsWith('[assets]')),[]);
+    assert.deepEqual(errors,[]);
+  }finally{await context.close();}
+});
+
+test('disabled entries can be enabled when their replacement art is ready',async()=>{
+  const manifest=JSON.parse(fs.readFileSync(path.join(root,'assets','manifest.json'),'utf8'));
+  manifest.assets.buttercup.enabled=true;
+  manifest.assets.crop_carrot.enabled=true;
+  const {context,page,status,errors}=await open('',manifest);
+  try{
+    assert.deepEqual(status.ready.sort(),['buttercup','crop_carrot','farmhouse','tree']);
+    assert.deepEqual(status.disabled,[]);
+    assert.equal(await page.evaluate(()=>Assets.hasAnim('buttercup','walk')&&
+      Assets.hasAnim('crop_carrot','stage3')&&drawAssetSprite('buttercup',0,0)),true);
+    assert.deepEqual(errors,[]);
+  }finally{await context.close();}
+});
+
 test('a missing image falls back without affecting other assets',async()=>{
-  missing.add('/assets/characters/buttercup.png');
+  missing.add('/assets/buildings/farmhouse.png');
   const {context,page,status,errors,warnings}=await open();
   try{
-    assert.deepEqual(status.failed,['buttercup']);
-    assert.deepEqual(status.ready.sort(),['crop_carrot','farmhouse','tree']);
-    assert.equal(await page.evaluate(()=>Array.from({length:10},()=>Assets.has('buttercup')).some(Boolean)),false);
-    assert.equal(warnings.filter(w=>w.includes('"buttercup"')).length,1);
+    assert.deepEqual(status.failed,['farmhouse']);
+    assert.deepEqual(status.ready,['tree']);
+    assert.equal(await page.evaluate(()=>Array.from({length:10},()=>Assets.has('farmhouse')).some(Boolean)),false);
+    assert.equal(warnings.filter(w=>w.includes('"farmhouse"')).length,1);
     assert.deepEqual(errors,[]);
   }finally{missing.clear();await context.close();}
 });
