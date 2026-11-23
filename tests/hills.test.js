@@ -60,7 +60,7 @@ test('Sunflower Hills rescues, checkpoints, old saves and replay',async()=>{
     async function quest(id){await page.waitForFunction(id=>qid()===id,id,{timeout:15000});await page.waitForTimeout(1700);await dialog();}
     async function world(x,y,px=x,py=y+1){
       await page.evaluate(([px,py])=>{player.x=px;player.y=py;player.path=[];player.action=null;},[px,py]);
-      await page.waitForTimeout(350);
+      await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
       const p=await page.evaluate(([x,y])=>({x:x*ts-cam.x,y:y*ts-cam.y}),[x,y]);await page.mouse.click(p.x,p.y);
     }
     async function flightTo(area,x,y,px,py){
@@ -106,10 +106,14 @@ test('Sunflower Hills rescues, checkpoints, old saves and replay',async()=>{
     await world(16.5,361);await choose('tulip','sunflower','blossom');await quest('hillsHome');
     await flightTo('valley',9.5,344,10.8,345.8);await quest('hillsBuild');
     for(const id of ['sunny','briar']){
+      await dialog();
       await page.evaluate(()=>{player.x=20.5;player.y=34.5;refreshBar(true);});await page.waitForTimeout(500);
       await page.locator('#bar [data-build]').click({force:true});await page.locator('#c2body .pick').first().click();
       const spot=await page.evaluate(()=>[placing.spots[0].x+1.5,placing.spots[0].y+1]);
-      await world(...spot);await page.locator(`#c2body .pick[data-id="${id}"]`).click();await dialog();
+      await world(...spot);
+      await page.waitForFunction(()=>!placing,null,{timeout:10000});
+      await page.locator(`#c2body .pick[data-id="${id}"]`).click();await dialog();
+      await page.waitForFunction(id=>!ents[id].goHome,id,{timeout:15000});
     }
     await page.waitForFunction(()=>dlgOpen||qid()==='freeEnd',null,{timeout:15000});await dialog();
     await quest('freeEnd');await reload();
