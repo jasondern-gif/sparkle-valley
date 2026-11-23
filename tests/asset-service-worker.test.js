@@ -2,6 +2,7 @@ const test=require('node:test');
 const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const vm=require('node:vm');
+const {browserLaunch,serve}=require('./helpers/browser.cjs');
 
 async function install({missingManifest=false,missingImage=false}={}){
   const events={},cached=[],warnings=[];
@@ -50,4 +51,29 @@ test('installs and caches other images when an image is missing',async()=>{
   assert.ok(cached.includes('assets/buildings/farmhouse.png'));
   assert.equal(warnings.length,1);
   assert.match(warnings[0],/tree/);
+});
+
+test('game loads offline with assets enabled and disabled',async()=>{
+  const server=await serve();let browser;
+  try{
+    browser=await browserLaunch();
+    for(const query of ['', '?assets=off']){
+      const context=await browser.newContext();
+      try{
+        const page=await context.newPage(),errors=[];
+        page.on('pageerror',e=>errors.push(e.message));
+        const url=`http://localhost:${server.address().port}/${query}`;
+        await page.goto(url);
+        await page.waitForFunction(()=>navigator.serviceWorker.controller,null,{timeout:30000});
+        await context.setOffline(true);
+        await page.reload();
+        await page.waitForFunction(()=>typeof qid==='function'&&typeof LG==='object');
+        const status=await page.evaluate(()=>Assets.ready);
+        if(query)assert.equal(status.manifest,'off');
+        else assert.deepEqual(status.ready.sort(),['buttercup','crop_carrot','farmhouse','tree']);
+        assert.ok(await page.locator('#playBtn').isVisible());
+        assert.deepEqual(errors,[]);
+      }finally{await context.close();}
+    }
+  }finally{try{if(browser)await browser.close();}finally{await new Promise((resolve,reject)=>server.close(e=>e?reject(e):resolve()));}}
 });

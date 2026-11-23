@@ -86,7 +86,7 @@ test('Rainbow Railway: safe journeys, two rescues, checkpoints and replay',async
       await page.locator(`#c2body .pick[data-id="${id}"]`).click();await dialog();
       await page.waitForFunction(id=>!ents[id].goHome,id,{timeout:15000});
     }
-    await page.waitForFunction(()=>dlgOpen||qid()==='freeEnd',null,{timeout:15000});await dialog();await quest('freeEnd');await reload();
+    await page.waitForFunction(()=>dlgOpen||qid()==='harborFly',null,{timeout:15000});await dialog();await quest('harborFly');await reload();
     const completed=await page.evaluate(()=>JSON.parse(JSON.stringify(state.ch15)));
     assert.equal(completed.done,true);assert.deepEqual(completed.flags,['hill','home','flower']);
     assert.deepEqual(await page.evaluate(()=>['piper','tinsel'].map(id=>state.cottages[state.ponies[id].home].pony)),['piper','tinsel']);
@@ -104,7 +104,7 @@ test('Rainbow Railway: safe journeys, two rescues, checkpoints and replay',async
       assert.ok(await page.evaluate(id=>state.ponies[id].hearts,id)>hearts);
       assert.deepEqual(await page.evaluate(()=>state.ch15),completed);
     }
-    await reload();assert.equal(await page.evaluate(()=>qid()),'freeEnd');
+    await reload();assert.equal(await page.evaluate(()=>qid()),'harborFly');
     await page.evaluate(()=>{
       const s=defaultState();s.quest=qi('brookKite');s.questId='brookKite';s.balloon=3;s.ch14={kite:['spots']};
       s.settings.voice=false;s.settings.music=false;started=false;localStorage.setItem(SAVE_KEY,JSON.stringify(s));

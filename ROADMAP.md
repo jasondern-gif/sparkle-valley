@@ -32,6 +32,13 @@ Design rules (apply to everything):
 - [x] Bring both friends home with gifted cottage wood; replay train routing and calm signals from their pony menus. Progress saves at each interaction, with procedural visuals and device speech fallback.
 - This is another content increment, not a claim that the original story quest count has doubled.
 
+## Tidepool Harbor and Crystal Observatory
+- [x] Repair a boat by selecting and rotating geometric patches; set a sail and rudder for changing winds and buoys; open a safe dock while protecting the tidepool.
+- [x] Assemble and focus a telescope, rotate a sky chart to observed landmarks, and trace a constellation.
+- [x] Welcome and name four ponies, build their cottages with gifted wood, and make a lasting harbor display and planet mobile. Activities save intermediate choices; pony-menu replays use separate progress. Procedural visuals and device speech remain available.
+- [x] When the original cottage grid is full, additional reachable village spots become available without moving existing homes; if the village is crowded, buildings and decorations can still be moved for free.
+- **Story measurement:** the Chapter 6 baseline at `ef070a3` has 83 runtime quest entries, including the free-play ending (82 actionable); this expansion has 166 entries including free play (165 actionable). The 18 new entries include discovery, rescues, travel and cottages as well as activities; counts are not a measure of playtime. The six Friendship Pavilion activities, six welcome-quilt stories and festival remain additional village content. Total playtime has not been measured.
+
 ---
 
 ## ✅ Graphics pass (done)
