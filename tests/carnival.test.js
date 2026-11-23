@@ -120,11 +120,11 @@ test('Cloud Carnival migration, rescue, saved checkpoints and replay',async()=>{
     await page.locator('#c2body .pick').first().click();
     const spot=await page.evaluate(()=>[placing.spots[0].x+1.5,placing.spots[0].y+1]);
     await world(...spot);await page.locator('#c2body .pick[data-id="pippin"]').click();
-    await page.waitForFunction(()=>dlgOpen||qid()==='freeEnd',null,{timeout:15000});await dialog();await quest('freeEnd');
+    await page.waitForFunction(()=>dlgOpen||qid()==='hillsFly',null,{timeout:15000});await dialog();await quest('hillsFly');
     assert.equal(await page.evaluate(()=>state.cottages[state.ponies.pippin.home].pony),'pippin');
     assert.equal(await page.evaluate(()=>state.ch12.done),true);
     await reload();
-    assert.equal(await page.evaluate(()=>qid()),'freeEnd');
+    assert.equal(await page.evaluate(()=>qid()),'hillsFly');
     assert.equal(await page.evaluate(()=>state.ch12.rounds),3);
     assert.equal(await page.evaluate(()=>state.coins),73);
     assert.deepEqual(await page.evaluate(()=>state.ch11),{done:true,steps:3});

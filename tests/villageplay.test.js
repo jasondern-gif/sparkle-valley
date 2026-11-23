@@ -66,7 +66,7 @@ test('six village activities: old saves, interruption, keepsakes, accessible pla
     await page.goto(`http://127.0.0.1:${server.address().port}/?assets=off`);
     await page.evaluate(()=>{
       const s=defaultState();s.quest=qi('freeEnd');s.questId='freeEnd';s.balloon=3;s.px=20.5;s.py=34.5;
-      for(let n=4;n<=12;n++)s['ch'+n]={done:true};
+      for(let n=4;n<=13;n++)s['ch'+n]={done:true};
       for(const [i,id] of ['toffee','frost','bloom','skye','luma','pippin'].entries()){
         s.ponies[id]={name:PONIES[id].names[0],hearts:2,home:i,acc:null};
         s.cottages.push({x:6+i*4,y:37,color:'pink',pony:id,built:-100});
@@ -237,7 +237,7 @@ test('welcome quilt stories unlock on rescue and preserve interrupted and comple
     await page.goto(`http://127.0.0.1:${server.address().port}/?assets=off`);
     await page.evaluate(()=>{
       const s=defaultState();s.quest=qi('freeEnd');s.questId='freeEnd';s.balloon=3;s.px=20.5;s.py=34.5;
-      for(let n=4;n<=12;n++)s['ch'+n]={done:true};
+      for(let n=4;n<=13;n++)s['ch'+n]={done:true};
       s.ponies.toffee={name:'Caramel',hearts:2,home:0,acc:null};
       s.cottages.push({x:6,y:37,color:'pink',pony:'toffee',built:-100});
       s.coins=73;s.inv.wood=9;s.settings.voice=false;s.settings.music=false;
@@ -326,7 +326,7 @@ test('village festival is accessible, resumable and keeps its finished banner du
     await page.goto(`http://127.0.0.1:${server.address().port}/?assets=off`);
     await page.evaluate(()=>{
       const s=defaultState();s.quest=qi('freeEnd');s.questId='freeEnd';s.balloon=3;s.px=20.5;s.py=34.5;
-      for(let n=4;n<=12;n++)s['ch'+n]={done:true};
+      for(let n=4;n<=13;n++)s['ch'+n]={done:true};
       for(const [i,id] of ['toffee','frost','bloom','skye','luma'].entries()){
         s.ponies[id]={name:PONIES[id].names[0],hearts:2,home:i,acc:null};
         s.cottages.push({x:6+i*4,y:37,color:'pink',pony:id,built:-100});

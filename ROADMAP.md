@@ -14,6 +14,13 @@ Design rules (apply to everything):
 
 ---
 
+## Sunflower Hills
+- [x] Fly to the hills, repair Sunny's bridge, make a bee picnic, and guide Briar with a gentle bell song.
+- [x] Choose flowers for a lasting welcome garden, bring both ponies home, and build their cottages with gifted wood.
+- [x] Resume activities at saved checkpoints and replay Sunny's bridge and Briar's bells from their pony menus. Procedural art and device speech remain available without new assets or recordings.
+
+---
+
 ## ✅ Graphics pass (done)
 - [x] Soft continuous grass, rounded paths, garden beds, pond with lily pads, drawn trees, cuter people and ponies (blinking, wings, swishing tails), building details, ambient sparkles
 - [ ] Later: real hand-drawn sprite art (free art pack or AI-generated images) for a bigger jump
