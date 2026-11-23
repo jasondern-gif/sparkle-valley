@@ -70,7 +70,10 @@ test('game loads offline with assets enabled and disabled',async()=>{
         await page.waitForFunction(()=>typeof qid==='function'&&typeof LG==='object');
         const status=await page.evaluate(()=>Assets.ready);
         if(query)assert.equal(status.manifest,'off');
-        else assert.deepEqual(status.ready.sort(),['buttercup','crop_carrot','farmhouse','tree']);
+        else{
+          assert.deepEqual(status.ready.sort(),['farmhouse','tree']);
+          assert.deepEqual(status.disabled.sort(),['buttercup','crop_carrot']);
+        }
         assert.ok(await page.locator('#playBtn').isVisible());
         assert.deepEqual(errors,[]);
       }finally{await context.close();}

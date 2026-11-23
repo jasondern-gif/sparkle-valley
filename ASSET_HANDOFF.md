@@ -7,6 +7,10 @@ The game draws everything procedurally today. An image is used only if it is lis
 `assets/manifest.json`, loads successfully, and matches its declared size; otherwise the original
 drawing is used automatically. A broken or missing file can never break the game.
 
+Tree and farmhouse images are enabled. Carrot and Buttercup entries have `enabled: false`
+so the release keeps their original procedural drawings instead of unfinished placeholders.
+Their wrappers and image specifications remain ready for replacement artwork.
+
 ## 1. Image rules (all assets)
 
 | Rule | Value |
@@ -36,6 +40,7 @@ on screen. Art never changes world coordinates, the camera, collisions or hit ar
       "frameSize": [frameWidthPx, frameHeightPx],
       "world": [widthInTiles, heightInTiles],
       "origin": "bottom-center",
+      "enabled": true,
       "pixelArt": true,
       "animations": {
         "<name>": { "frames": [0, 1, 2], "fps": 8, "loop": true }
@@ -53,6 +58,7 @@ on screen. Art never changes world coordinates, the camera, collisions or hit ar
 | `world` | yes | On-screen size of one frame in world tiles. Should equal `frameSize / tilePx` (a warning is logged otherwise) |
 | `origin` | no | `"bottom-center"` (default) or `"top-left"`: which point of the frame sits on the game's anchor point |
 | `pixelArt` | no | `true` (default) = crisp nearest-neighbour scaling; `false` = smooth scaling |
+| `enabled` | no | `false` skips loading and uses the procedural drawing without a missing-asset warning; otherwise enabled |
 | `animations` | no | Named frame lists. `fps` 0/absent = static first frame. `loop` defaults to `true`; `false` holds the last frame |
 
 Frame index `n` is at column `n % cols`, row `floor(n / cols)` where `cols = size[0] / frameSize[0]`.
@@ -95,6 +101,7 @@ Coordinates below are in tiles relative to the anchor point; +x = right, +y = do
 
 1. Put the PNG in the right folder and set `size`/`frameSize`/`world` exactly.
 2. Keep ids and animation names from section 3 (new ids need a matching code wrapper first).
+   After replacing a disabled placeholder with finished art, remove `enabled: false` or set it to `true`.
 3. Open the game normally and with `?assets=off` to compare; the console shows one `[assets]` warning
    per problem (bad size, missing file, missing animation) and that object keeps its drawn art.
 4. `node assets/make_placeholders.js` regenerates the placeholder images (overwrites the art files).
