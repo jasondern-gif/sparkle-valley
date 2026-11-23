@@ -537,6 +537,24 @@ Object.assign(L,{playground:R('The playground! The ponies love to play here!'),p
   needFlowers:R('You need more flowers! Pick flowers in the meadow.'),lock2:R('Rescue 3 ponies to unlock this!'),lock3:R('Rescue 5 ponies to unlock this!'),
   noSpot:R('There is no room for this. Try moving things around!')});
 const DECO={
+  pavilion:{n:R('Friendship Pavilion'),cost:{},w:3,h:2,hg:2,rare:1,d:s=>{
+    shadow(0,-s*.1,s*1.5,s*.25);ctx.fillStyle='#fff0f8';rr(-s*1.4,-s*.25,s*2.8,s*.25,s*.1);ctx.fill();
+    ctx.fillStyle='#a77bd8';for(const x of[-1.2,1.2])ctx.fillRect(x*s,-s*1.6,s*.12,s*1.4);
+    ctx.fillStyle='#ff9ad5';ctx.beginPath();ctx.moveTo(-s*1.5,-s*1.5);ctx.lineTo(0,-s*2);ctx.lineTo(s*1.5,-s*1.5);ctx.closePath();ctx.fill();
+    drawEmoji('💗',0,-s*1.65,s*.4);
+  },a:(X,Y,s)=>{
+    const ids=['toffee','frost','bloom','skye','luma','pippin'];
+    ids.forEach((id,i)=>{if(S().activities&&S().activities[id]&&S().activities[id].keepsake)
+      drawEmoji(PONIES[id].acc,X+(i-2.5)*s*.4,Y-s*.55,s*.3);});
+    ids.forEach((id,i)=>{if(S().friendStories&&S().friendStories[id]&&S().friendStories[id].keepsake)
+      drawEmoji('🧵',X+(i-2.5)*s*.4,Y-s*.95,s*.25);});
+    const festival=S().festival&&S().festival.keepsake;
+    if(festival){
+      const colors={rose:'#ed568f',sky:'#58a8df',sun:'#f4c64d'};
+      festival.colors.forEach((color,i)=>{ctx.fillStyle=colors[color];ctx.fillRect(X+(i-3)*s*.3,Y-s*1.35,s*.28,s*.18);});
+      drawEmoji('⭐',X,Y-s*1.5,s*.25);
+    }
+  }},
   flowers:{n:R('Flower bed'),cost:{flower:2},hg:1,multi:1,vars:4,d:dFlowerBed,tag:'flower'},
   bush:{n:R('Flower bush'),cost:{wood:1},hg:1.1,vars:4,d:dBush,tag:'flower'},
   tree:{n:R('Green tree'),cost:{wood:2},hg:1.9,d:dTree(0),tag:'tree'},
@@ -1069,6 +1087,7 @@ HOOK.update.push(dt=>{if(!state.vil)return;
     talk([['narrator','You got the Rainbow Crown! You look like a real rainbow princess!'],['narrator','It is in your wardrobe. Tap the dress button any time!']]);}});
 function tapDeco(d){const D=DECO[d.k],o=originOf(d),fx=o.x,fy=d.y+D.h+.45;
   goDo(fx,fy,D.w>=3?2.2:1.6,()=>{sfx('tap');burst(o.x,o.y-D.hg*.6,'✨',5,.6);
+    if(d.k==='pavilion'){window.villagePlay();return;}
     if(d.k==='bakery'){if(typeof window.ch3OpenBakery==='function')window.ch3OpenBakery();else say(L.bakeryReady,'narrator');return;}
     say(D.say||D.n,'narrator');if(D.say===L.wish){sfx('sparkle');burst(o.x,o.y-1,'💫',6,.8);}});}
 HOOK.tap.push((wx,wy)=>{if(!state.vil||placing||flight)return false;

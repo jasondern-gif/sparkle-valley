@@ -14,10 +14,37 @@ Design rules (apply to everything):
 
 ---
 
+## Sunflower Hills
+- [x] Fly to the hills, repair Sunny's bridge, make a bee picnic, and guide Briar with a gentle bell song.
+- [x] Choose flowers for a lasting welcome garden, bring both ponies home, and build their cottages with gifted wood.
+- [x] Resume activities at saved checkpoints and replay Sunny's bridge and Briar's bells from their pony menus. Procedural art and device speech remain available without new assets or recordings.
+
+## Butterfly Brook
+- [x] Discover three illustrated wing patterns, then operate two water gates to float Ripple's boat while protecting the butterfly reeds.
+- [x] Match mirrored wing patches on a butterfly kite to guide the fluttering visitors away from shy Mallow, then design a lasting three-flag wing mural.
+- [x] Name both rescued ponies, bring them home, and build cottages with gifted wood; replay water routing and kite mending from their pony menus.
+- [x] Nine story quests with per-interaction checkpoints, old-save continuation, procedural drawings, large labeled picture controls, and device speech fallback. No timers, purchases, crop waits, or lost progress for a different choice.
+- This is another content increment, not a claim that the original story quest count has doubled.
+
+## Rainbow Railway
+- [x] Repair and check a bridge together, guide a train through stations with safe switches, and welcome Piper.
+- [x] Share calm signals with Tinsel, guide a return journey, and choose a lasting station display.
+- [x] Bring both friends home with gifted cottage wood; replay train routing and calm signals from their pony menus. Progress saves at each interaction, with procedural visuals and device speech fallback.
+- This is another content increment, not a claim that the original story quest count has doubled.
+
+## Tidepool Harbor and Crystal Observatory
+- [x] Repair a boat by selecting and rotating geometric patches; set a sail and rudder for changing winds and buoys; open a safe dock while protecting the tidepool.
+- [x] Assemble and focus a telescope, rotate a sky chart to observed landmarks, and trace a constellation.
+- [x] Welcome and name four ponies, build their cottages with gifted wood, and make a lasting harbor display and planet mobile. Activities save intermediate choices; pony-menu replays use separate progress. Procedural visuals and device speech remain available.
+- [x] When the original cottage grid is full, additional reachable village spots become available without moving existing homes; if the village is crowded, buildings and decorations can still be moved for free.
+- **Story measurement:** the Chapter 6 baseline at `ef070a3` has 83 runtime quest entries, including the free-play ending (82 actionable); this expansion has 166 entries including free play (165 actionable). The 18 new entries include discovery, rescues, travel and cottages as well as activities; counts are not a measure of playtime. The six Friendship Pavilion activities, six welcome-quilt stories and festival remain additional village content. Total playtime has not been measured.
+
+---
+
 ## ✅ Graphics pass (done)
 - [x] Soft continuous grass, rounded paths, garden beds, pond with lily pads, drawn trees, cuter people and ponies (blinking, wings, swishing tails), building details, ambient sparkles
 - [ ] Later: real hand-drawn sprite art (free art pack or AI-generated images) for a bigger jump
-  - [x] Asset pipeline prototype: `assets/manifest.json` + procedural fallback, `?assets=off` to compare; trees, carrots, farmhouse and Buttercup wired up with placeholder images (spec: `ASSET_HANDOFF.md`)
+  - [x] Asset pipeline prototype: `assets/manifest.json` + procedural fallback, `?assets=off` to compare; trees and farmhouse use sprites, while unfinished carrot and Buttercup placeholders remain disabled (spec: `ASSET_HANDOFF.md`).
 
 ## ✅ Chapter 1: Sparkle Valley (done)
 - [x] Grandma's farm: plant, water, harvest carrots, strawberries and sunflowers
@@ -107,6 +134,67 @@ Design rules (apply to everything):
 - [x] Every new pony has a replayable game from the pony menu's play button
 - [x] Every new object is drawn by a named function in a per-land drawing table (`LandArt` in lands.js, forest.js, lagoon.js, meadow.js), ready to be swapped for sprite art
 
+## ✅ Candy Castle adventure (Chapter 7, first increment)
+- [x] Fly to Candy Castle, find its scattered decorations, and choose a roof and topper
+- [x] Befriend and name Toffee, make her a Pony Village cottage, and replay the decoration hunt
+- [x] Castle choices and quest progress survive saving; new lines use the device's speech fallback
+
+## ✅ Snowy Mountain adventure (Chapter 8)
+- [x] Find five magic snowflakes, play the mountain bells, and customize the guiding lantern
+- [x] Befriend and name Frost, build her a village cottage, and replay the snowflake hunt
+- [x] The lantern, new friend, and progress persist; new lines use device speech fallback
+- [x] Browser journey checks: `npm ci`, then `node --test tests/candy.test.js` (uses installed Chromium/Edge or `CHROMIUM_PATH`)
+
+## ✅ Secret Garden adventure (Chapter 9)
+- [x] Open a hidden path, find five seeds, and choose flowers and a decoration for the garden
+- [x] Befriend and name Bloom, build her a village cottage, and replay the seed hunt
+- [x] The open path, planted garden, and progress persist; new lines use device speech fallback
+- [x] Browser journey checks cover earlier saves, new games, reloads, and replay in `tests/candy.test.js`
+
+## ✅ Rainbow Island adventure (Chapter 10)
+- [x] Mend the bridge, find five rainbow lights, and customize the island beacon
+- [x] Befriend and name Skye, build her a village cottage, and replay the light hunt
+- [x] The bridge, beacon, friend, and progress persist; new lines use device speech fallback
+- [x] Run browser journeys with `npm ci` and `npm test`; set `CHROMIUM_PATH` if no supported browser is discoverable
+
+## ✅ Starlight Orchard adventure (Chapter 11)
+- [x] Guide Luma through three landmark crossroads, with spoken hints and saved checkpoints
+- [x] Befriend and name Luma, build her a village cottage, and replay the route for friendship
+- [x] The glowing orchard, pony, and progress persist; new lines use device speech fallback
+- [x] Browser journey checks cover old saves, interrupted progress, new games, and replay in `tests/orchard.test.js`; Linux CI runs `npm test`
+
+## ✅ Cloud Carnival adventure (Chapter 12)
+- [x] Balance a wobbly cloud carousel in three untimed rounds to rescue Pippin
+- [x] Befriend and name Pippin, build her a village cottage, and replay the balancing game for friendship
+- [x] The restored carousel, pony, and completed rounds persist; spoken directions use device speech fallback
+- [x] Browser journeys cover migration, interrupted progress, new games, and replay in `tests/carnival.test.js`; run `npm ci` and `npm test`, setting `CHROMIUM_PATH` if needed
+
 ## 💡 Ideas for later
-- More lands (a candy castle, a snowy mountain), and more Pony Village buildings for the new ponies' favorite things
+- More lands and more Pony Village buildings for the new ponies' favorite things
 - Real hand-drawn sprite art for the new lands (see the `LandArt` tables)
+
+## ✅ Friendship Pavilion (bounded village expansion)
+- [x] The first rescued friend from chapters 7–12 brings a free pavilion in the decoration treasure box; place, move or store it with the existing village tools
+- [x] Open activities from the pavilion, the village heart button, or the new heart button on those ponies; each friend's activity unlocks on rescue
+- [x] Toffee shares chosen picnic treats; Frost echoes three snow bells; Bloom plants and waters a flower basket
+- [x] Skye steers a kite to three stars; Luma lights a landmark walking route; Pippin composes and listens to a four-sound parade
+- [x] Untimed, cost-free play with spoken prompts, keyboard controls, large buttons, saved drafts and finished keepsakes; pavilion badges grow with completed activities
+- [x] Existing chapter replay games remain on the original Play button; old saves, cottages, artwork and story progression are preserved
+- [x] Automated journeys in `tests/villageplay.test.js` cover migration, free placement and access, interrupted play, six completed keepsakes, replay, speech fallback and small-screen controls; `npm test` also runs in Linux CI
+
+This adds one building and six activities, not more story quests. It is **not a verified doubling of the game's content**. New speech uses device fallback rather than new recorded voices, and the pavilion uses procedural artwork.
+
+## ✅ Welcome quilt stories (bounded follow-up)
+- [x] Six short, choice-led friendship stories for Toffee, Frost, Bloom, Skye, Luma and Pippin, available from the Friendship Pavilion after each pony's rescue
+- [x] Welcome a nervous neighbor, make room for quiet, care for a shared garden, include a distant friend, light a safe path and celebrate different ways to participate
+- [x] Choices save at each step; finished patches remain visible on the pavilion while a replay is in progress. Stories are free, untimed and do not replace the main quest or existing activities
+- [x] The story journey is covered by `tests/villageplay.test.js`, including older saves, rescue gates, interrupted and completed saves, replay, speech and keyboard access
+
+The stories use procedural visuals and device speech fallback. This increment does not establish a doubling of total content.
+
+## ✅ Village friendship festival
+- [x] After all six new friends are rescued, open the free festival from the Friendship Pavilion hub. Toffee and Frost match inclusive invitations; Bloom and Skye plan three site features; Luma and Pippin make a six-flag banner.
+- [x] The finished banner appears on a placed pavilion and the hub marks the festival as complete. Each choice is saved; an interrupted replay preserves the previous finished festival until replaced.
+- [x] Untimed play has spoken instructions and hints, keyboard-operable controls, procedural visuals and device speech fallback. Existing saves and adventures remain intact.
+
+The festival is one additional adventure, not a verified doubling of total content. The pavilion must be placed to see the banner in the village.

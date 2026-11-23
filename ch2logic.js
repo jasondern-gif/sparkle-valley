@@ -181,8 +181,17 @@ function spotOK(ax,ay){
   const before=villageReach();tiles.forEach(([x,y])=>map[y][x]='Y');const after=villageReach();tiles.forEach(([x,y])=>map[y][x]='.');
   return after===before-6;
 }
-function buildSpots(){const out=[];for(let ay=33;ay<=41;ay+=4)for(let ax=6;ax<=36;ax+=4)if(spotOK(ax,ay))out.push({x:ax,y:ay});return out;}
-function startPlacing(color){placing={color,spots:buildSpots()};say(N2.tapSpot,'narrator');refreshBar(true);}
+function buildSpots(){
+  const out=[];for(let ay=33;ay<=41;ay+=4)for(let ax=6;ax<=36;ax+=4)if(spotOK(ax,ay))out.push({x:ax,y:ay});
+  if(out.length)return out;
+  for(let ay=31;ay<=41;ay++)for(let ax=5;ax<=36;ax++)if(spotOK(ax,ay))out.push({x:ax,y:ay});
+  return out;
+}
+function startPlacing(color){
+  const spots=buildSpots();
+  if(!spots.length){say('There is no room here yet. You can move cottages or decorations for free to make space.','narrator');return;}
+  placing={color,spots};say(N2.tapSpot,'narrator');refreshBar(true);
+}
 function placeAt(wx,wy){
   let best=null,bd=1.8;for(const s of placing.spots){const d=dist(wx,wy,s.x+1.5,s.y+1);if(d<bd){bd=d;best=s;}}
   if(!best){sfx('nope');say(N2.badSpot,'narrator');return;}

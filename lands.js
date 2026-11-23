@@ -6,7 +6,7 @@
 //     const prev=LandArt.forest.fairyHouse; LandArt.forest.fairyHouse=function(...a){ if(Assets.has('fairy_house')) ...; else prev(...a); };
 // - LG: mini-game engines shared by the land chapters (world tap fields, picture picks, staged builders, screen games)
 //   and chapter helpers (guiding arrow to the right place, cottages for new ponies, moving old saves into new chapters).
-const LandArt={shared:{},forest:{},lagoon:{},meadow:{}};
+const LandArt={shared:{},forest:{},lagoon:{},meadow:{},candy:{},mountain:{},garden:{},island:{},orchard:{},carnival:{},hills:{},brook:{},railway:{},harbor:{},observatory:{}};
 const LG=(()=>{
 const R=reg,A=LandArt.shared;
 const art=key=>{const[a,b]=key.split('.');return LandArt[a][b];};
@@ -15,7 +15,7 @@ const art=key=>{const[a,b]=key.split('.');return LandArt[a][b];};
 Object.assign(AREAS.valley,{name:R('narrator','Sparkle Valley'),icon:'🏡',unlocked:()=>true,sky:['#7cc8ff','#d6f0ff'],
   go:R('narrator','Home we go! Back to Sparkle Valley!')});
 Object.assign(AREAS.clouds,{name:R('narrator','Cloud Kingdom'),icon:'🏰',unlocked:()=>state.balloon>=3,sky:['#b8a6ff','#ffe1f2'],go:N2.up});
-const LANDS=['forest','lagoon','meadow'];
+const LANDS=['forest','lagoon','meadow','candy','mountain','garden','island','orchard','carnival','hills','brook','railway','harbor','observatory'];
 const SAY={
   where:R('narrator','Where should we fly? Tap a picture!'),
   stop:R('narrator','Okay! We can play again later.'),
@@ -108,7 +108,7 @@ A.scene_clouds=function(iy,s,t){ctx.fillStyle='#fdfbff';ell(vw/2,iy+vh*.12,vw*.6
 {const prev=drawTree;drawTree=function(x,y){if(y>=48&&x<45){const f=LandArt[areaAt(x,y)].tree;if(f)return f(x,y);}return prev(x,y);};}
 // Sparkle Valley's big rainbow belongs to the valley sky; the far lands have their own skies
 {const prev=drawRainbow;drawRainbow=function(){const a=hereArea();if(LANDS.includes(a)){drawAmbient();return;}return prev();};}
-const grassDeco=(x,y,c,s,cl,r)=>{const f=LandArt[cl===3?'forest':cl===6?'meadow':'lagoon'].grassDeco;if(f)f(x,y,c,s,r);};
+const grassDeco=(x,y,c,s,cl,r)=>{const f=LandArt[cl===3?'forest':cl===6?'meadow':cl===7?'candy':cl===8?'mountain':cl===9?'garden':cl===10?'island':cl===11?'orchard':cl===12?'carnival':cl===13?'hills':cl===14?'brook':cl===15?'railway':cl===16?'harbor':cl===17?'observatory':'lagoon'].grassDeco;if(f)f(x,y,c,s,r);};
 
 // ===== Mini-game engines =====
 // Only one LG mini-game runs at a time. mode 'story' belongs to a quest; mode 'play' is a replay game from the pony menu.
@@ -162,13 +162,13 @@ function pickGame(cfg){stop(true);const g=game=Object.assign({type:'pick',i:0,ok
   const opts=[...cfg.opts].sort(()=>Math.random()-.5);
   $('lgOpts').innerHTML=opts.map(o=>`<button data-k="${o.k}">${o.html}</button>`).join('');
   $('lgOpts').querySelectorAll('button').forEach(b=>b.onclick=()=>pickTap(g,b));
-  pickShow(g);setTimeout(()=>{if(game===g)screenSay(g.steps[0].say,g.who);},1700);}
+  pickShow(g);setTimeout(()=>{if(game===g&&g.i===0)screenSay(g.steps[0].say,g.who);},1700);}
 function pickShow(g){const r=$('lgRecipe');if(r)r.innerHTML=g.steps.map((s,i)=>`<span class="${i<g.i?'ok':i===g.i?'now':''}">${(g.opts.find(o=>o.k===s.want)||{}).html||''}</span>`).join('');}
 function pickTap(g,b){if(game!==g||g.i>=g.steps.length)return;initAudio();const st=g.steps[g.i];
   if(b.dataset.k!==st.want){sfx('nope');b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake');screenSay(pick(SAY.wrong));return;}
   sfx('sparkle');g.ok.push(st.want);g.hit=performance.now()/1000;if(g.onRight)g.onRight(g.i);g.i++;pickShow(g);
   if(g.i>=g.steps.length){sfx('fanfare');setTimeout(()=>{if(game!==g)return;game=null;closeScreen(true);if(g.onDone)g.onDone();},2200);return;}
-  setTimeout(()=>{if(game===g)screenSay(g.steps[g.i].say,g.who);},500);}
+  const next=g.i;setTimeout(()=>{if(game===g&&g.i===next)screenSay(g.steps[next].say,g.who);},500);}
 
 // --- Staged builder: pick a look for each part, see it change, tap ✔. cfg: {mode,title,titleSay,who,stages:[{say,opts:[{k,html,say}]}],art:'land.object',onDone(choices)}
 function builder(cfg){stop(true);const g=game=Object.assign({type:'builder',si:0,ch:{},cur:null},cfg);

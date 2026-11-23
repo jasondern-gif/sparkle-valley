@@ -96,6 +96,28 @@ test('missing manifest installs the worker and still works offline',async()=>{
   }finally{missing.clear();await context.close();}
 });
 
+test('all chapters and prototype assets load offline with an older save',async()=>{
+  const {context,page,errors}=await open();
+  try{
+    await page.waitForFunction(()=>navigator.serviceWorker.controller,{timeout:15000});
+    await page.evaluate(()=>{
+      const s=defaultState();s.quest=qi('c12fly');delete s.questId;s.balloon=3;
+      s.ch4={done:true};s.ch5={done:true};s.ch6={done:true};s.ch7={done:true};
+      s.ch8={done:true};s.ch9={done:true};s.ch10={done:true};s.ch11={done:true,steps:3};
+      s.coins=73;s.settings.voice=false;localStorage.setItem(SAVE_KEY,JSON.stringify(s));
+    });
+    await context.setOffline(true);
+    await page.reload();
+    const status=await page.evaluate(()=>Assets.ready);
+    assert.deepEqual(status.ready.sort(),['farmhouse','tree']);
+    assert.deepEqual(status.disabled.sort(),['buttercup','crop_carrot']);
+    await page.locator('#continueBtn').click();
+    assert.deepEqual(await page.evaluate(()=>({quest:qid(),coins:state.coins,steps:state.ch11.steps,
+      carnival:LG.dests().includes('carnival')})),{quest:'c12fly',coins:73,steps:3,carnival:true});
+    assert.deepEqual(errors,[]);
+  }finally{await context.close();}
+});
+
 test('disabled placeholder art keeps procedural drawings without warnings',async()=>{
   const {context,page,status,errors,warnings,requests}=await open();
   try{
