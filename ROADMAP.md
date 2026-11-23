@@ -19,6 +19,13 @@ Design rules (apply to everything):
 - [x] Choose flowers for a lasting welcome garden, bring both ponies home, and build their cottages with gifted wood.
 - [x] Resume activities at saved checkpoints and replay Sunny's bridge and Briar's bells from their pony menus. Procedural art and device speech remain available without new assets or recordings.
 
+## Butterfly Brook
+- [x] Discover three illustrated wing patterns, then operate two water gates to float Ripple's boat while protecting the butterfly reeds.
+- [x] Match mirrored wing patches on a butterfly kite to guide the fluttering visitors away from shy Mallow, then design a lasting three-flag wing mural.
+- [x] Name both rescued ponies, bring them home, and build cottages with gifted wood; replay water routing and kite mending from their pony menus.
+- [x] Nine story quests with per-interaction checkpoints, old-save continuation, procedural drawings, large labeled picture controls, and device speech fallback. No timers, purchases, crop waits, or lost progress for a different choice.
+- This is another content increment, not a claim that the original story quest count has doubled.
+
 ---
 
 ## ✅ Graphics pass (done)

@@ -1,48 +1,7 @@
 // Run with: node --test tests/hills.test.js
-const {chromium}=require('playwright-core');
 const assert=require('node:assert/strict');
-const fs=require('node:fs');
-const http=require('node:http');
-const path=require('node:path');
 const test=require('node:test');
-
-async function browserLaunch(){
-  const isFile=p=>{try{return fs.statSync(p).isFile();}catch(e){if(e.code==='ENOENT'||e.code==='ENOTDIR')return false;throw e;}};
-  if(process.env.CHROMIUM_PATH){
-    if(!isFile(process.env.CHROMIUM_PATH))throw new Error('CHROMIUM_PATH does not point to a browser executable');
-    return chromium.launch({executablePath:process.env.CHROMIUM_PATH,headless:true});
-  }
-  try{return await chromium.launch({headless:true});}
-  catch(e){if(!e.message.includes("Executable doesn't exist"))throw e;}
-  const names=process.platform==='win32'?['msedge.exe','chrome.exe','chromium.exe']:
-    ['chromium','chromium-browser','google-chrome','google-chrome-stable','microsoft-edge','microsoft-edge-stable'];
-  const candidates=[];
-  if(process.platform==='win32'){
-    for(const dir of [process.env['PROGRAMFILES(X86)'],process.env.PROGRAMFILES,process.env.LOCALAPPDATA].filter(Boolean))
-      candidates.push(path.join(dir,'Microsoft','Edge','Application','msedge.exe'),path.join(dir,'Google','Chrome','Application','chrome.exe'));
-  }else if(process.platform==='darwin'){
-    candidates.push('/Applications/Google Chrome.app/Contents/MacOS/Google Chrome','/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge');
-  }
-  for(const dir of (process.env.PATH||'').split(path.delimiter).filter(Boolean))for(const name of names)candidates.push(path.join(dir,name));
-  const found=candidates.find(isFile);
-  if(!found)throw new Error('No Chromium or Edge browser found. Install Playwright Chromium or set CHROMIUM_PATH.');
-  return chromium.launch({executablePath:found,headless:true});
-}
-function serve(){
-  const root=path.resolve(__dirname,'..');
-  const types={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.json':'application/json','.png':'image/png','.mp3':'audio/mpeg'};
-  const server=http.createServer((req,res)=>{
-    let pathname;
-    try{pathname=decodeURIComponent(new URL(req.url,'http://127.0.0.1').pathname);}catch(e){res.writeHead(400);res.end('Bad URL');return;}
-    const file=path.resolve(root,'.'+(pathname==='/'?'/index.html':pathname));
-    if(file!==root&&!file.startsWith(root+path.sep)){res.writeHead(403);res.end('Forbidden');return;}
-    fs.readFile(file,(err,data)=>{
-      if(err){res.writeHead(err.code==='ENOENT'?404:500);res.end();return;}
-      res.writeHead(200,{'Content-Type':types[path.extname(file)]||'application/octet-stream'});res.end(data);
-    });
-  });
-  return new Promise((resolve,reject)=>{server.once('error',reject);server.listen(0,'127.0.0.1',()=>resolve(server));});
-}
+const {browserLaunch,serve}=require('./helpers/browser.cjs');
 
 test('Sunflower Hills rescues, checkpoints, old saves and replay',async()=>{
   const server=await serve();let browser;
@@ -115,8 +74,8 @@ test('Sunflower Hills rescues, checkpoints, old saves and replay',async()=>{
       await page.locator(`#c2body .pick[data-id="${id}"]`).click();await dialog();
       await page.waitForFunction(id=>!ents[id].goHome,id,{timeout:15000});
     }
-    await page.waitForFunction(()=>dlgOpen||qid()==='freeEnd',null,{timeout:15000});await dialog();
-    await quest('freeEnd');await reload();
+    await page.waitForFunction(()=>dlgOpen||qid()==='brookFly',null,{timeout:15000});await dialog();
+    await quest('brookFly');await reload();
     assert.equal(await page.evaluate(()=>state.ch13.done),true);
     assert.deepEqual(await page.evaluate(()=>state.ch13.garden),['tulip','sunflower','blossom']);
     assert.deepEqual(await page.evaluate(()=>['sunny','briar'].map(id=>state.cottages[state.ponies[id].home].pony)),['sunny','briar']);
@@ -129,7 +88,7 @@ test('Sunflower Hills rescues, checkpoints, old saves and replay',async()=>{
       await page.waitForFunction(()=>!LG.active());
       assert.ok(await page.evaluate(id=>state.ponies[id].hearts,id)>hearts);
     }
-    await reload();assert.equal(await page.evaluate(()=>qid()),'freeEnd');
+    await reload();assert.equal(await page.evaluate(()=>qid()),'brookFly');
     await page.evaluate(()=>{
       const s=defaultState();s.quest=qi('hillsFly');s.balloon=3;
       for(let n=4;n<=12;n++)s['ch'+n]={done:true};
