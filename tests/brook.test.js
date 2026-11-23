@@ -61,6 +61,15 @@ test('Butterfly Brook: both rescues, saved interactions, speech, cottages and re
     assert.equal(await page.locator('#brookOpts [data-brook]').evaluateAll(bs=>bs.every(b=>{
       const r=b.getBoundingClientRect();return r.width>=80&&r.left>=0&&r.right<=innerWidth;
     })),true);
+    assert.deepEqual(await page.locator('#brookOpts .sayBtn').evaluateAll(bs=>({
+      count:bs.length,
+      accessibleLayout:bs.every(b=>{
+        const r=b.getBoundingClientRect(),choice=b.closest('.brookChoice').getBoundingClientRect();
+        const action=b.parentElement.querySelector('[data-brook]').getBoundingClientRect();
+        return r.width>=44&&r.height>=44&&r.left>=0&&r.right<=innerWidth
+          &&choice.left>=0&&choice.right<=innerWidth&&r.left>=action.right;
+      })
+    })),{count:3,accessibleLayout:true},'Read-aloud targets must be at least 44x44, fit 390px, and not overlap activity buttons');
     assert.equal(await page.locator('[data-brook="boat"]').getAttribute('aria-pressed'),'true');
     await page.evaluate(()=>{window.utterances=[];speechSynthesis.speak=u=>window.utterances.push(u.text);state.settings.voice=true;});
     await page.locator('#brookOpts .brookChoice').first().locator('.sayBtn').click();

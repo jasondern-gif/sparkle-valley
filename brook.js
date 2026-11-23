@@ -2,7 +2,7 @@
 // Butterfly Brook: observe wing patterns, route a boat, and mend a mirrored kite.
 (()=>{
 const R=t=>reg('narrator',t), ART=LandArt.brook, IDS=['ripple','mallow'];
-document.head.insertAdjacentHTML('beforeend','<style>#brookOpts .sayBtn{width:36px;height:36px;font-size:20px;border-width:2px;grid-column:2;grid-row:1;}#brookOpts .brookChoice{display:grid;grid-template-columns:84px 36px;align-items:center;gap:4px;}#brookOpts .brookLabel{grid-column:1 / -1;font-size:18px;text-align:center;max-width:124px;}</style>');
+document.head.insertAdjacentHTML('beforeend','<style>#brookOpts .sayBtn{width:44px;height:44px;font-size:20px;border-width:2px;grid-column:2;grid-row:1;}#brookOpts .brookChoice{display:grid;grid-template-columns:84px 44px;align-items:center;gap:4px;}#brookOpts .brookLabel{grid-column:1 / -1;font-size:18px;text-align:center;max-width:132px;}</style>');
 const PATTERNS=[{key:'spots',icon:'●',name:'Spots'},{key:'stripes',icon:'≡',name:'Stripes'},{key:'stars',icon:'★',name:'Stars'}];
 for(const [id,look,home] of [
   ['ripple',{body:'#b9e5e8',mane:['#5baebc','#f9e5ac','#b7d3f2'],hoof:'#698f9d',snout:'#f0ffff',scale:.84},{x:27.5,y:380.5}],
