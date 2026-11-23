@@ -101,8 +101,8 @@ test('Butterfly Brook: both rescues, saved interactions, speech, cottages and re
       await page.locator(`#c2body .pick[data-id="${id}"]`).click();await dialog();
       await page.waitForFunction(id=>!ents[id].goHome,id,{timeout:15000});
     }
-    await page.waitForFunction(()=>dlgOpen||qid()==='freeEnd',null,{timeout:15000});await dialog();
-    await quest('freeEnd');await reload();
+    await page.waitForFunction(()=>dlgOpen||qid()==='railFly',null,{timeout:15000});await dialog();
+    await quest('railFly');await reload();
     const completed=await page.evaluate(()=>JSON.parse(JSON.stringify(state.ch14)));
     assert.equal(completed.done,true);assert.deepEqual(completed.mural,['stripes','stars','spots']);
     assert.deepEqual(await page.evaluate(()=>['ripple','mallow'].map(id=>state.cottages[state.ponies[id].home].pony)),['ripple','mallow']);
@@ -121,7 +121,7 @@ test('Butterfly Brook: both rescues, saved interactions, speech, cottages and re
       assert.ok(await page.evaluate(id=>state.ponies[id].hearts,id)>hearts);
       assert.deepEqual(await page.evaluate(()=>state.ch14),completed);
     }
-    await reload();assert.equal(await page.evaluate(()=>qid()),'freeEnd');
+    await reload();assert.equal(await page.evaluate(()=>qid()),'railFly');
     await page.evaluate(()=>{
       const s=defaultState();s.quest=qi('hillsBells');s.questId='hillsBells';s.balloon=3;
       s.ch13={bells:['sun']};s.settings.voice=false;s.settings.music=false;started=false;localStorage.setItem(SAVE_KEY,JSON.stringify(s));

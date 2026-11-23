@@ -26,6 +26,12 @@ Design rules (apply to everything):
 - [x] Nine story quests with per-interaction checkpoints, old-save continuation, procedural drawings, large labeled picture controls, and device speech fallback. No timers, purchases, crop waits, or lost progress for a different choice.
 - This is another content increment, not a claim that the original story quest count has doubled.
 
+## Rainbow Railway
+- [x] Repair and check a bridge together, guide a train through stations with safe switches, and welcome Piper.
+- [x] Share calm signals with Tinsel, guide a return journey, and choose a lasting station display.
+- [x] Bring both friends home with gifted cottage wood; replay train routing and calm signals from their pony menus. Progress saves at each interaction, with procedural visuals and device speech fallback.
+- This is another content increment, not a claim that the original story quest count has doubled.
+
 ---
 
 ## ✅ Graphics pass (done)
