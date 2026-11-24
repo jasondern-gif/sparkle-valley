@@ -1,4 +1,4 @@
-const CACHE='sparkle-valley-v24';
+const CACHE='sparkle-valley-v25';
 const FILES=['./','index.html','core.js','draw.js','assets/assetManager.js','quests.js','ch2data.js','ch2logic.js','ch2world.js','ch2ui.js','ch2draw.js','ch2draw2.js','assets/wrappers.js','hooks.js','lands.js','ch3.js','village.js','forest.js','lagoon.js','meadow.js','candy.js','mountain.js','garden.js','island.js','orchard.js','carnival.js','hills.js','brook.js','railway.js','harbor-observatory.js','villageplay.js','friendstories.js','festival.js','questbook.js','glue.js','game.js','holdmove.js','manifest.json','icon-180.png','icon-512.png','audio/manifest.json'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(async c=>{
   await c.addAll(FILES);

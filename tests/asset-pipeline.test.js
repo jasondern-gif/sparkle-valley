@@ -150,6 +150,25 @@ test('disabled entries can be enabled when their replacement art is ready',async
   }finally{await context.close();}
 });
 
+test('device speech speaks immediately after iPad gesture unlock',async()=>{
+  const {context,page,status,errors}=await open();
+  try{
+    await page.evaluate(()=>{
+      window.speechCalls=[];
+      speechSynthesis.resume=()=>{};
+      speechSynthesis.cancel=()=>{};
+      speechSynthesis.speak=u=>window.speechCalls.push(u.text);
+      speechUnlocked=false;
+      initAudio();
+      ttsSay('Read these words for Maddie','narrator',null);
+    });
+    const calls=await page.evaluate(()=>window.speechCalls);
+    assert.equal(calls[calls.length-1],'Read these words for Maddie');
+    assert.equal(calls.length>=2,true);
+    assert.deepEqual(errors,[]);
+  }finally{await context.close();}
+});
+
 test('a missing image falls back without affecting other assets',async()=>{
   missing.add('/assets/buildings/farmhouse.png');
   const {context,page,status,errors,warnings}=await open();
