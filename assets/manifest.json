@@ -1,0 +1,54 @@
+{
+  "schema": 1,
+  "tilePx": 24,
+  "assets": {
+    "tree": {
+      "src": "tiles/tree.png",
+      "size": [144, 48],
+      "frameSize": [36, 48],
+      "world": [1.5, 2],
+      "origin": "bottom-center",
+      "pixelArt": true,
+      "animations": {
+        "round":   { "frames": [0] },
+        "blossom": { "frames": [1] },
+        "apple":   { "frames": [2] },
+        "pine":    { "frames": [3] }
+      }
+    },
+    "crop_carrot": {
+      "enabled": false,
+      "src": "crops/carrot.png",
+      "size": [72, 24],
+      "frameSize": [24, 24],
+      "world": [1, 1],
+      "origin": "bottom-center",
+      "pixelArt": true,
+      "animations": {
+        "stage1": { "frames": [0] },
+        "stage2": { "frames": [1] },
+        "stage3": { "frames": [2] }
+      }
+    },
+    "farmhouse": {
+      "src": "buildings/farmhouse.png",
+      "size": [120, 108],
+      "world": [5, 4.5],
+      "origin": "bottom-center",
+      "pixelArt": true
+    },
+    "buttercup": {
+      "enabled": false,
+      "src": "characters/buttercup.png",
+      "size": [180, 36],
+      "frameSize": [36, 36],
+      "world": [1.5, 1.5],
+      "origin": "bottom-center",
+      "pixelArt": true,
+      "animations": {
+        "idle": { "frames": [0] },
+        "walk": { "frames": [1, 2, 3, 4], "fps": 8 }
+      }
+    }
+  }
+}

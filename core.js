@@ -1,9 +1,9 @@
 'use strict';
 // ---------- Core: map, data, state, audio, speech ----------
 // The world grid holds: Sparkle Valley (x0-43,y0-29), Pony Village (south, y30-47), the Cloud Kingdom (east, x45-79, y0-47),
-// and the far lands below the village (x0-43): Fairy Forest (y48-79), Mermaid Lagoon (y80-111), Moonlight Meadow (y112-143).
+// and the far lands below the village (x0-43), ending with Sunflower Hills.
 // The Cloud Kingdom and the far lands are only reached by the Rainbow Balloon.
-const W = 80, H = 144, VW = 44, VH = 30;
+const W = 80, H = 496, VW = 44, VH = 30;
 const SAVE_KEY = 'sparkleValley_v1';
 const GROW = 5; // seconds per growth stage
 const $ = id => document.getElementById(id);
@@ -57,8 +57,19 @@ const AREAS={
   clouds:{cam:CLOUD_AREA,play:[45.5,0.5,79.5,47.5]},
   forest:{cam:{x0:0,y0:48,x1:44,y1:80},play:[4.5,51.5,39.5,76.5],fill:'#2f5a2a'},
   lagoon:{cam:{x0:0,y0:80,x1:44,y1:112},play:[4.5,83.5,39.5,108.5],fill:'#2a8fc4'},
-  meadow:{cam:{x0:0,y0:112,x1:44,y1:144},play:[4.5,115.5,39.5,140.5],fill:'#1c2152'}};
-function areaAt(x,y){if(x>=45)return 'clouds';if(y<48)return 'valley';return y<80?'forest':y<112?'lagoon':'meadow';}
+  meadow:{cam:{x0:0,y0:112,x1:44,y1:144},play:[4.5,115.5,39.5,140.5],fill:'#1c2152'},
+  candy:{cam:{x0:0,y0:144,x1:44,y1:176},play:[4.5,147.5,39.5,172.5],fill:'#e5a5c1'},
+  mountain:{cam:{x0:0,y0:176,x1:44,y1:208},play:[4.5,179.5,39.5,204.5],fill:'#d7ecf6'},
+  garden:{cam:{x0:0,y0:208,x1:44,y1:240},play:[4.5,211.5,39.5,236.5],fill:'#4a8f55'},
+  island:{cam:{x0:0,y0:240,x1:44,y1:272},play:[4.5,243.5,39.5,268.5],fill:'#73cbd0'},
+  orchard:{cam:{x0:0,y0:272,x1:44,y1:304},play:[4.5,275.5,39.5,300.5],fill:'#594c83'},
+  carnival:{cam:{x0:0,y0:304,x1:44,y1:336},play:[4.5,307.5,39.5,332.5],fill:'#a8d7e9'},
+  hills:{cam:{x0:0,y0:336,x1:44,y1:368},play:[4.5,339.5,39.5,364.5],fill:'#9dbb55'},
+  brook:{cam:{x0:0,y0:368,x1:44,y1:400},play:[4.5,371.5,39.5,396.5],fill:'#83bbb3'},
+  railway:{cam:{x0:0,y0:400,x1:44,y1:432},play:[4.5,403.5,39.5,428.5],fill:'#99c6a9'},
+  harbor:{cam:{x0:0,y0:432,x1:44,y1:464},play:[4.5,435.5,39.5,460.5],fill:'#83bdc0'},
+  observatory:{cam:{x0:0,y0:464,x1:44,y1:496},play:[4.5,467.5,39.5,492.5],fill:'#a9a4cd'}};
+function areaAt(x,y){if(x>=45)return 'clouds';if(y<48)return 'valley';return y<80?'forest':y<112?'lagoon':y<144?'meadow':y<176?'candy':y<208?'mountain':y<240?'garden':y<272?'island':y<304?'orchard':y<336?'carnival':y<368?'hills':y<400?'brook':y<432?'railway':y<464?'harbor':'observatory';}
 const sameArea=(a,b)=>areaAt(a.x,a.y)===areaAt(b.x,b.y);
 const hereArea=()=>areaAt(player.x,player.y);
 
