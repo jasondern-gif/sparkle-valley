@@ -151,6 +151,7 @@ let actx=null,master=null,nextNote=0,step=0;
 function initAudio(){
   // iOS 17+: let sound play even when the iPad's silent switch is on
   try{if(navigator.audioSession)navigator.audioSession.type='playback';}catch(e){}
+  unlockSpeech();
   if(actx){if(actx.state!=='running')actx.resume();return;}
   const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
   actx=new AC();master=actx.createGain();master.gain.value=.7;master.connect(actx.destination);
@@ -193,7 +194,7 @@ function sfx(n){
 // ---------- Speech (reads everything out loud) ----------
 // Natural recorded voices live in audio/ (made by make_voices.py). If a line has no recording,
 // we fall back to the device's built-in voice, preferring the higher-quality ones.
-let voice=null,speakTimer=null,VOICE={};
+let voice=null,speakTimer=null,VOICE={},speechUnlocked=false,speechRequest=0;
 const hasSpeech='speechSynthesis' in window;
 const voiceEl=new Audio();voiceEl.preload='auto';
 fetch('audio/manifest.json').then(r=>r.json()).then(j=>{VOICE=j;}).catch(()=>{});
@@ -203,6 +204,18 @@ function pickVoice(){if(!hasSpeech)return;const en=speechSynthesis.getVoices().f
     ||en.find(v=>/en-US/i.test(v.lang))||en[0]||null;}
 if(hasSpeech){pickVoice();speechSynthesis.onvoiceschanged=pickVoice;}
 function cleanSpeech(t){return t.replace(/[\p{Extended_Pictographic}\u{1F3FB}-\u{1F3FF}\uFE0F\u200D]/gu,'').replace(/\s+/g,' ').trim();}
+function unlockSpeech(){
+  if(!hasSpeech||speechUnlocked)return;
+  speechUnlocked=true;
+  try{
+    speechSynthesis.resume();
+    pickVoice();
+    const u=new SpeechSynthesisUtterance(' ');
+    u.volume=0;
+    speechSynthesis.speak(u);
+    speechSynthesis.cancel();
+  }catch(e){}
+}
 // Recordings can't know the player's name, so they use a friendly word instead.
 function voiceText(t){return cleanSpeech(t.replace(/^Once upon a time, \{name\}/,'Once upon a time, a little farmer').replace(/my sweet \{name\}/g,'my sweetheart')
   .replace(/\{name\}, /g,'').replace(/,\s*\{name\}/g,'').replace(/\{name\}/g,'friend'));}
@@ -212,8 +225,10 @@ function speaking(){return (!voiceEl.paused&&!voiceEl.ended)||(hasSpeech&&speech
 function say(text,who,target){
   if(!state.settings.voice)return;who=SPK[who]?who:'narrator';
   stopSpeech();
-  const v=VOICE[voiceKey(text,who)],f=typeof v==='string'?v:v&&v.f;
-  if(f){hlStart(target,'audio',v.w);voiceEl.src='audio/'+f;const pr=voiceEl.play();if(pr)pr.catch(()=>ttsSay(text,who,target));return;}
+  const v=VOICE[voiceKey(text,who)],f=typeof v==='string'?v:v&&v.f,request=speechRequest;
+  if(f){hlStart(target,'audio',v.w);voiceEl.src='audio/'+f;const pr=voiceEl.play();if(pr)pr.catch(()=>{
+    if(request===speechRequest&&state.settings.voice)ttsSay(text,who,target);
+  });return;}
   ttsSay(text,who,target);
 }
 function ttsSay(text,who,target){
@@ -229,11 +244,12 @@ function ttsSay(text,who,target){
   u.onend=()=>{if(HL.utt===u)hlClear();};HL.utt=u;
   clearTimeout(speakTimer);
   try{
-    if(speechSynthesis.speaking||speechSynthesis.pending){speechSynthesis.cancel();speakTimer=setTimeout(()=>speechSynthesis.speak(u),90);}
-    else speechSynthesis.speak(u);
+    speechSynthesis.resume();
+    if(speechSynthesis.speaking||speechSynthesis.pending)speechSynthesis.cancel();
+    speechSynthesis.speak(u);
   }catch(e){}
 }
-function stopSpeech(){hlClear();try{voiceEl.pause();}catch(e){}if(hasSpeech){clearTimeout(speakTimer);try{speechSynthesis.cancel();}catch(e){}}}
+function stopSpeech(){speechRequest++;hlClear();try{voiceEl.pause();}catch(e){}if(hasSpeech){clearTimeout(speakTimer);try{speechSynthesis.cancel();}catch(e){}}}
 
 // ---------- Word highlighting: each word lights up while it is spoken ----------
 const HL={target:null,spans:null,map:[],times:[],idx:-1,mode:null,started:false,ttsIdx:-1,utt:null};
