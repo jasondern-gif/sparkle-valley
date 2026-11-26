@@ -169,6 +169,43 @@ test('device speech speaks immediately after iPad gesture unlock',async()=>{
   }finally{await context.close();}
 });
 
+test('recorded voice failures only fall back for the current spoken line',async()=>{
+  const {context,page,errors}=await open();
+  try{
+    const result=await page.evaluate(async()=>{
+      const spoken=[];
+      speechSynthesis.resume=()=>{};
+      speechSynthesis.cancel=()=>{};
+      speechSynthesis.speak=u=>spoken.push(u.text);
+      state.settings.voice=true;
+      VOICE={};
+      const older='First recorded message',newer='Next message',current='Current recorded message';
+      VOICE[voiceKey(older,'narrator')]='older.mp3';
+      VOICE[voiceKey(current,'narrator')]='current.mp3';
+      let rejectPlay;
+      voiceEl.play=()=>new Promise((resolve,reject)=>{rejectPlay=reject;});
+      say(older,'narrator');
+      say(newer,'narrator');
+      rejectPlay(new Error('playback interrupted'));
+      await Promise.resolve();
+      const afterInterrupt=spoken.slice();
+      say(current,'narrator');
+      rejectPlay(new Error('recording unavailable'));
+      await Promise.resolve();
+      const afterFailure=spoken.slice();
+      say(current,'narrator');
+      state.settings.voice=false;stopSpeech();
+      rejectPlay(new Error('muted'));
+      await Promise.resolve();
+      return{afterInterrupt,afterFailure,afterMute:spoken};
+    });
+    assert.deepEqual(result.afterInterrupt,['Next message']);
+    assert.deepEqual(result.afterFailure,['Next message','Current recorded message']);
+    assert.deepEqual(result.afterMute,result.afterFailure);
+    assert.deepEqual(errors,[]);
+  }finally{await context.close();}
+});
+
 test('a missing image falls back without affecting other assets',async()=>{
   missing.add('/assets/buildings/farmhouse.png');
   const {context,page,status,errors,warnings}=await open();

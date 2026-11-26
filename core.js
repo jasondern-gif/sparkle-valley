@@ -194,7 +194,7 @@ function sfx(n){
 // ---------- Speech (reads everything out loud) ----------
 // Natural recorded voices live in audio/ (made by make_voices.py). If a line has no recording,
 // we fall back to the device's built-in voice, preferring the higher-quality ones.
-let voice=null,speakTimer=null,VOICE={},speechUnlocked=false;
+let voice=null,speakTimer=null,VOICE={},speechUnlocked=false,speechRequest=0;
 const hasSpeech='speechSynthesis' in window;
 const voiceEl=new Audio();voiceEl.preload='auto';
 fetch('audio/manifest.json').then(r=>r.json()).then(j=>{VOICE=j;}).catch(()=>{});
@@ -225,8 +225,10 @@ function speaking(){return (!voiceEl.paused&&!voiceEl.ended)||(hasSpeech&&speech
 function say(text,who,target){
   if(!state.settings.voice)return;who=SPK[who]?who:'narrator';
   stopSpeech();
-  const v=VOICE[voiceKey(text,who)],f=typeof v==='string'?v:v&&v.f;
-  if(f){hlStart(target,'audio',v.w);voiceEl.src='audio/'+f;const pr=voiceEl.play();if(pr)pr.catch(()=>ttsSay(text,who,target));return;}
+  const v=VOICE[voiceKey(text,who)],f=typeof v==='string'?v:v&&v.f,request=speechRequest;
+  if(f){hlStart(target,'audio',v.w);voiceEl.src='audio/'+f;const pr=voiceEl.play();if(pr)pr.catch(()=>{
+    if(request===speechRequest&&state.settings.voice)ttsSay(text,who,target);
+  });return;}
   ttsSay(text,who,target);
 }
 function ttsSay(text,who,target){
@@ -247,7 +249,7 @@ function ttsSay(text,who,target){
     speechSynthesis.speak(u);
   }catch(e){}
 }
-function stopSpeech(){hlClear();try{voiceEl.pause();}catch(e){}if(hasSpeech){clearTimeout(speakTimer);try{speechSynthesis.cancel();}catch(e){}}}
+function stopSpeech(){speechRequest++;hlClear();try{voiceEl.pause();}catch(e){}if(hasSpeech){clearTimeout(speakTimer);try{speechSynthesis.cancel();}catch(e){}}}
 
 // ---------- Word highlighting: each word lights up while it is spoken ----------
 const HL={target:null,spans:null,map:[],times:[],idx:-1,mode:null,started:false,ttsIdx:-1,utt:null};
